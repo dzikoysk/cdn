@@ -1,2 +1,2 @@
-# con
-CON (Configuration Object Notation) - enhanced standard of JSON5 (JSON for Humans)
+# cdn
+CDN (Configuration Data Notation) - enhanced standard of JSON5 (JSON for Humans)
