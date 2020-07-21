@@ -8,7 +8,7 @@ class CdnReaderTest {
 
     @Test
     void 'should return entry' () {
-        def result = CDN.parse('key: value')
+        def result = Cdn.defaultInstance().parse('key: value')
         def entry = result.getValue().get('key')
 
         assertNotNull entry
@@ -18,7 +18,7 @@ class CdnReaderTest {
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = CDN.parse('''
+        def result = Cdn.defaultInstance().parse('''
         # comment1
         // comment2
         section {
@@ -37,7 +37,7 @@ class CdnReaderTest {
 
     @Test
     void 'should return nested section' () {
-        def result = CDN.parse('''
+        def result = Cdn.defaultInstance().parse('''
         # c1
         s1 {
             # c2
@@ -52,7 +52,7 @@ class CdnReaderTest {
 
     @Test
     void 'should skip empty lines' () {
-        def result = CDN.parse('')
+        def result = Cdn.defaultInstance().parse('')
         assertTrue result.getValue().isEmpty()
     }
 

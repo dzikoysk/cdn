@@ -16,10 +16,15 @@ import java.util.stream.Collectors;
 
 final class CdnReader {
 
+    private final Cdn cdn;
     private final Map<String, CdnElement<?>> root = new HashMap<>();
     private final Stack<Map<String, CdnElement<?>>> sections = new Stack<>();
     private final Stack<String> operators = new Stack<>();
     private List<String> comments = new ArrayList<>();
+
+    public CdnReader(Cdn cdn) {
+        this.cdn = cdn;
+    }
 
     public CdnRoot read(String source) {
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);

@@ -15,7 +15,7 @@ class CdnWriterTest {
         assertEquals """
             # description
             key: value
-        """.stripIndent().trim(), CDN.compose(entry)
+        """.stripIndent().trim(), Cdn.defaultInstance().compose(entry)
     }
 
     @Test
@@ -26,7 +26,7 @@ class CdnWriterTest {
             # description
             section {
             }
-        """.stripIndent().trim(), CDN.compose(section)
+        """.stripIndent().trim(), Cdn.defaultInstance().compose(section)
     }
 
     @Test
@@ -45,7 +45,7 @@ class CdnWriterTest {
                 entry: value
               }
             }
-        """.stripIndent().trim(), CDN.compose(section)
+        """.stripIndent().trim(), Cdn.defaultInstance().compose(section)
     }
 
 
