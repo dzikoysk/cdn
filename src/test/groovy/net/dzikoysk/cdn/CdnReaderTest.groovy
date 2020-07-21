@@ -22,7 +22,7 @@ class CdnReaderTest {
         # comment1
         // comment2
         section {
-            entry: value   
+            entry: value
         }
         ''')
 
@@ -48,6 +48,12 @@ class CdnReaderTest {
         ''')
 
         assertTrue result.has('s1.s2')
+    }
+
+    @Test
+    void 'should skip empty lines' () {
+        def result = CDN.parse('')
+        assertTrue result.getValue().isEmpty()
     }
 
 }

@@ -28,4 +28,13 @@ class CdnSectionTest {
         assertEquals 'value', SECTION.getString('sub.entry')
     }
 
+    @Test
+    void 'should append sub element' () {
+        CdnSection section = new CdnSection('section', [], [:])
+        assertTrue section.getValue().isEmpty()
+
+        section.append(new CdnEntry('entry', [], 'value'))
+        assertEquals 1, section.getValue().size()
+    }
+
 }

@@ -12,4 +12,6 @@ final class CdnConstants {
 
     protected static final String[] ARRAY_SEPARATOR = { "[", "]" };
 
+    private CdnConstants() { }
+
 }
