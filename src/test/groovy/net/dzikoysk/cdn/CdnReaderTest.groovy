@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.*
 
-class CdnParserTest {
+class CdnReaderTest {
 
     static final CdnParser PARSER = new CdnParser()
 
@@ -43,18 +43,13 @@ class CdnParserTest {
         # c1
         s1 {
             # c2
+            some: entry
             s2 {
-                # c3
-                some: entry
-                
-                s3 {
-                    
-                }
             }
         }
         ''')
 
-        assertTrue result.has('s1.s2.s3')
+        assertTrue result.has('s1.s2')
     }
 
 }
