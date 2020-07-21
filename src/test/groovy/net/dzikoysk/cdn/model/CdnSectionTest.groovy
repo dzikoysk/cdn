@@ -1,18 +1,31 @@
 package net.dzikoysk.cdn.model
 
-
 import org.junit.jupiter.api.Test
-import org.panda_lang.utilities.commons.collection.Maps
 
 import static org.junit.jupiter.api.Assertions.assertEquals
+import static org.junit.jupiter.api.Assertions.assertTrue
 
 class CdnSectionTest {
 
-    static final CdnSection SECTION = new CdnSection('section-name', Maps.of("entry", new CdnEntry("entry", "value", [])), [ '# comment' ])
+    static final CdnSection SECTION = new CdnSection('name', [ '# comment' ], [
+        "sub": new CdnSection("sub", [], [
+            "entry": new CdnEntry("entry", [], "value")
+        ])
+    ])
 
     @Test
     void 'should return section name' () {
-        assertEquals 'section-name', SECTION.getName()
+        assertEquals 'name', SECTION.getName()
+    }
+
+    @Test
+    void 'should contain entry' () {
+        assertTrue SECTION.has('sub')
+    }
+
+    @Test
+    void 'should return entry of sub section' () {
+        assertEquals 'value', SECTION.getString('sub.entry')
     }
 
 }
