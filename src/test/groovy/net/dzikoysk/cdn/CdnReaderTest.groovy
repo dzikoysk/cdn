@@ -6,11 +6,9 @@ import static org.junit.jupiter.api.Assertions.*
 
 class CdnReaderTest {
 
-    static final CdnParser PARSER = new CdnParser()
-
     @Test
     void 'should return entry' () {
-        def result = PARSER.parse('key: value')
+        def result = CDN.parse('key: value')
         def entry = result.getValue().get('key')
 
         assertNotNull entry
@@ -20,7 +18,7 @@ class CdnReaderTest {
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = PARSER.parse('''
+        def result = CDN.parse('''
         # comment1
         // comment2
         section {
@@ -39,7 +37,7 @@ class CdnReaderTest {
 
     @Test
     void 'should return nested section' () {
-        def result = PARSER.parse('''
+        def result = CDN.parse('''
         # c1
         s1 {
             # c2

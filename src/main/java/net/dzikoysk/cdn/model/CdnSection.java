@@ -6,7 +6,7 @@ import org.panda_lang.utilities.commons.StringUtils;
 import java.util.List;
 import java.util.Map;
 
-public final class CdnSection extends AbstractCdnElement<Map<String, CdnElement<?>>> {
+public class CdnSection extends AbstractCdnElement<Map<String, CdnElement<?>>> {
 
     public CdnSection(String name, List<String> comments, Map<String, CdnElement<?>> value) {
         super(name, value, comments);

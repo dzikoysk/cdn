@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 
 class CdnEntryTest {
 
-    static final CdnEntry ENTRY = new CdnEntry('entry-name', 'entry-value', [ '// entry-comment' ])
+    static final CdnEntry ENTRY = new CdnEntry('entry-name', [ '// entry-comment' ], 'entry-value')
 
     @Test
     void 'should return entry name' () {

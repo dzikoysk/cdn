@@ -8,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 
 class CdnWriterTest {
 
-    static final CdnParser PARSER = new CdnParser()
-
     @Test
     void 'should compose simple entry' () {
         def entry = new CdnEntry('key', [ '# description' ], 'value')
@@ -17,7 +15,7 @@ class CdnWriterTest {
         assertEquals """
             # description
             key: value
-        """.stripIndent().trim(), PARSER.compose(entry)
+        """.stripIndent().trim(), CDN.compose(entry)
     }
 
     @Test
@@ -28,7 +26,7 @@ class CdnWriterTest {
             # description
             section {
             }
-        """.stripIndent().trim(), PARSER.compose(section)
+        """.stripIndent().trim(), CDN.compose(section)
     }
 
     @Test
@@ -47,7 +45,7 @@ class CdnWriterTest {
                 entry: value
               }
             }
-        """.stripIndent().trim(), PARSER.compose(section)
+        """.stripIndent().trim(), CDN.compose(section)
     }
 
 

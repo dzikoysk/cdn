@@ -2,12 +2,12 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.model.CdnElement;
 import net.dzikoysk.cdn.model.CdnEntry;
+import net.dzikoysk.cdn.model.CdnRoot;
 import net.dzikoysk.cdn.model.CdnSection;
 import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ final class CdnReader {
     private final Stack<String> operators = new Stack<>();
     private List<String> comments = new ArrayList<>();
 
-    public CdnSection read(String source) {
+    public CdnRoot read(String source) {
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);
 
         List<String> lines = Arrays.stream(normalizedSource.split(CdnConstants.LINE_SEPARATOR))
@@ -73,7 +73,7 @@ final class CdnReader {
             comments = new ArrayList<>();
         }
 
-        return new CdnSection("", Collections.emptyList(), root);
+        return new CdnRoot(root);
     }
 
     private void appendElement(String key, CdnElement<?> element) {

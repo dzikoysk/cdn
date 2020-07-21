@@ -2,6 +2,7 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.model.CdnElement;
 import net.dzikoysk.cdn.model.CdnEntry;
+import net.dzikoysk.cdn.model.CdnRoot;
 import net.dzikoysk.cdn.model.CdnSection;
 import org.panda_lang.utilities.commons.StringUtils;
 
@@ -37,18 +38,26 @@ final class CdnWriter {
 
         if (element instanceof CdnSection) {
             CdnSection section = (CdnSection) element;
-            content.append(indentation)
-                    .append(section.getName())
-                    .append(" {")
-                    .append(CdnConstants.LINE_SEPARATOR);
+            boolean isRoot = section instanceof CdnRoot;
 
-            for (CdnElement<?> sectionElement : section.getValue().values()) {
-                render(content, level + 1, sectionElement);
+            if (!isRoot) {
+                content.append(indentation)
+                        .append(section.getName())
+                        .append(" {")
+                        .append(CdnConstants.LINE_SEPARATOR);
             }
 
-            content.append(indentation)
-                    .append("}")
-                    .append(CdnConstants.LINE_SEPARATOR);
+            int subLevel = isRoot ? level : level + 1;
+
+            for (CdnElement<?> sectionElement : section.getValue().values()) {
+                render(content, subLevel, sectionElement);
+            }
+
+            if (!isRoot) {
+                content.append(indentation)
+                        .append("}")
+                        .append(CdnConstants.LINE_SEPARATOR);
+            }
         }
     }
 
