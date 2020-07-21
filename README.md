@@ -1,4 +1,4 @@
-# CDN [![Build Status](https://travis-ci.com/dzikoysk/cdn.svg?branch=master)](https://travis-ci.com/dzikoysk/cdn)
+# CDN ![CDN CI](https://github.com/dzikoysk/cdn/workflows/CDN%20CI/badge.svg)  [![Build Status](https://travis-ci.com/dzikoysk/cdn.svg?branch=master)](https://travis-ci.com/dzikoysk/cdn) [![Coverage Status](https://coveralls.io/repos/github/dzikoysk/cdn/badge.svg?branch=master)](https://coveralls.io/github/dzikoysk/cdn?branch=master) [![CodeFactor](https://www.codefactor.io/repository/github/dzikoysk/cdn/badge)](https://www.codefactor.io/repository/github/dzikoysk/cdn)
 CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON5 *(JSON for Humans)* format for Java projects.
 
 
@@ -8,7 +8,7 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 - [x] Respecting comment entries
 - [x] Bidirectional parse and compose of CDN sources
 - [ ] Serialization and deserialization of Java entities 
-- [ ] 90%+ test coverage
+- [x] 90%+ test coverage
 - [ ] Docs
 
 #### Usage
