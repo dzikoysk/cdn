@@ -3,13 +3,18 @@ package net.dzikoysk.cdn.model;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CdnSection extends AbstractCdnElement<Map<String, CdnElement<?>>> {
 
-    public CdnSection(String name, List<String> comments, Map<String, CdnElement<?>> value) {
-        super(name, value, comments);
+    public CdnSection(String name, List<String> description) {
+        this(name, description, new HashMap<>());
+    }
+
+    public CdnSection(String name, List<String> description, Map<String, CdnElement<?>> value) {
+        super(name, description, value);
     }
 
     public <E extends CdnElement<?>> E append(E element) {

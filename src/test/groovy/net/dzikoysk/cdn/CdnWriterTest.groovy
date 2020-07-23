@@ -20,7 +20,7 @@ class CdnWriterTest {
 
     @Test
     void 'should compose simple section' () {
-        def section = new CdnSection('section', ['# description' ], [:])
+        def section = new CdnSection('section', ['# description' ])
 
         assertEquals """
             # description

@@ -8,7 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 
 final class CdnRootTest {
 
-    static final CdnRoot ROOT = new CdnRoot([ 'entry': new CdnEntry('entry', [], 'value') ])
+    static final CdnRoot ROOT = new CdnRoot()
+
+    static {
+        ROOT.append(new CdnEntry('entry', [], 'value'))
+    }
 
     @Test
     void 'should contain empty name' () {

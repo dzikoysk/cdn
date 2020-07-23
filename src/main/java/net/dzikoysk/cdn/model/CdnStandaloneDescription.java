@@ -4,8 +4,8 @@ import java.util.List;
 
 final class CdnStandaloneDescription extends AbstractCdnElement<Object> {
 
-    protected CdnStandaloneDescription(String name, Object value, List<String> comments) {
-        super(name, value, comments);
+    protected CdnStandaloneDescription(String name, List<String> comments, Object value) {
+        super(name, comments, value);
     }
 
 }

@@ -5,18 +5,18 @@ import java.util.List;
 abstract class AbstractCdnElement<T> implements CdnElement<T>  {
 
     protected final String name;
+    protected final List<String> description;
     protected final T value;
-    protected final List<String> comments;
 
-    protected AbstractCdnElement(String name, T value, List<String> comments) {
+    protected AbstractCdnElement(String name, List<String> description,  T value) {
         this.name = name;
+        this.description = description;
         this.value = value;
-        this.comments = comments;
     }
 
     @Override
     public List<? extends String> getDescription() {
-        return comments;
+        return description;
     }
 
     @Override
