@@ -21,7 +21,7 @@ class CdnEntryTest {
 
     @Test
     void 'should return entry comments' () {
-        assertEquals([ '// entry-comment' ], ENTRY.getComments())
+        assertEquals([ '// entry-comment' ], ENTRY.getDescription())
     }
 
 }

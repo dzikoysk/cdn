@@ -15,7 +15,7 @@ abstract class AbstractCdnElement<T> implements CdnElement<T>  {
     }
 
     @Override
-    public List<? extends String> getComments() {
+    public List<? extends String> getDescription() {
         return comments;
     }
 

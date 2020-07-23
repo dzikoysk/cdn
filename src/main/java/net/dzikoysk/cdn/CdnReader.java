@@ -36,11 +36,7 @@ final class CdnReader {
         for (String line : lines) {
             line = line.trim();
 
-            if (line.isEmpty()) {
-                continue;
-            }
-
-            if (line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
+            if (line.isEmpty() || line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
                 comments.add(line);
                 continue;
             }

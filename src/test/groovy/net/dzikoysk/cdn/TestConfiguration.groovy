@@ -7,7 +7,8 @@ class TestConfiguration {
     @Description("# Root entry description")
     public String rootEntry = "default value";
 
-    @Description([ "", "// Section description" ])
+    @Description("")
+    @Description("// Section description")
     public SectionConfiguration section = new SectionConfiguration();
 
     static class SectionConfiguration {

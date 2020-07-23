@@ -6,7 +6,7 @@ public interface CdnElement<T> {
 
     T getValue();
 
-    List<? extends String> getComments();
+    List<? extends String> getDescription();
 
     String getName();
 

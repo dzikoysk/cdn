@@ -28,7 +28,7 @@ class CdnReaderTest {
 
         def section = result.getSection('section')
         assertNotNull section
-        assertEquals([ '# comment1', '// comment2' ], section.getComments())
+        assertEquals([ '# comment1', '// comment2' ], section.getDescription())
 
         def entry = section.getEntry('entry')
         assertNotNull entry
