@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CdnSection extends AbstractCdnElement<Map<String, CdnElement<?>>> {
+public class Section extends AbstractConfigurationElement<Map<String, ConfigurationElement<?>>> {
 
-    public CdnSection(String name, List<String> description) {
+    public Section(String name, List<String> description) {
         this(name, description, new HashMap<>());
     }
 
-    public CdnSection(String name, List<String> description, Map<String, CdnElement<?>> value) {
+    public Section(String name, List<String> description, Map<String, ConfigurationElement<?>> value) {
         super(name, description, value);
     }
 
-    public <E extends CdnElement<?>> E append(E element) {
+    public <E extends ConfigurationElement<?>> E append(E element) {
         super.value.put(element.getName(), element);
         return element;
     }
@@ -32,27 +32,27 @@ public class CdnSection extends AbstractCdnElement<Map<String, CdnElement<?>>> {
     }
 
     public String getString(String key) {
-        CdnEntry entry = getEntry(key);
+        Entry entry = getEntry(key);
         return entry != null ? entry.getValue() : null;
     }
 
-    public CdnEntry getEntry(String key) {
+    public Entry getEntry(String key) {
         return ObjectUtils.cast(get(key));
     }
 
-    public CdnSection getSection(String key) {
+    public Section getSection(String key) {
         return ObjectUtils.cast(get(key));
     }
 
-    public CdnElement<?> get(String key) {
-        CdnElement<?> result = getValue().get(key);
+    public ConfigurationElement<?> get(String key) {
+        ConfigurationElement<?> result = getValue().get(key);
 
         if (result != null || !key.contains(".")) {
             return result;
         }
 
         String[] qualifier = StringUtils.split(key, ".");
-        CdnSection section = this;
+        Section section = this;
 
         for (int index = 0; index < qualifier.length - 1 && section != null; index++) {
             section = section.getSection(qualifier[index]);

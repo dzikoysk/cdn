@@ -2,7 +2,7 @@ package net.dzikoysk.cdn.model;
 
 import java.util.List;
 
-public interface CdnElement<T> {
+public interface ConfigurationElement<T> {
 
     T getValue();
 

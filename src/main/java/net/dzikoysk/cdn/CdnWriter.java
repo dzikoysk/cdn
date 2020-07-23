@@ -1,20 +1,20 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.CdnElement;
-import net.dzikoysk.cdn.model.CdnEntry;
-import net.dzikoysk.cdn.model.CdnRoot;
-import net.dzikoysk.cdn.model.CdnSection;
+import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.Section;
 import org.panda_lang.utilities.commons.StringUtils;
 
 final class CdnWriter {
 
-    public String render(CdnElement<?> element) {
+    public String render(ConfigurationElement<?> element) {
         StringBuilder content = new StringBuilder();
         render(content, 0, element);
         return content.toString().trim();
     }
 
-    private void render(StringBuilder content, int level, CdnElement<?> element) {
+    private void render(StringBuilder content, int level, ConfigurationElement<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
 
         for (String comment : element.getDescription()) {
@@ -23,8 +23,8 @@ final class CdnWriter {
                     .append(CdnConstants.LINE_SEPARATOR);
         }
 
-        if (element instanceof CdnEntry) {
-            CdnEntry entry = (CdnEntry) element;
+        if (element instanceof Entry) {
+            Entry entry = (Entry) element;
 
             content.append(indentation)
                     .append(entry.getName())
@@ -36,9 +36,9 @@ final class CdnWriter {
             return;
         }
 
-        if (element instanceof CdnSection) {
-            CdnSection section = (CdnSection) element;
-            boolean isRoot = section instanceof CdnRoot;
+        if (element instanceof Section) {
+            Section section = (Section) element;
+            boolean isRoot = section instanceof Configuration;
 
             if (!isRoot) {
                 content.append(indentation)
@@ -49,7 +49,7 @@ final class CdnWriter {
 
             int subLevel = isRoot ? level : level + 1;
 
-            for (CdnElement<?> sectionElement : section.getValue().values()) {
+            for (ConfigurationElement<?> sectionElement : section.getValue().values()) {
                 render(content, subLevel, sectionElement);
             }
 

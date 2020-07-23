@@ -1,7 +1,7 @@
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.model.CdnEntry
-import net.dzikoysk.cdn.model.CdnSection
+import net.dzikoysk.cdn.model.Entry
+import net.dzikoysk.cdn.model.Section
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -10,30 +10,30 @@ class CdnWriterTest {
 
     @Test
     void 'should compose simple entry' () {
-        def entry = new CdnEntry('key', [ '# description' ], 'value')
+        def entry = new Entry('key', ['# description' ], 'value')
 
         assertEquals """
             # description
             key: value
-        """.stripIndent().trim(), Cdn.defaultInstance().compose(entry)
+        """.stripIndent().trim(), CDN.defaultInstance().compose(entry)
     }
 
     @Test
     void 'should compose simple section' () {
-        def section = new CdnSection('section', ['# description' ])
+        def section = new Section('section', ['# description' ])
 
         assertEquals """
             # description
             section {
             }
-        """.stripIndent().trim(), Cdn.defaultInstance().compose(section)
+        """.stripIndent().trim(), CDN.defaultInstance().compose(section)
     }
 
     @Test
     void 'should compose section with sub section and entry' () {
-        def section = new CdnSection('section', ['# description' ], [
-            'sub': new CdnSection('sub', [], [
-                'entry': new CdnEntry('entry', [ '# entry comment' ], 'value')
+        def section = new Section('section', ['# description' ], [
+            'sub': new Section('sub', [], [
+                'entry': new Entry('entry', ['# entry comment' ], 'value')
             ])
         ])
 
@@ -45,7 +45,7 @@ class CdnWriterTest {
                 entry: value
               }
             }
-        """.stripIndent().trim(), Cdn.defaultInstance().compose(section)
+        """.stripIndent().trim(), CDN.defaultInstance().compose(section)
     }
 
 

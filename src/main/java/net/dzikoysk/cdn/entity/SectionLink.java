@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Description {
-
-    String[] value() default {};
+public @interface SectionLink {
 
 }

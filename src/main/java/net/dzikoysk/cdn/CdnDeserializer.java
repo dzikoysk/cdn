@@ -1,41 +1,41 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.CdnElement;
-import net.dzikoysk.cdn.model.CdnEntry;
-import net.dzikoysk.cdn.model.CdnRoot;
-import net.dzikoysk.cdn.model.CdnSection;
+import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.Section;
 
 import java.lang.reflect.Field;
 import java.util.function.Function;
 
 final class CdnDeserializer<T> {
 
-    private final Cdn cdn;
+    private final CDN cdn;
 
-    public CdnDeserializer(Cdn cdn) {
+    public CdnDeserializer(CDN cdn) {
         this.cdn = cdn;
     }
 
-    protected T deserialize(Class<T> scheme, CdnRoot content) throws Exception {
+    protected T deserialize(Class<T> scheme, Configuration content) throws Exception {
         T instance = scheme.getConstructor().newInstance();
         deserialize(instance, content);
         return instance;
     }
 
-    private void deserialize(Object instance, CdnSection section) throws Exception {
+    private void deserialize(Object instance, Section section) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
-            CdnElement<?> element = section.get(field.getName());
+            ConfigurationElement<?> element = section.get(field.getName());
 
             if (element == null) {
                 continue;
             }
 
-            if (element instanceof CdnSection) {
-                deserialize(field.get(instance), (CdnSection) element);
+            if (element instanceof Section) {
+                deserialize(field.get(instance), (Section) element);
                 continue;
             }
 
-            CdnEntry entry = section.getEntry(field.getName());
+            Entry entry = section.getEntry(field.getName());
 
             if (entry == null) {
                 continue;

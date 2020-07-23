@@ -1,9 +1,9 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.CdnElement;
-import net.dzikoysk.cdn.model.CdnEntry;
-import net.dzikoysk.cdn.model.CdnRoot;
-import net.dzikoysk.cdn.model.CdnSection;
+import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.Section;
 import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.ArrayList;
@@ -14,17 +14,17 @@ import java.util.stream.Collectors;
 
 final class CdnReader {
 
-    private final Cdn cdn;
-    private final CdnRoot root = new CdnRoot();
-    private final Stack<CdnSection> sections = new Stack<>();
+    private final CDN cdn;
+    private final Configuration root = new Configuration();
+    private final Stack<Section> sections = new Stack<>();
     private final Stack<String> operators = new Stack<>();
     private List<String> comments = new ArrayList<>();
 
-    public CdnReader(Cdn cdn) {
+    public CdnReader(CDN cdn) {
         this.cdn = cdn;
     }
 
-    public CdnRoot read(String source) {
+    public Configuration read(String source) {
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);
 
         List<String> lines = Arrays.stream(normalizedSource.split(CdnConstants.LINE_SEPARATOR))
@@ -44,7 +44,7 @@ final class CdnReader {
                 String sectionName = trimSeparator(line);
                 operators.push(CdnConstants.OBJECT_SEPARATOR[0]);
 
-                CdnSection section = new CdnSection(sectionName, comments);
+                Section section = new Section(sectionName, comments);
                 appendElement(section);
                 sections.push(section); // has to be after append
 
@@ -66,7 +66,7 @@ final class CdnReader {
 
             // add standard entry
             String[] elements = StringUtils.split(line, CdnConstants.OPERATOR);
-            CdnEntry entry = new CdnEntry(elements[0].trim(), comments, elements[1].trim());
+            Entry entry = new Entry(elements[0].trim(), comments, elements[1].trim());
             appendElement(entry);
             comments = new ArrayList<>();
         }
@@ -74,7 +74,7 @@ final class CdnReader {
         return root;
     }
 
-    private void appendElement(CdnElement<?> element) {
+    private void appendElement(ConfigurationElement<?> element) {
         if (sections.isEmpty()) {
             root.append(element);
         }

@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
 
-class CdnSectionTest {
+class SectionTest {
 
-    static final CdnSection SECTION = new CdnSection('name', [ '# comment' ], [
-        "sub": new CdnSection("sub", [], [
-            "entry": new CdnEntry("entry", [], "value")
+    static final Section SECTION = new Section('name', ['# comment' ], [
+        "sub": new Section("sub", [], [
+            "entry": new Entry("entry", [], "value")
         ])
     ])
 
@@ -30,10 +30,10 @@ class CdnSectionTest {
 
     @Test
     void 'should append sub element' () {
-        CdnSection section = new CdnSection('section', [], [:])
+        Section section = new Section('section', [], [:])
         assertTrue section.getValue().isEmpty()
 
-        section.append(new CdnEntry('entry', [], 'value'))
+        section.append(new Entry('entry', [], 'value'))
         assertEquals 1, section.getValue().size()
     }
 

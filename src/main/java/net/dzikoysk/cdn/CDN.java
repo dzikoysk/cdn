@@ -1,17 +1,17 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.CdnElement;
-import net.dzikoysk.cdn.model.CdnRoot;
+import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Configuration;
 
-public final class Cdn {
+public final class CDN {
 
     private final CdnConfiguration configuration;
 
-    Cdn(CdnConfiguration configuration) {
+    CDN(CdnConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    public CdnRoot parse(String source) {
+    public Configuration parse(String source) {
         return new CdnReader(this).read(source);
     }
 
@@ -19,8 +19,12 @@ public final class Cdn {
         return new CdnDeserializer<T>(this).deserialize(scheme, parse(source));
     }
 
-    public String compose(CdnElement<?> element) {
+    public String compose(ConfigurationElement<?> element) {
         return new CdnWriter().render(element);
+    }
+
+    public String compose(Object entity) {
+        return compose(new CdnSerializer(this).serialize(entity));
     }
 
     public CdnConfiguration getConfiguration() {
@@ -31,7 +35,7 @@ public final class Cdn {
         return new CdnConfiguration();
     }
 
-    public static Cdn defaultInstance() {
+    public static CDN defaultInstance() {
         return configure().build();
     }
 

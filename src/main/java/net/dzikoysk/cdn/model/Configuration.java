@@ -4,9 +4,9 @@ import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.Collections;
 
-public final class CdnRoot extends CdnSection {
+public final class Configuration extends Section {
 
-    public CdnRoot() {
+    public Configuration() {
         super(StringUtils.EMPTY, Collections.emptyList());
     }
 

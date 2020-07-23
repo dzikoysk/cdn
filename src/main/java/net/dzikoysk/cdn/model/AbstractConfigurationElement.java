@@ -2,13 +2,13 @@ package net.dzikoysk.cdn.model;
 
 import java.util.List;
 
-abstract class AbstractCdnElement<T> implements CdnElement<T>  {
+abstract class AbstractConfigurationElement<T> implements ConfigurationElement<T> {
 
     protected final String name;
     protected final List<String> description;
     protected final T value;
 
-    protected AbstractCdnElement(String name, List<String> description,  T value) {
+    protected AbstractConfigurationElement(String name, List<String> description,  T value) {
         this.name = name;
         this.description = description;
         this.value = value;

@@ -1,20 +1,33 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.CdnRoot;
+import net.dzikoysk.cdn.entity.SectionLink;
+import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.Section;
+
+import java.lang.reflect.Field;
 
 final class CdnSerializer {
 
-    private final Cdn cdn;
+    private final CDN cdn;
 
-    CdnSerializer(Cdn cdn) {
+    CdnSerializer(CDN cdn) {
         this.cdn = cdn;
     }
 
-    public String serialize(Object entity) {
-        Class<?> scheme = entity.getClass();
-        CdnRoot root = new CdnRoot();
+    public Configuration serialize(Object entity) {
+        Configuration root = new Configuration();
+        serialize(root, entity);
+        return root;
+    }
 
-        return null;
+    private void serialize(Section root, Object entity) {
+        Class<?> scheme = entity.getClass();
+
+        for (Field field : scheme.getDeclaredFields()) {
+            if (field.isAnnotationPresent(SectionLink.class)) {
+
+            }
+        }
     }
 
 }

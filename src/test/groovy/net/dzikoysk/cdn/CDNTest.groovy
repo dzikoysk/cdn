@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
-class CdnTest {
+class CDNTest {
 
     @Test
     void 'should parse and compose bidirectional input' () {
@@ -23,8 +23,8 @@ class CdnTest {
         }
         """.stripIndent().trim()
 
-        def result = Cdn.defaultInstance().parse(source)
-        assertEquals source, Cdn.defaultInstance().compose(result)
+        def result = CDN.defaultInstance().parse(source)
+        assertEquals source, CDN.defaultInstance().compose(result)
     }
 
 }

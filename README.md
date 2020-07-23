@@ -22,6 +22,7 @@ section {
     // sub entry description
     subEntry: subValue
   }
+
   # section
   // entry
   # description
@@ -32,7 +33,7 @@ section {
 To load CDN source, use:
 
 ```java
-CdnRoot configuration = CDN.parse(source);
+Configuration configuration = CDN.parse(source);
 
 // get some values
 String keyValue = configuration.getString("key");

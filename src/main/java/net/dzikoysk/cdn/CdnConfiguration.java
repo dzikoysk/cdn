@@ -39,8 +39,8 @@ public final class CdnConfiguration {
         return serializers;
     }
 
-    public Cdn build() {
-        return new Cdn(this);
+    public CDN build() {
+        return new CDN(this);
     }
 
 }

@@ -6,12 +6,12 @@ import org.panda_lang.utilities.commons.StringUtils
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
-final class CdnRootTest {
+final class ConfigurationTest {
 
-    static final CdnRoot ROOT = new CdnRoot()
+    static final Configuration ROOT = new Configuration()
 
     static {
-        ROOT.append(new CdnEntry('entry', [], 'value'))
+        ROOT.append(new Entry('entry', [], 'value'))
     }
 
     @Test
