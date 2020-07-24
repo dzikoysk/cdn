@@ -4,6 +4,7 @@ import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 public final class CdnConfiguration {
@@ -14,10 +15,12 @@ public final class CdnConfiguration {
 
     {
         serializer(String.class, Object::toString);
+        serializer(Boolean.class, Objects::toString);
         serializer(Integer.class, Object::toString);
         serializer(Double.class, Object::toString);
 
         deserializer(String.class, Function.identity());
+        deserializer(Boolean.class, Boolean::parseBoolean);
         deserializer(Integer.class, Integer::parseInt);
         deserializer(Double.class, Double::parseDouble);
     }
