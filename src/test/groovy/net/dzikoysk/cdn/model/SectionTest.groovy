@@ -2,20 +2,30 @@ package net.dzikoysk.cdn.model
 
 import org.junit.jupiter.api.Test
 
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertTrue
+import static org.junit.jupiter.api.Assertions.*
 
 class SectionTest {
 
     static final Section SECTION = new Section('name', ['# comment' ], [
         "sub": new Section("sub", [], [
-            "entry": new Entry("entry", [], "value")
+            "entry": new Entry("entry", [], "value"),
+            "int-entry": new Entry("int-entry", [], "7")
         ])
     ])
 
     @Test
     void 'should return section name' () {
         assertEquals 'name', SECTION.getName()
+    }
+
+    @Test
+    void 'should return int' () {
+        assertEquals 7, SECTION.getInt('sub.int-entry')
+    }
+
+    @Test
+    void 'should return null' () {
+        assertNull SECTION.get('sub.unknown')
     }
 
     @Test

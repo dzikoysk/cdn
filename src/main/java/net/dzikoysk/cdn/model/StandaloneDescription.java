@@ -1,11 +1,12 @@
 package net.dzikoysk.cdn.model;
 
 import java.util.List;
+import java.util.UUID;
 
-public final class StandaloneDescription extends AbstractConfigurationElement<Object> {
+public final class StandaloneDescription extends AbstractConfigurationElement<List<String>> {
 
-    protected StandaloneDescription(String name, List<String> comments, Object value) {
-        super(name, comments, value);
+    protected StandaloneDescription(List<String> description) {
+        super(UUID.randomUUID().toString(), description, description);
     }
 
 }
