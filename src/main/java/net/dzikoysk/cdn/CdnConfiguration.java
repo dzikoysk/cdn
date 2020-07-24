@@ -10,6 +10,7 @@ public final class CdnConfiguration {
 
     private final Map<Class<?>, Function<Object, String>> serializers = new HashMap<>();
     private final Map<Class<?>, Function<String, Object>> deserializers = new HashMap<>();
+    private boolean indentationEnabled;
 
     {
         serializer(String.class, Object::toString);
@@ -29,6 +30,15 @@ public final class CdnConfiguration {
     public <T> CdnConfiguration deserializer(Class<T> type, Function<String, T> deserializer) {
         deserializers.put(type, ObjectUtils.cast(deserializer));
         return this;
+    }
+
+    public CdnConfiguration enableIndentationFormatting() {
+        this.indentationEnabled = true;
+        return this;
+    }
+
+    public boolean isIndentationEnabled() {
+        return indentationEnabled;
     }
 
     public Map<Class<?>, Function<String, Object>> getDeserializers() {

@@ -6,17 +6,17 @@ import net.dzikoysk.cdn.entity.SectionLink
 class TestConfiguration {
 
     @Description("# Root entry description")
-    public String rootEntry = "default value";
+    public String rootEntry = "default value"
 
     @Description("")
     @Description("// Section description")
     @SectionLink
-    public SectionConfiguration section = new SectionConfiguration();
+    public SectionConfiguration section = new SectionConfiguration()
 
     static class SectionConfiguration {
 
         @Description("# Random value")
-        public Integer subEntry = 7;
+        public Integer subEntry = 7
 
     }
 

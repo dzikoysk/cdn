@@ -25,6 +25,10 @@ final class CdnReader {
     }
 
     public Configuration read(String source) {
+        if (cdn.getConfiguration().isIndentationEnabled()) {
+            source = new CdnPrettier(source).tryToConvertIndentationInADumbWay();
+        }
+
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);
 
         List<String> lines = Arrays.stream(normalizedSource.split(CdnConstants.LINE_SEPARATOR))
