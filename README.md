@@ -56,7 +56,7 @@ The output looks exactly like the input above.
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
