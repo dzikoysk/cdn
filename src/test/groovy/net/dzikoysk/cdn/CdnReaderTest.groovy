@@ -1,5 +1,6 @@
 package net.dzikoysk.cdn
 
+
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.*
@@ -54,6 +55,20 @@ class CdnReaderTest {
     void 'should skip empty lines' () {
         def result = CDN.defaultInstance().parse('')
         assertTrue result.getValue().isEmpty()
+    }
+
+    @Test
+    void 'should use prettier' () {
+        def cdn = CDN.configure()
+            .enableIndentationFormatting()
+            .build()
+
+        def configuration = cdn.parse("""
+        section :
+          key : value
+        """.stripIndent())
+
+        assertEquals "value", configuration.getString("section.key")
     }
 
 }

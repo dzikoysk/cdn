@@ -46,6 +46,11 @@ final class CdnReader {
             // initialize section
             if (line.endsWith(CdnConstants.OBJECT_SEPARATOR[0])) {
                 String sectionName = trimSeparator(line);
+
+                if (sectionName.endsWith(":")) {
+                    sectionName = sectionName.substring(0, sectionName.length() - 1).trim();
+                }
+
                 operators.push(CdnConstants.OBJECT_SEPARATOR[0]);
 
                 Section section = new Section(sectionName, comments);
@@ -70,7 +75,10 @@ final class CdnReader {
 
             // add standard entry
             String[] elements = StringUtils.split(line, CdnConstants.OPERATOR);
-            Entry entry = new Entry(elements[0].trim(), comments, elements[1].trim());
+            String key = elements[0].trim();
+            String value = elements[1].trim();
+
+            Entry entry = new Entry(key, comments, value);
             appendElement(entry);
             comments = new ArrayList<>();
         }

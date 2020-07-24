@@ -17,7 +17,6 @@ final class CdnWriter {
     private void render(StringBuilder content, int level, ConfigurationElement<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
 
-
         for (String comment : element.getDescription()) {
             content.append(indentation)
                     .append(comment)
