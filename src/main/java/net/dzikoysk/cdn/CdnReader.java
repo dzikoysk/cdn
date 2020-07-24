@@ -18,7 +18,7 @@ final class CdnReader {
     private final Configuration root = new Configuration();
     private final Stack<Section> sections = new Stack<>();
     private final Stack<String> operators = new Stack<>();
-    private List<String> comments = new ArrayList<>();
+    private List<String> description = new ArrayList<>();
 
     public CdnReader(CDN cdn) {
         this.cdn = cdn;
@@ -39,7 +39,7 @@ final class CdnReader {
             line = line.trim();
 
             if (line.isEmpty() || line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
-                comments.add(line);
+                description.add(line);
                 continue;
             }
 
@@ -53,11 +53,11 @@ final class CdnReader {
 
                 operators.push(CdnConstants.OBJECT_SEPARATOR[0]);
 
-                Section section = new Section(sectionName, comments);
+                Section section = new Section(sectionName, description);
                 appendElement(section);
                 sections.push(section); // has to be after append
 
-                comments = new ArrayList<>();
+                description = new ArrayList<>();
                 continue;
             }
             // pop section
@@ -74,13 +74,8 @@ final class CdnReader {
             }
 
             // add standard entry
-            String[] elements = StringUtils.split(line, CdnConstants.OPERATOR);
-            String key = elements[0].trim();
-            String value = elements[1].trim();
-
-            Entry entry = new Entry(key, comments, value);
-            appendElement(entry);
-            comments = new ArrayList<>();
+            appendElement(Entry.of(line, description));
+            description = new ArrayList<>();
         }
 
         return root;

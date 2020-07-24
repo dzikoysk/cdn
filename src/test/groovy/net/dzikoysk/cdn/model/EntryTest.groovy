@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 
 class EntryTest {
 
-    static final Entry ENTRY = new Entry('entry-name', ['// entry-comment' ], 'entry-value')
+    static final Entry ENTRY = Entry.of('entry-name: entry-value', ['// entry-comment' ])
 
     @Test
     void 'should return entry name' () {
@@ -22,6 +22,11 @@ class EntryTest {
     @Test
     void 'should return entry comments' () {
         assertEquals([ '// entry-comment' ], ENTRY.getDescription())
+    }
+
+    @Test
+    void 'should return entry record' () {
+        assertEquals 'entry-name: entry-value', ENTRY.getRecord()
     }
 
 }

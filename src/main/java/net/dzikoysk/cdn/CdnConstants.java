@@ -1,16 +1,16 @@
 package net.dzikoysk.cdn;
 
-final class CdnConstants {
+public class CdnConstants {
 
-    protected static final String LINE_SEPARATOR = "\n";
+    public static final String LINE_SEPARATOR = "\n";
 
-    protected static final String OPERATOR = ":";
+    public static final String OPERATOR = ":";
 
-    protected static final String[] COMMENT_OPERATORS = { "#", "//" };
+    public static final String[] COMMENT_OPERATORS = { "#", "//" };
 
-    protected static final String[] OBJECT_SEPARATOR = { "{", "}" };
+    public static final String[] OBJECT_SEPARATOR = { "{", "}" };
 
-    protected static final String[] ARRAY_SEPARATOR = { "[", "]" };
+    public static final String[] ARRAY_SEPARATOR = { "[", "]" };
 
     private CdnConstants() { }
 

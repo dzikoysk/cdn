@@ -3,27 +3,46 @@ package net.dzikoysk.cdn.model;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class Section extends AbstractConfigurationElement<Map<String, ConfigurationElement<?>>> {
+public class Section extends AbstractConfigurationElement<List<ConfigurationElement<?>>> {
 
     public Section(String name, List<String> description) {
-        this(name, description, new HashMap<>());
+        this(name, description, new ArrayList<>());
     }
 
-    public Section(String name, List<String> description, Map<String, ConfigurationElement<?>> value) {
+    public Section(String name, List<String> description, List<ConfigurationElement<?>> value) {
         super(name, description, value);
     }
 
     public <E extends ConfigurationElement<?>> E append(E element) {
-        super.value.put(element.getName(), element);
+        super.value.add(element);
         return element;
     }
 
     public boolean has(String key) {
         return get(key) != null;
+    }
+
+    public List<String> getList(String key) {
+        Section section = getSection(key);
+        return section == null ? null : section.getList();
+    }
+
+    public List<String> getList() {
+        List<String> values = new ArrayList<>(getValue().size());
+
+        for (ConfigurationElement<?> element : getValue()) {
+            if (element instanceof Entry) {
+                values.add(((Entry) element).getRecord());
+            }
+            else if (!(element instanceof StandaloneDescription)) {
+                return null;
+            }
+        }
+
+        return values;
     }
 
     public Integer getInt(String key) {
@@ -45,7 +64,14 @@ public class Section extends AbstractConfigurationElement<Map<String, Configurat
     }
 
     public ConfigurationElement<?> get(String key) {
-        ConfigurationElement<?> result = getValue().get(key);
+        ConfigurationElement<?> result = null;
+
+        for (ConfigurationElement<?> element : getValue()) {
+            if (key.equals(element.getName())) {
+                result = element;
+                break;
+            }
+        }
 
         if (result != null || !key.contains(".")) {
             return result;

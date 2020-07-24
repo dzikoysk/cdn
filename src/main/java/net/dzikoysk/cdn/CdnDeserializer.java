@@ -1,11 +1,14 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
-import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 final class CdnDeserializer<T> {
@@ -22,20 +25,35 @@ final class CdnDeserializer<T> {
         return instance;
     }
 
-    private void deserialize(Object instance, Section section) throws Exception {
+    private void deserialize(Object instance, Section root) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
-            ConfigurationElement<?> element = section.get(field.getName());
+            ConfigurationElement<?> element = root.get(field.getName());
 
             if (element == null) {
                 continue;
             }
 
             if (element instanceof Section) {
-                deserialize(field.get(instance), (Section) element);
+                Section section = (Section) element;
+
+                if (!Collection.class.isAssignableFrom(field.getType())) {
+                    deserialize(field.get(instance), section);
+                    continue;
+                }
+
+                List<Object> result = new ArrayList<>();
+                Class<?> genericType =CdnUtils.getGenericType(field.getGenericType());
+                Function<String, Object> deserializer = cdn.getConfiguration().getDeserializers().get(genericType);
+
+                for (String record : root.getList()) {
+                    result.add(deserializer.apply(record));
+                }
+
+                field.set(instance, result);
                 continue;
             }
 
-            Entry entry = section.getEntry(field.getName());
+            Entry entry = root.getEntry(field.getName());
 
             if (entry == null) {
                 continue;

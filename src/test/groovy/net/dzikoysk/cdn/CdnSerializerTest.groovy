@@ -17,6 +17,11 @@ class CdnSerializerTest {
         section {
           # Random value
           subEntry: -1
+          # List description
+          list {
+            record
+            record : with : semicolons
+          }
         }
         """.stripIndent().trim(), CDN.defaultInstance().compose(new TestConfiguration())
     }

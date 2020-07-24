@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.*
 class SectionTest {
 
     static final Section SECTION = new Section('name', ['# comment' ], [
-        "sub": new Section("sub", [], [
-            "entry": new Entry("entry", [], "value"),
-            "int-entry": new Entry("int-entry", [], "7")
+        new Section("sub", [], [
+            Entry.of("entry: value", []),
+            Entry.of("int-entry: 7", [])
         ])
     ])
 
@@ -41,11 +41,20 @@ class SectionTest {
 
     @Test
     void 'should append sub element' () {
-        Section section = new Section('section', [], [:])
+        Section section = new Section('section', [])
         assertTrue section.getValue().isEmpty()
 
-        section.append(new Entry('entry', [], 'value'))
+        section.append(Entry.of('entry: value', []))
         assertEquals 1, section.getValue().size()
+    }
+
+    @Test
+    void 'should return list' () {
+        Section section = new Section('section', [])
+        section.append(Entry.of('record 1', []))
+        section.append(Entry.of('record 2 : with semicolon', []))
+
+        assertEquals(['record 1', 'record 2 : with semicolon'], section.getList())
     }
 
 }

@@ -18,6 +18,10 @@ class TestConfiguration {
         @Description("# Random value")
         public Integer subEntry = -1
 
+
+        @Description("# List description")
+        public List<String> list = [ 'record', 'record : with : semicolons' ]
+
     }
 
 }

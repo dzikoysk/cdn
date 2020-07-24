@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Repeatable(Descriptions.class)
 public @interface Description {
 
-    String[] value() default {};
+    String[] value();
 
 }

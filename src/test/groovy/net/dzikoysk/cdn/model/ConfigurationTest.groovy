@@ -11,7 +11,7 @@ final class ConfigurationTest {
     static final Configuration ROOT = new Configuration()
 
     static {
-        ROOT.append(new Entry('entry', [], 'value'))
+        ROOT.append(Entry.of('entry: value', []))
     }
 
     @Test

@@ -11,7 +11,7 @@ class CdnWriterTest {
 
     @Test
     void 'should compose simple entry' () {
-        def entry = new Entry('key', ['# description' ], 'value')
+        def entry = Entry.of('key: value', ['# description' ])
 
         assertEquals """
         # description
@@ -33,8 +33,8 @@ class CdnWriterTest {
     @Test
     void 'should compose section with sub section and entry' () {
         def section = new Section('section', ['# description' ], [
-            'sub': new Section('sub', [], [
-                'entry': new Entry('entry', ['# entry comment' ], 'value')
+            new Section('sub', [], [
+                Entry.of('entry: value', ['# entry comment' ])
             ])
         ])
 

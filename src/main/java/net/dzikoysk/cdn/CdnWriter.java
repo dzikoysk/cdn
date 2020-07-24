@@ -33,10 +33,7 @@ final class CdnWriter {
             Entry entry = (Entry) element;
 
             content.append(indentation)
-                    .append(entry.getName())
-                    .append(CdnConstants.OPERATOR)
-                    .append(" ")
-                    .append(entry.getValue())
+                    .append(entry.getRecord())
                     .append(CdnConstants.LINE_SEPARATOR);
 
             return;
@@ -61,7 +58,7 @@ final class CdnWriter {
 
             int subLevel = isRoot ? level : level + 1;
 
-            for (ConfigurationElement<?> sectionElement : section.getValue().values()) {
+            for (ConfigurationElement<?> sectionElement : section.getValue()) {
                 render(content, subLevel, sectionElement);
             }
 

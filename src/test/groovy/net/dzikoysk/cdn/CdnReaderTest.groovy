@@ -10,7 +10,7 @@ class CdnReaderTest {
     @Test
     void 'should return entry' () {
         def result = CDN.defaultInstance().parse('key: value')
-        def entry = result.getValue().get('key')
+        def entry = result.get('key')
 
         assertNotNull entry
         assertEquals 'key', entry.getName()

@@ -9,6 +9,8 @@ import net.dzikoysk.cdn.model.Section;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,14 +28,15 @@ final class CdnSerializer {
 
         try {
             serialize(root, entity);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException("Cannot access configuration member", e);
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot access serialize member", e);
         }
 
         return root;
     }
 
-    private void serialize(Section root, Object entity) throws IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    private void serialize(Section root, Object entity) throws Exception {
         Class<?> scheme = entity.getClass();
 
         for (Field field : scheme.getDeclaredFields()) {
@@ -53,13 +56,27 @@ final class CdnSerializer {
             }
 
             Object value = field.get(entity);
+
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                Section section = root.append(new Section(field.getName(), description));
+                Collection<Object> collection = (Collection<Object>) value;
+                Class<?> collectionType = CdnUtils.getGenericType(field.getGenericType());
+                Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
+
+                for (Object element : collection) {
+                    section.append(Entry.of(serializer.apply(element), Collections.emptyList()));
+                }
+
+                continue;
+            }
+
             Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(value.getClass());
 
             if (serializer == null) {
                 throw new UnsupportedOperationException("Cannot serialize " + value.getClass());
             }
 
-            root.append(new Entry(field.getName(), description, serializer.apply(value)));
+            root.append(Entry.of(field.getName() + ": " +  serializer.apply(value), description));
         }
     }
 
