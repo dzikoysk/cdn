@@ -26,6 +26,7 @@ class SectionTest {
     @Test
     void 'should return null' () {
         assertNull SECTION.get('sub.unknown')
+        assertNull SECTION.get('unknown.entry')
     }
 
     @Test

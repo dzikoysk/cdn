@@ -1,5 +1,6 @@
 package net.dzikoysk.cdn
 
+import net.dzikoysk.cdn.entity.SectionLink
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import org.junit.jupiter.api.Test
@@ -13,8 +14,8 @@ class CdnWriterTest {
         def entry = new Entry('key', ['# description' ], 'value')
 
         assertEquals """
-            # description
-            key: value
+        # description
+        key: value
         """.stripIndent().trim(), CDN.defaultInstance().compose(entry)
     }
 
@@ -23,9 +24,9 @@ class CdnWriterTest {
         def section = new Section('section', ['# description' ])
 
         assertEquals """
-            # description
-            section {
-            }
+        # description
+        section {
+        }
         """.stripIndent().trim(), CDN.defaultInstance().compose(section)
     }
 
@@ -38,15 +39,31 @@ class CdnWriterTest {
         ])
 
         assertEquals """
-            # description
-            section {
-              sub {
-                # entry comment
-                entry: value
-              }
-            }
+        # description
+        section {
+          sub {
+            # entry comment
+            entry: value
+          }
+        }
         """.stripIndent().trim(), CDN.defaultInstance().compose(section)
     }
 
+    @Test
+    void 'should compose indentation based source' () {
+        def cdn = CDN.configure()
+            .enableIndentationFormatting()
+            .build()
+
+        assertEquals """
+        section:
+          key: value
+        """.stripIndent().trim(), cdn.compose(new Object() {
+            @SectionLink
+            public Object section = new Object() {
+                public String key = "value"
+            }
+        })
+    }
 
 }

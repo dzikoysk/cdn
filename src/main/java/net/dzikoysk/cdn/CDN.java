@@ -20,7 +20,7 @@ public final class CDN {
     }
 
     public String compose(ConfigurationElement<?> element) {
-        return new CdnWriter().render(element);
+        return new CdnWriter(this).render(element);
     }
 
     public String compose(Object entity) {

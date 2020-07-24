@@ -8,6 +8,12 @@ import org.panda_lang.utilities.commons.StringUtils;
 
 final class CdnWriter {
 
+    private final CDN cdn;
+
+    CdnWriter(CDN cdn) {
+        this.cdn = cdn;
+    }
+
     public String render(ConfigurationElement<?> element) {
         StringBuilder content = new StringBuilder();
         render(content, 0, element);
@@ -41,10 +47,16 @@ final class CdnWriter {
             boolean isRoot = section instanceof Configuration;
 
             if (!isRoot) {
-                content.append(indentation)
-                        .append(section.getName())
-                        .append(" {")
-                        .append(CdnConstants.LINE_SEPARATOR);
+                content.append(indentation).append(section.getName());
+
+                if (cdn.getConfiguration().isIndentationEnabled()) {
+                    content.append(":");
+                }
+                else {
+                    content.append(" {");
+                }
+
+                content.append(CdnConstants.LINE_SEPARATOR);
             }
 
             int subLevel = isRoot ? level : level + 1;
@@ -53,7 +65,7 @@ final class CdnWriter {
                 render(content, subLevel, sectionElement);
             }
 
-            if (!isRoot) {
+            if (!isRoot && !cdn.getConfiguration().isIndentationEnabled()) {
                 content.append(indentation)
                         .append("}")
                         .append(CdnConstants.LINE_SEPARATOR);
