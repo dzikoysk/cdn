@@ -16,7 +16,7 @@ class TestConfiguration {
     static class SectionConfiguration {
 
         @Description("# Random value")
-        public Integer subEntry = 7
+        public Integer subEntry = -1
 
     }
 

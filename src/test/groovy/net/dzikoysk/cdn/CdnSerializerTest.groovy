@@ -16,7 +16,7 @@ class CdnSerializerTest {
         // Section description
         section {
           # Random value
-          subEntry: 7
+          subEntry: -1
         }
         """.stripIndent().trim(), CDN.defaultInstance().compose(new TestConfiguration())
     }
