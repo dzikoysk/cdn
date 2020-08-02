@@ -64,7 +64,13 @@ final class CdnSerializer {
                 Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
 
                 for (Object element : collection) {
-                    section.append(Entry.of(serializer.apply(element), Collections.emptyList()));
+                    String collectionElement = serializer.apply(element);
+
+                    if (cdn.getConfiguration().isIndentationEnabled()) {
+                        collectionElement = CdnConstants.LIST + " " + collectionElement;
+                    }
+
+                    section.append(Entry.of(collectionElement, Collections.emptyList()));
                 }
 
                 continue;

@@ -50,11 +50,24 @@ class SectionTest {
 
     @Test
     void 'should return list' () {
-        Section section = new Section('section', [])
-        section.append(Entry.of('record 1', []))
-        section.append(Entry.of('record 2 : with semicolon', []))
+        Section section = new Section('section', [], [
+            new Section('list', [], [
+                Entry.of('record 1', []),
+                Entry.of('- record 2 : with semicolon', [])
+            ])
+        ])
 
-        assertEquals(['record 1', 'record 2 : with semicolon'], section.getList())
+        assertEquals(['record 1', '- record 2 : with semicolon'], section.getList('list'))
+    }
+
+    @Test
+    void 'should remove list operators' () {
+        Section section = new Section('list', [], [
+            Entry.of('- val1 ', []),
+            Entry.of('- " val2 "', [])
+        ])
+
+        assertEquals(['val1', ' val2 '], section.getList())
     }
 
 }

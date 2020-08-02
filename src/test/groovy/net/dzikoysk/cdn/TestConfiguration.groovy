@@ -5,21 +5,20 @@ import net.dzikoysk.cdn.entity.SectionLink
 
 class TestConfiguration {
 
-    @Description("# Root entry description")
+    @Description('# Root entry description')
     public String rootEntry = "default value"
 
-    @Description("")
-    @Description("// Section description")
+    @Description(['', '// Section description'])
     @SectionLink
     public SectionConfiguration section = new SectionConfiguration()
 
     static class SectionConfiguration {
 
-        @Description("# Random value")
+        @Description('# Random value')
         public Integer subEntry = -1
 
 
-        @Description("# List description")
+        @Description('# List description')
         public List<String> list = [ 'record', 'record : with : semicolons' ]
 
     }
