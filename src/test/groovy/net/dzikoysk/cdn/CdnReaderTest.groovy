@@ -71,4 +71,14 @@ class CdnReaderTest {
         assertEquals "value", configuration.getString("section.key")
     }
 
+    @Test
+    void 'should read quoted key and value' () {
+        def result = CDN.defaultInstance().parse('''
+        " key ": " value "
+        ''')
+
+        assertEquals ' key ', result.get(' key ').getName()
+        assertEquals ' value ', result.getString(' key ')
+    }
+
 }

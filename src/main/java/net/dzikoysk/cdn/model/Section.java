@@ -1,6 +1,7 @@
 package net.dzikoysk.cdn.model;
 
 import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.CdnUtils;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 
@@ -51,18 +52,14 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
             }
         }
 
-        if (listOperators == values.size()) {
-            for (int index = 0; index < values.size(); index++) {
-                values.set(index, values.get(index).substring(1).trim());
-            }
-        }
-
         for (int index = 0; index < values.size(); index++) {
             String element = values.get(index);
 
-            if (element.startsWith("\"") && element.endsWith("\"")) {
-                values.set(index, element.substring(1, element.length() - 1));
+            if (listOperators == values.size()) {
+                element = element.substring(1).trim();
             }
+
+            values.set(index, CdnUtils.destringify(element));
         }
 
         return values;

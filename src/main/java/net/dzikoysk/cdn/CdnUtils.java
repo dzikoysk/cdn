@@ -3,7 +3,7 @@ package net.dzikoysk.cdn;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-final class CdnUtils {
+public final class CdnUtils {
 
     private CdnUtils() {}
 
@@ -20,6 +20,16 @@ final class CdnUtils {
         }
 
         throw new IllegalArgumentException("Missing generic signature");
+    }
+
+    public static String destringify(String value) {
+        for (String operator : CdnConstants.STRING_OPERATORS) {
+            if (value.startsWith(operator) && value.endsWith(operator)) {
+                return value.substring(1, value.length() - 1);
+            }
+        }
+
+        return value;
     }
 
 }

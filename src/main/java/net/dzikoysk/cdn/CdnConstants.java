@@ -8,6 +8,8 @@ public class CdnConstants {
 
     public static final String LIST = "-";
 
+    public static final String[] STRING_OPERATORS = { "'", "\"", "`" };
+
     public static final String[] COMMENT_OPERATORS = { "#", "//" };
 
     public static final String[] OBJECT_SEPARATOR = { "{", "}" };

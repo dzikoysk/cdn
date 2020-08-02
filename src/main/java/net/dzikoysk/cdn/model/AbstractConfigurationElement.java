@@ -1,5 +1,7 @@
 package net.dzikoysk.cdn.model;
 
+import net.dzikoysk.cdn.CdnUtils;
+
 import java.util.List;
 
 abstract class AbstractConfigurationElement<T> implements ConfigurationElement<T> {
@@ -26,7 +28,7 @@ abstract class AbstractConfigurationElement<T> implements ConfigurationElement<T
 
     @Override
     public String getName() {
-        return name;
+        return CdnUtils.destringify(name);
     }
 
 }
