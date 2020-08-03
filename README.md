@@ -18,6 +18,7 @@ Let's say we want to maintain the following configuration:
 <table>
 <tr>
 <th>Default</th>
+<td>Compatibility</td>
 <th>Indentation based</th>
 </tr>
 <tr>
@@ -42,6 +43,9 @@ section {
   sectionEntry: 7
 }
 </pre>
+</td>
+<td>
+ ⇄ 
 </td>
 <td>
 <pre lang="yaml">
