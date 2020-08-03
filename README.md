@@ -17,14 +17,14 @@ Let's say we want to maintain the following configuration:
 
 <table>
 <tr>
-<th>Default</th>
+<th>Standard <i>(default)</i></th>
 <td>Compatibility</td>
 <th>Indentation based</th>
 </tr>
 <tr>
 <td>
-<pre lang="haml">
-// entry
+<pre lang="php">
+// entry comment
 key: value
 # section description
 section {
@@ -37,19 +37,18 @@ section {
     }
   }
 <br>
-  &#35; section
-  // entry
+  &#35; section entry
   &#35; description
   sectionEntry: 7
 }
 </pre>
 </td>
-<td>
+<td align="center">
  ⇄ 
 </td>
 <td>
 <pre lang="yaml">
-// entry
+// entry comment
 key: value
 # section description
 section:
@@ -60,8 +59,7 @@ section:
       1st element
       2nd element
 <br>
-  &#35; section
-  // entry
+  &#35; section entry
   &#35; description
   sectionEntry: 7
 </pre>
