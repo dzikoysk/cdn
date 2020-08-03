@@ -35,10 +35,10 @@ section {
       2nd element
     }
   }
-
-  # section
+<br>
+  &#35; section
   // entry
-  # description
+  &#35; description
   sectionEntry: 7
 }
 </pre>
@@ -55,10 +55,10 @@ section:
     list:
       1st element
       2nd element
-
-  # section
+<br>
+  &#35; section
   // entry
-  # description
+  &#35; description
   sectionEntry: 7
 </pre>
 </td>
