@@ -14,7 +14,15 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 
 #### Usage
 Let's say we want to maintain the following configuration:
-```haml
+
+<table>
+<tr>
+<th>Default</th>
+<th>Indentation based</th>
+</tr>
+<tr>
+<td>
+<pre lang="haml">
 // entry
 key: value
 # section description
@@ -22,6 +30,10 @@ section {
   sub {
     // sub entry description
     subEntry: subValue
+    list {
+      1st element
+      2nd element
+    }
   }
 
   # section
@@ -29,7 +41,29 @@ section {
   # description
   sectionEntry: 7
 }
-```
+</pre>
+</td>
+<td>
+<pre lang="yaml">
+// entry
+key: value
+# section description
+section:
+  sub:
+    // sub entry description
+    subEntry: subValue
+    list:
+      1st element
+      2nd element
+
+  # section
+  // entry
+  # description
+  sectionEntry: 7
+</pre>
+</td>
+</tr>
+</table>
 
 To load CDN source, use:
 
