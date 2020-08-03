@@ -1,5 +1,6 @@
 package net.dzikoysk.cdn;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -7,7 +8,9 @@ public final class CdnUtils {
 
     private CdnUtils() {}
 
-    static Class<?> getGenericType(Type type) {
+    static Class<?> getGenericType(Field field) {
+        Type type = field.getGenericType();
+
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type genericType = parameterizedType.getActualTypeArguments()[0];
@@ -15,7 +18,7 @@ public final class CdnUtils {
             try {
                 return Class.forName(genericType.getTypeName());
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Cannot find generic type " + genericType);
+                throw new IllegalArgumentException("Cannot find generic type " + genericType);
             }
         }
 

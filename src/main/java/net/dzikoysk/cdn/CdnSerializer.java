@@ -60,7 +60,7 @@ final class CdnSerializer {
             if (Collection.class.isAssignableFrom(field.getType())) {
                 Section section = root.append(new Section(field.getName(), description));
                 Collection<Object> collection = (Collection<Object>) value;
-                Class<?> collectionType = CdnUtils.getGenericType(field.getGenericType());
+                Class<?> collectionType = CdnUtils.getGenericType(field);
                 Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
 
                 for (Object element : collection) {

@@ -47,9 +47,11 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
 
                 values.add(record);
             }
+            /*
             else if (!(element instanceof StandaloneDescription)) {
                 return null;
             }
+             */
         }
 
         for (int index = 0; index < values.size(); index++) {

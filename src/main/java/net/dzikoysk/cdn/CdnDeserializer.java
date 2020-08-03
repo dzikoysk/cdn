@@ -42,10 +42,10 @@ final class CdnDeserializer<T> {
                 }
 
                 List<Object> result = new ArrayList<>();
-                Class<?> genericType =CdnUtils.getGenericType(field.getGenericType());
+                Class<?> genericType = CdnUtils.getGenericType(field);
                 Function<String, Object> deserializer = cdn.getConfiguration().getDeserializers().get(genericType);
 
-                for (String record : root.getList()) {
+                for (String record : root.getList(field.getName())) {
                     result.add(deserializer.apply(record));
                 }
 

@@ -12,11 +12,15 @@ class CdnDeserializerTest {
         rootEntry: custom value
         section: {
           subEntry: 7
+          list: {
+            value
+          }
         }
         """)
 
         assertEquals 'custom value', configuration.rootEntry
         assertEquals 7, configuration.section.subEntry
+        assertEquals Collections.singletonList('value'), configuration.section.list
     }
 
 }
