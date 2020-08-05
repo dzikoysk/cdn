@@ -63,7 +63,10 @@ final class CdnDeserializer<T> {
             Function<String, Object> deserializer = cdn.getConfiguration().getDeserializers().get(field.getType());
 
             if (deserializer == null) {
-                throw new UnsupportedOperationException("Missing deserializer for " + value.getClass() + " type");
+                throw new UnsupportedOperationException(
+                        "Missing deserializer for " + field.getType() + " type, value: " + value + ". Available deserializers: " +
+                        cdn.getConfiguration().getDeserializers().keySet().toString()
+                );
             }
 
             field.set(instance, deserializer.apply(value));
