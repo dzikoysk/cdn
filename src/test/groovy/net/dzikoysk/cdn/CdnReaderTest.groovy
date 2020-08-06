@@ -81,4 +81,17 @@ class CdnReaderTest {
         assertEquals ' value ', result.getString(' key ')
     }
 
+    static class ConfigTest {
+        public List<String> list = Collections.singletonList("element")
+    }
+
+    @Test
+    void 'should read empty yaml list' () {
+        def result = CDN.defaultInstance().parse(ConfigTest.class, '''
+        list: []
+        ''')
+
+        assertEquals Collections.emptyList(), result.list
+    }
+
 }

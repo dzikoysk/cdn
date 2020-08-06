@@ -2,7 +2,9 @@ package net.dzikoysk.cdn;
 
 import org.panda_lang.utilities.commons.ObjectUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -22,6 +24,14 @@ public final class CdnConfiguration {
         deserializer(Boolean.class, Boolean::parseBoolean);
         deserializer(Integer.class, Integer::parseInt);
         deserializer(Double.class, Double::parseDouble);
+
+        deserializer(List.class, value -> {
+            if (value.equals("[]")) {
+                return Collections.emptyList();
+            }
+
+            throw new UnsupportedOperationException("Cannot deserialize list of " + value);
+        });
     }
 
     public <T> CdnConfiguration serializer(Class<T> type, Function<T, String> serializer) {

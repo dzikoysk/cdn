@@ -57,7 +57,7 @@ final class CdnSerializer {
 
             Object value = field.get(entity);
 
-            if (Collection.class.isAssignableFrom(field.getType())) {
+            if (List.class.isAssignableFrom(field.getType())) {
                 Section section = root.append(new Section(field.getName(), description));
                 Collection<Object> collection = (Collection<Object>) value;
                 Class<?> collectionType = CdnUtils.getGenericType(field);

@@ -7,7 +7,6 @@ import net.dzikoysk.cdn.model.Section;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -36,7 +35,7 @@ final class CdnDeserializer<T> {
             if (element instanceof Section) {
                 Section section = (Section) element;
 
-                if (!Collection.class.isAssignableFrom(field.getType())) {
+                if (!List.class.isAssignableFrom(field.getType())) {
                     deserialize(field.get(instance), section);
                     continue;
                 }
