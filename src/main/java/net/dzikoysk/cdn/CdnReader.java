@@ -17,7 +17,6 @@ final class CdnReader {
     private final CDN cdn;
     private final Configuration root = new Configuration();
     private final Stack<Section> sections = new Stack<>();
-    private final Stack<String> operators = new Stack<>();
     private List<String> description = new ArrayList<>();
 
     public CdnReader(CDN cdn) {
@@ -43,17 +42,17 @@ final class CdnReader {
                 continue;
             }
 
+            boolean isArray = line.endsWith(CdnConstants.ARRAY_SEPARATOR[0]);
+
             // initialize section
-            if (line.endsWith(CdnConstants.OBJECT_SEPARATOR[0])) {
+            if ((isArray || line.endsWith(CdnConstants.OBJECT_SEPARATOR[0]))) {
                 String sectionName = trimSeparator(line);
 
                 if (sectionName.endsWith(":")) {
                     sectionName = sectionName.substring(0, sectionName.length() - 1).trim();
                 }
 
-                operators.push(CdnConstants.OBJECT_SEPARATOR[0]);
-
-                Section section = new Section(sectionName, description);
+                Section section = new Section(isArray ? CdnConstants.ARRAY_SEPARATOR : CdnConstants.OBJECT_SEPARATOR, sectionName, description);
                 appendElement(section);
                 sections.push(section); // has to be after append
 
@@ -61,14 +60,13 @@ final class CdnReader {
                 continue;
             }
             // pop section
-            else if (line.endsWith(CdnConstants.OBJECT_SEPARATOR[1]) && operators.peek().equals(CdnConstants.OBJECT_SEPARATOR[0])) {
+            else if (!sections.isEmpty() && line.endsWith(sections.peek().getOperators()[1])) {
                 String lineBefore = trimSeparator(line);
 
                 if (!lineBefore.isEmpty()) {
                     throw new UnsupportedOperationException("Unsupported section ending");
                 }
 
-                operators.pop();
                 sections.pop();
                 continue;
             }

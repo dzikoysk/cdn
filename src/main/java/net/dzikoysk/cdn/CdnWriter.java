@@ -50,7 +50,7 @@ final class CdnWriter {
                     content.append(":");
                 }
                 else {
-                    content.append(" {");
+                    content.append(" ").append(section.getOperators()[0]);
                 }
 
                 content.append(CdnConstants.LINE_SEPARATOR);
@@ -64,7 +64,7 @@ final class CdnWriter {
 
             if (!isRoot && !cdn.getConfiguration().isIndentationEnabled()) {
                 content.append(indentation)
-                        .append("}")
+                        .append(section.getOperators()[1])
                         .append(CdnConstants.LINE_SEPARATOR);
             }
         }

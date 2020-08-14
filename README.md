@@ -31,9 +31,13 @@ section {
   sub {
     // sub entry description
     subEntry: subValue
-    list {
+    list1 [
       1st element
       2nd element
+    ]
+    list2 {
+      3rd element
+      4th element
     }
   }
 <br>
@@ -55,9 +59,13 @@ section:
   sub:
     // sub entry description
     subEntry: subValue
-    list:
+    list1:
       1st element
       2nd element
+    list2: {
+      3rd element
+      4rd element
+    }
 <br>
   &#35; section entry
   &#35; description
@@ -92,7 +100,7 @@ The output looks exactly like the input above.
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 

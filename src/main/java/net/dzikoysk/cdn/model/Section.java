@@ -10,12 +10,23 @@ import java.util.List;
 
 public class Section extends AbstractConfigurationElement<List<ConfigurationElement<?>>> {
 
+    private final String[] operators;
+
     public Section(String name, List<String> description) {
-        this(name, description, new ArrayList<>());
+        this(CdnConstants.OBJECT_SEPARATOR, name, description);
+    }
+
+    public Section(String[] operators, String name, List<String> description) {
+        this(operators, name, description, new ArrayList<>());
     }
 
     public Section(String name, List<String> description, List<ConfigurationElement<?>> value) {
+        this(CdnConstants.OBJECT_SEPARATOR, name, description, value);
+    }
+
+    public Section(String[] operators, String name, List<String> description, List<ConfigurationElement<?>> value) {
         super(name, description, value);
+        this.operators = operators;
     }
 
     public <E extends ConfigurationElement<?>> E append(E element) {
@@ -111,6 +122,10 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         }
 
         return null;
+    }
+
+    public String[] getOperators() {
+        return operators;
     }
 
 }

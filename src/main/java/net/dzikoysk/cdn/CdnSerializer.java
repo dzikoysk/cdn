@@ -49,7 +49,7 @@ final class CdnSerializer {
                     .collect(Collectors.toList());
 
             if (field.isAnnotationPresent(SectionLink.class)) {
-                Section section = new Section(field.getName(), description);
+                Section section = new Section(CdnConstants.OBJECT_SEPARATOR, field.getName(), description);
                 root.append(section);
                 serialize(section, field.get(entity));
                 continue;
@@ -58,7 +58,7 @@ final class CdnSerializer {
             Object value = field.get(entity);
 
             if (List.class.isAssignableFrom(field.getType())) {
-                Section section = root.append(new Section(field.getName(), description));
+                Section section = root.append(new Section(CdnConstants.ARRAY_SEPARATOR, field.getName(), description));
                 Collection<Object> collection = (Collection<Object>) value;
                 Class<?> collectionType = CdnUtils.getGenericType(field);
                 Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(collectionType);

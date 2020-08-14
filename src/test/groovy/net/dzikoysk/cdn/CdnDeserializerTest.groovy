@@ -12,9 +12,9 @@ class CdnDeserializerTest {
         rootEntry: custom value
         section: {
           subEntry: 7
-          list: {
+          list: [
             value
-          }
+          ]
         }
         """)
 
