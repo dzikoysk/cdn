@@ -8,7 +8,7 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 - [x] Respecting comment entries
 - [x] Bidirectional parse and compose of CDN sources
 - [x] Serialization and deserialization of Java entities 
-- [x] 90%+ test coverage
+- [x] 95%+ test coverage
 - [x] Indentation based configuration
 - [ ] Docs
 
