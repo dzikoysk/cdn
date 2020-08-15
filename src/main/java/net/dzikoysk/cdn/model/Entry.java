@@ -29,6 +29,10 @@ public final class Entry extends AbstractConfigurationElement<String> {
         String key = elements.length > 0 ? elements[0].trim() : record;
         String value = elements.length == 2 ? elements[1].trim() : key;
 
+        if (value.endsWith(CdnConstants.SEPARATOR)) {
+            value = value.substring(0, value.length() - 1);
+        }
+
         return new Entry(record, key, description, value);
     }
 

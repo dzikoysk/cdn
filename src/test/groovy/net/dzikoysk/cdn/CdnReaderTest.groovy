@@ -94,4 +94,14 @@ class CdnReaderTest {
         assertEquals Collections.emptyList(), result.list
     }
 
+    @Test
+    void 'should remove semicolons' () {
+        def result = CDN.defaultInstance().parse("""
+        a: b,
+        c: d
+        """)
+
+        assertEquals 'b', result.getString('a')
+    }
+
 }
