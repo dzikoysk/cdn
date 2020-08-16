@@ -38,6 +38,10 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         return get(key) != null;
     }
 
+    public int size() {
+        return getValue().size();
+    }
+
     public List<String> getList(String key) {
         Section section = getSection(key);
         return section == null ? null : section.getList();
@@ -56,13 +60,12 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
                     listOperators++;
                 }
 
+                if (record.endsWith(CdnConstants.SEPARATOR)) {
+                    record = record.substring(0, record.length() - CdnConstants.SEPARATOR.length());
+                }
+
                 values.add(record);
             }
-            /*
-            else if (!(element instanceof StandaloneDescription)) {
-                return null;
-            }
-             */
         }
 
         for (int index = 0; index < values.size(); index++) {
@@ -78,22 +81,8 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         return values;
     }
 
-    public Integer getInt(String key) {
-        String value = getString(key);
-        return value != null ? Integer.parseInt(value) : null;
-    }
-
-    public String getString(String key) {
-        Entry entry = getEntry(key);
-        return entry != null ? entry.getValue() : null;
-    }
-
-    public Entry getEntry(String key) {
-        return ObjectUtils.cast(get(key));
-    }
-
-    public Section getSection(String key) {
-        return ObjectUtils.cast(get(key));
+    public ConfigurationElement<?> get(int index) {
+        return getValue().get(index);
     }
 
     public ConfigurationElement<?> get(String key) {
@@ -122,6 +111,37 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         }
 
         return null;
+    }
+
+    public Boolean getBoolean(String key) {
+        String value = getString(key);
+        return value != null ? Boolean.parseBoolean(value) : null;
+    }
+
+    public Integer getInt(String key) {
+        String value = getString(key);
+        return value != null ? Integer.parseInt(value) : null;
+    }
+
+    public String getString(String key) {
+        Entry entry = getEntry(key);
+        return entry != null ? entry.getValue() : null;
+    }
+
+    public Entry getEntry(int index) {
+        return ObjectUtils.cast(get(index));
+    }
+
+    public Entry getEntry(String key) {
+        return ObjectUtils.cast(get(key));
+    }
+
+    public Section getSection(int index) {
+        return ObjectUtils.cast(get(index));
+    }
+
+    public Section getSection(String key) {
+        return ObjectUtils.cast(get(key));
     }
 
     public String[] getOperators() {

@@ -104,4 +104,17 @@ class CdnReaderTest {
         assertEquals 'b', result.getString('a')
     }
 
+    @Test
+    void 'should ignore empty root section' () {
+        def result = CDN.defaultInstance().parse("""
+        {
+          "a": "b",
+          "c": "d"
+        }
+        """)
+
+        assertEquals 'b', result.getString('a')
+        assertEquals 'd', result.getString('c')
+    }
+
 }

@@ -4,6 +4,7 @@ import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
+import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.ArrayList;
@@ -36,10 +37,15 @@ final class CdnReader {
 
         for (String line : lines) {
             line = line.trim();
+            String originalLine = line;
 
             if (line.isEmpty() || line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
                 description.add(line);
                 continue;
+            }
+
+            if (line.endsWith(CdnConstants.SEPARATOR)) {
+                line = line.substring(0, line.length() - CdnConstants.SEPARATOR.length()).trim();
             }
 
             boolean isArray = line.endsWith(CdnConstants.ARRAY_SEPARATOR[0]);
@@ -48,8 +54,8 @@ final class CdnReader {
             if ((isArray || line.endsWith(CdnConstants.OBJECT_SEPARATOR[0]))) {
                 String sectionName = trimSeparator(line);
 
-                if (sectionName.endsWith(":")) {
-                    sectionName = sectionName.substring(0, sectionName.length() - 1).trim();
+                if (sectionName.endsWith(CdnConstants.OPERATOR)) {
+                    sectionName = sectionName.substring(0, sectionName.length() - CdnConstants.OPERATOR.length()).trim();
                 }
 
                 Section section = new Section(isArray ? CdnConstants.ARRAY_SEPARATOR : CdnConstants.OBJECT_SEPARATOR, sectionName, description);
@@ -72,8 +78,17 @@ final class CdnReader {
             }
 
             // add standard entry
-            appendElement(Entry.of(line, description));
+            appendElement(Entry.of(originalLine, description));
             description = new ArrayList<>();
+        }
+
+        // map json-like formats with declared root operators
+        if (root.size() == 1) {
+            Section section = ObjectUtils.cast(Section.class, root.get(0));
+
+            if (section != null && section.getName().isEmpty()) {
+                return new Configuration(section.getValue());
+            }
         }
 
         return root;

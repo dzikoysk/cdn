@@ -1,7 +1,7 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.ConfigurationElement;
 
 public final class CDN {
 
@@ -13,6 +13,10 @@ public final class CDN {
 
     public Configuration parse(String source) {
         return new CdnReader(this).read(source);
+    }
+
+    public Configuration parseJson(String source) {
+        return parse(new CdnPrettier(source).tryToInsertNewLinesInADumbWay());
     }
 
     public <T> T parse(Class<T> scheme, String source) throws Exception {
