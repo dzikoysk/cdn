@@ -48,7 +48,7 @@ section {
 </pre>
 </td>
 <td align="center">
- ⇄ 
+  ⇄ <br> <i>both are valid</i>
 </td>
 <td>
 <pre lang="yaml">
