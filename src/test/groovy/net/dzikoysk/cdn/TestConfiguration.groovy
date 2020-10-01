@@ -26,15 +26,3 @@ class TestConfiguration {
     }
 
 }
-
-class CustomObject {
-
-    private String id
-    private int count
-
-    CustomObject (String id, int count) {
-        this.id = id
-        this.count = count
-    }
-
-}
