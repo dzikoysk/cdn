@@ -2,6 +2,7 @@ package net.dzikoysk.cdn
 
 import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.entity.SectionLink
+import net.dzikoysk.cdn.entity.CustomComposer
 
 class TestConfiguration {
 
@@ -20,8 +21,9 @@ class TestConfiguration {
         @Description('# List description')
         public List<String> list = [ 'record', 'record : with : semicolons' ]
 
-        // @Description('# Custom object')
-        //public CustomObject custom = new CustomObject('rtx', 3070)
+        @Description('# Custom object')
+        @CustomComposer(TestConfigurationCustomObject.CustomObjectComposer.class)
+        public TestConfigurationCustomObject custom = new TestConfigurationCustomObject('rtx', 3070)
 
     }
 

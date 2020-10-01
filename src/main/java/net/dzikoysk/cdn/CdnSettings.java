@@ -1,26 +1,29 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.serialization.Deserializer;
+import net.dzikoysk.cdn.serialization.Serializer;
+import net.dzikoysk.cdn.serialization.SimpleDeserializer;
+import net.dzikoysk.cdn.serialization.SimpleSerializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-public final class CdnConfiguration {
+public final class CdnSettings {
 
-    private final Map<Class<?>, Function<Object, String>> serializers = new HashMap<>();
-    private final Map<Class<?>, Function<String, Object>> deserializers = new HashMap<>();
+    private final Map<Class<?>, Serializer<Object>> serializers = new HashMap<>();
+    private final Map<Class<?>, Deserializer<Object>> deserializers = new HashMap<>();
     private boolean indentationEnabled;
 
     {
-        serializer(String.class, Function.identity());
+        serializer(String.class, Object::toString);
         serializer(Boolean.class, Object::toString);
         serializer(Integer.class, Object::toString);
         serializer(Double.class, Object::toString);
 
-        deserializer(String.class, Function.identity());
+        deserializer(String.class, string -> string);
         deserializer(Boolean.class, Boolean::parseBoolean);
         deserializer(Integer.class, Integer::parseInt);
         deserializer(Double.class, Double::parseDouble);
@@ -34,17 +37,25 @@ public final class CdnConfiguration {
         });
     }
 
-    public <T> CdnConfiguration serializer(Class<T> type, Function<T, String> serializer) {
+    public <T> CdnSettings serializer(Class<T> type, SimpleSerializer<Object> serializer) {
+        return serializer(type, (Serializer<Object>) serializer);
+    }
+
+    public <T> CdnSettings serializer(Class<T> type, Serializer<Object> serializer) {
         serializers.put(type, ObjectUtils.cast(serializer));
         return this;
     }
 
-    public <T> CdnConfiguration deserializer(Class<T> type, Function<String, T> deserializer) {
+    public <T> CdnSettings deserializer(Class<T> type, SimpleDeserializer<Object> deserializer) {
+        return deserializer(type, (Deserializer<Object>) deserializer);
+    }
+
+    public <T> CdnSettings deserializer(Class<T> type, Deserializer<Object> deserializer) {
         deserializers.put(type, ObjectUtils.cast(deserializer));
         return this;
     }
 
-    public CdnConfiguration enableIndentationFormatting() {
+    public CdnSettings enableIndentationFormatting() {
         this.indentationEnabled = true;
         return this;
     }
@@ -53,11 +64,11 @@ public final class CdnConfiguration {
         return indentationEnabled;
     }
 
-    public Map<Class<?>, Function<String, Object>> getDeserializers() {
+    public Map<Class<?>, Deserializer<Object>> getDeserializers() {
         return deserializers;
     }
 
-    public Map<Class<?>, Function<Object, String>> getSerializers() {
+    public Map<Class<?>, Serializer<Object>> getSerializers() {
         return serializers;
     }
 

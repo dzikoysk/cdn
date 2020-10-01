@@ -22,6 +22,11 @@ class CdnSerializerTest {
             record
             record : with : semicolons
           ]
+          # Custom object
+          custom {
+            id: rtx
+            count: 3070
+          }
         }
         """.stripIndent().trim(), CDN.defaultInstance().compose(new TestConfiguration())
     }
@@ -40,6 +45,10 @@ class CdnSerializerTest {
           list:
             - record
             - record : with : semicolons
+          # Custom object
+          custom:
+            id: rtx
+            count: 3070
         """.stripIndent().trim(), CDN.configure().enableIndentationFormatting().build().compose(new TestConfiguration())
     }
 

@@ -1,10 +1,14 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.serialization.Serializer;
+import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -12,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 final class CdnSerializer {
@@ -61,29 +64,57 @@ final class CdnSerializer {
                 Section section = root.append(new Section(CdnConstants.ARRAY_SEPARATOR, field.getName(), description));
                 Collection<Object> collection = (Collection<Object>) value;
                 Class<?> collectionType = CdnUtils.getGenericType(field);
-                Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
+                Serializer<Object> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
 
                 for (Object element : collection) {
-                    String collectionElement = serializer.apply(element);
+                    ConfigurationElement<?> configurationElement = serializer.serialize("", element, Collections.emptyList());
 
-                    if (cdn.getConfiguration().isIndentationEnabled()) {
-                        collectionElement = CdnConstants.LIST + " " + collectionElement;
+                    if (configurationElement instanceof Entry) {
+                        if (cdn.getConfiguration().isIndentationEnabled()) {
+                            configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord(), configurationElement.getDescription());
+                        }
+                    }
+                    else {
+                        throw new UnsupportedOperationException("#todo @makub");
                     }
 
-                    section.append(Entry.of(collectionElement, Collections.emptyList()));
+                    section.append(configurationElement);
                 }
 
                 continue;
             }
 
-            Function<Object, String> serializer = cdn.getConfiguration().getSerializers().get(value.getClass());
+            Serializer<Object> serializer = cdn.getConfiguration().getSerializers().get(value.getClass());
 
-            if (serializer == null) {
-                throw new UnsupportedOperationException("Cannot serialize " + value.getClass());
+            if (serializer == null && field.isAnnotationPresent(CustomComposer.class)) {
+                CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+                serializer = (Serializer<Object>) customComposer.value().getConstructor().newInstance();
             }
 
-            root.append(Entry.of(field.getName() + ": " +  serializer.apply(value), description));
+            if (serializer == null) {
+                throw new UnsupportedOperationException("Cannot serialize " + value.getClass() + " - missing serializer");
+            }
+
+            root.append(serializer.serialize(field.getName(), value, description));
         }
+    }
+
+    private Serializer<Object> getSerializer(Class<?> type, Field field) throws Exception {
+        Serializer<Object> serializer;
+
+        if (field.isAnnotationPresent(CustomComposer.class)) {
+            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+            serializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+        }
+        else {
+             serializer = cdn.getConfiguration().getSerializers().get(type);
+        }
+
+        if (serializer == null) {
+            throw new UnsupportedOperationException("Cannot serialize field '" + field.getType().getSimpleName() + " " + field.getName() + "' - missing serializer");
+        }
+
+        return serializer;
     }
 
 }

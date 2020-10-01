@@ -5,9 +5,9 @@ import net.dzikoysk.cdn.model.ConfigurationElement;
 
 public final class CDN {
 
-    private final CdnConfiguration configuration;
+    private final CdnSettings configuration;
 
-    CDN(CdnConfiguration configuration) {
+    CDN(CdnSettings configuration) {
         this.configuration = configuration;
     }
 
@@ -31,12 +31,12 @@ public final class CDN {
         return compose(new CdnSerializer(this).serialize(entity));
     }
 
-    public CdnConfiguration getConfiguration() {
+    public CdnSettings getConfiguration() {
         return configuration;
     }
 
-    public static CdnConfiguration configure() {
-        return new CdnConfiguration();
+    public static CdnSettings configure() {
+        return new CdnSettings();
     }
 
     public static CDN defaultInstance() {
