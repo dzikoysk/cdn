@@ -68,7 +68,7 @@ class CdnReaderTest {
           key : value
         """.stripIndent())
 
-        assertEquals "value", configuration.getString("section.key")
+        assertEquals "value", configuration.getString("section.key").get()
     }
 
     @Test
@@ -78,7 +78,7 @@ class CdnReaderTest {
         ''')
 
         assertEquals ' key ', result.get(' key ').getName()
-        assertEquals ' value ', result.getString(' key ')
+        assertEquals ' value ', result.getString(' key ').get()
     }
 
     static class ConfigTest {
@@ -101,7 +101,7 @@ class CdnReaderTest {
         c: d
         """)
 
-        assertEquals 'b', result.getString('a')
+        assertEquals 'b', result.getString('a').get()
     }
 
     @Test
@@ -113,8 +113,8 @@ class CdnReaderTest {
         }
         """)
 
-        assertEquals 'b', result.getString('a')
-        assertEquals 'd', result.getString('c')
+        assertEquals 'b', result.getString('a').get()
+        assertEquals 'd', result.getString('c').get()
     }
 
 }

@@ -46,6 +46,14 @@ final class CdnDeserializer<T> {
                 continue;
             }
 
+            Object defaultValue = field.get(instance);
+
+            if (field.isAnnotationPresent(CustomComposer.class)) {
+                Object value = getDeserializer(field.getType(), field).deserialize(element, defaultValue);
+                field.set(instance, value);
+                continue;
+            }
+
             if (element instanceof Section) {
                 Section section = (Section) element;
 
@@ -59,7 +67,7 @@ final class CdnDeserializer<T> {
                 Deserializer<Object> deserializer = getDeserializer(genericType, field);
 
                 for (String record : root.getList(field.getName())) {
-                    result.add(deserializer.deserialize(Entry.of(record, Collections.emptyList())));
+                    result.add(deserializer.deserialize(Entry.of(record, Collections.emptyList()), null));
                 }
 
                 field.set(instance, result);
@@ -73,7 +81,7 @@ final class CdnDeserializer<T> {
             }
 
             Deserializer<Object> deserializer = getDeserializer(field.getType(), field);
-            field.set(instance, deserializer.deserialize(entry));
+            field.set(instance, deserializer.deserialize(entry, defaultValue));
         }
     }
 

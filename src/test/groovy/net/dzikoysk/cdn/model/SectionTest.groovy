@@ -9,7 +9,8 @@ class SectionTest {
     static final Section SECTION = new Section('name', ['# comment' ], [
         new Section("sub", [], [
             Entry.of("entry: value", []),
-            Entry.of("int-entry: 7", [])
+            Entry.of("int-entry: 7", []),
+            Entry.ofPair('boolKey', 'true', [])
         ])
     ])
 
@@ -20,7 +21,12 @@ class SectionTest {
 
     @Test
     void 'should return int' () {
-        assertEquals 7, SECTION.getInt('sub.int-entry')
+        assertEquals 7, SECTION.getInt('sub.int-entry').get()
+    }
+
+    @Test
+    void 'should return boolean' () {
+        assertEquals true, SECTION.getBoolean('sub.boolKey').get()
     }
 
     @Test
@@ -36,7 +42,12 @@ class SectionTest {
 
     @Test
     void 'should return entry of sub section' () {
-        assertEquals 'value', SECTION.getString('sub.entry')
+        assertEquals 'value', SECTION.getString('sub.entry').get()
+    }
+
+    @Test
+    void 'should return entry' () {
+        assertEquals SECTION.getSection('sub').getEntry('int-entry'), SECTION.getSection(0).getEntry(1)
     }
 
     @Test

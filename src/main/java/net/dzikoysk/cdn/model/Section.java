@@ -4,8 +4,10 @@ import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnUtils;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
+import org.panda_lang.utilities.commons.function.Option;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Section extends AbstractConfigurationElement<List<ConfigurationElement<?>>> {
@@ -42,9 +44,45 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         return getValue().size();
     }
 
+    public ConfigurationElement<?> get(int index) {
+        return getValue().get(index);
+    }
+
+    public ConfigurationElement<?> get(String key) {
+        ConfigurationElement<?> result = null;
+
+        for (ConfigurationElement<?> element : getValue()) {
+            if (key.equals(element.getName())) {
+                result = element;
+                break;
+            }
+        }
+
+        if (result != null || !key.contains(".")) {
+            return result;
+        }
+
+        String[] qualifier = StringUtils.split(key, ".");
+        Section section = this;
+
+        for (int index = 0; index < qualifier.length - 1 && section != null; index++) {
+            section = section.getSection(qualifier[index]);
+        }
+
+        if (section != null) {
+            return section.get(qualifier[qualifier.length - 1]);
+        }
+
+        return null;
+    }
+
     public List<String> getList(String key) {
+        return getList(key, Collections.emptyList());
+    }
+
+    public List<String> getList(String key, List<String> defaultValue) {
         Section section = getSection(key);
-        return section == null ? null : section.getList();
+        return section != null ? section.getList() : defaultValue;
     }
 
     public List<String> getList() {
@@ -81,51 +119,33 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         return values;
     }
 
-    public ConfigurationElement<?> get(int index) {
-        return getValue().get(index);
+    public Option<Boolean> getBoolean(String key) {
+        return Option.of(getBoolean(key, null));
     }
 
-    public ConfigurationElement<?> get(String key) {
-        ConfigurationElement<?> result = null;
-
-        for (ConfigurationElement<?> element : getValue()) {
-            if (key.equals(element.getName())) {
-                result = element;
-                break;
-            }
-        }
-
-        if (result != null || !key.contains(".")) {
-            return result;
-        }
-
-        String[] qualifier = StringUtils.split(key, ".");
-        Section section = this;
-
-        for (int index = 0; index < qualifier.length - 1 && section != null; index++) {
-            section = section.getSection(qualifier[index]);
-        }
-
-        if (section != null) {
-            return section.get(qualifier[qualifier.length - 1]);
-        }
-
-        return null;
+    public Boolean getBoolean(String key, Boolean defaultValue) {
+        return getString(key)
+                .map(Boolean::parseBoolean)
+                .orElseGet(defaultValue);
     }
 
-    public Boolean getBoolean(String key) {
-        String value = getString(key);
-        return value != null ? Boolean.parseBoolean(value) : null;
+    public Option<Integer> getInt(String key) {
+        return Option.of(getInt(key, null));
     }
 
-    public Integer getInt(String key) {
-        String value = getString(key);
-        return value != null ? Integer.parseInt(value) : null;
+    public Integer getInt(String key, Integer defaultValue) {
+        return getString(key)
+                .map(Integer::parseInt)
+                .orElseGet(defaultValue);
     }
 
-    public String getString(String key) {
+    public String getString(String key, String defaultValue) {
         Entry entry = getEntry(key);
-        return entry != null ? entry.getValue() : null;
+        return entry != null ? entry.getValue() : defaultValue;
+    }
+
+    public Option<String> getString(String key) {
+        return Option.of(getString(key, null));
     }
 
     public Entry getEntry(int index) {
