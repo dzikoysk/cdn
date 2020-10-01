@@ -6,6 +6,8 @@ import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import org.panda_lang.utilities.commons.StringUtils;
 
+import java.util.Map;
+
 final class CdnWriter {
 
     private final CDN cdn;
@@ -17,7 +19,13 @@ final class CdnWriter {
     public String render(ConfigurationElement<?> element) {
         StringBuilder content = new StringBuilder();
         render(content, 0, element);
-        return content.toString().trim();
+        String result = content.toString();
+
+        for (Map.Entry<? extends String, ? extends String> entry : cdn.getSettings().getPlaceholders().entrySet()) {
+            result = StringUtils.replace(result, "${{" + entry.getKey() + "}}", entry.getValue());
+        }
+
+        return result.trim();
     }
 
     private void render(StringBuilder content, int level, ConfigurationElement<?> element) {
@@ -46,7 +54,7 @@ final class CdnWriter {
             if (!isRoot) {
                 content.append(indentation).append(section.getName());
 
-                if (cdn.getConfiguration().isIndentationEnabled()) {
+                if (cdn.getSettings().isIndentationEnabled()) {
                     content.append(":");
                 }
                 else {
@@ -62,7 +70,7 @@ final class CdnWriter {
                 render(content, subLevel, sectionElement);
             }
 
-            if (!isRoot && !cdn.getConfiguration().isIndentationEnabled()) {
+            if (!isRoot && !cdn.getSettings().isIndentationEnabled()) {
                 content.append(indentation)
                         .append(section.getOperators()[1])
                         .append(CdnConstants.LINE_SEPARATOR);

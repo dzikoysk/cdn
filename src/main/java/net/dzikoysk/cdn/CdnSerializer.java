@@ -70,7 +70,7 @@ final class CdnSerializer {
                     ConfigurationElement<?> configurationElement = serializer.serialize("", element, Collections.emptyList());
 
                     if (configurationElement instanceof Entry) {
-                        if (cdn.getConfiguration().isIndentationEnabled()) {
+                        if (cdn.getSettings().isIndentationEnabled()) {
                             configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord(), configurationElement.getDescription());
                         }
                     }
@@ -97,7 +97,7 @@ final class CdnSerializer {
             serializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
-             serializer = cdn.getConfiguration().getSerializers().get(type);
+             serializer = cdn.getSettings().getSerializers().get(type);
         }
 
         if (serializer == null) {
