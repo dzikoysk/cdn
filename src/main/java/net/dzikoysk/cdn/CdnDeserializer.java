@@ -1,16 +1,19 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.serialization.Deserializer;
+import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 final class CdnDeserializer<T> {
 
@@ -33,7 +36,7 @@ final class CdnDeserializer<T> {
                 continue;
             }
 
-            if (cdn.getConfiguration().getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class)) {
+            if (cdn.getConfiguration().getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class) && !field.isAnnotationPresent(CustomComposer.class)) {
                 throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
             }
 
@@ -53,10 +56,10 @@ final class CdnDeserializer<T> {
 
                 List<Object> result = new ArrayList<>();
                 Class<?> genericType = CdnUtils.getGenericType(field);
-                Function<String, Object> deserializer = cdn.getConfiguration().getDeserializers().get(genericType);
+                Deserializer<Object> deserializer = getDeserializer(genericType, field);
 
                 for (String record : root.getList(field.getName())) {
-                    result.add(deserializer.apply(record));
+                    result.add(deserializer.deserialize(Entry.of(record, Collections.emptyList())));
                 }
 
                 field.set(instance, result);
@@ -69,18 +72,30 @@ final class CdnDeserializer<T> {
                 continue;
             }
 
-            String value = entry.getValue();
-            Function<String, Object> deserializer = cdn.getConfiguration().getDeserializers().get(field.getType());
-
-            if (deserializer == null) {
-                throw new UnsupportedOperationException(
-                        "Missing deserializer for " + field.getType() + " type, value: " + value + ". Available deserializers: " +
-                        cdn.getConfiguration().getDeserializers().keySet().toString()
-                );
-            }
-
-            field.set(instance, deserializer.apply(value));
+            Deserializer<Object> deserializer = getDeserializer(field.getType(), field);
+            field.set(instance, deserializer.deserialize(entry));
         }
+    }
+
+    private Deserializer<Object> getDeserializer(Class<?> type, Field field) throws Exception {
+        Deserializer<Object> deserializer;
+
+        if (field.isAnnotationPresent(CustomComposer.class)) {
+            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+            deserializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+        }
+        else {
+            deserializer = cdn.getConfiguration().getDeserializers().get(type);
+        }
+
+        if (deserializer == null) {
+            throw new UnsupportedOperationException(
+                    "Missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "' type. Available deserializers: " +
+                            cdn.getConfiguration().getDeserializers().keySet().toString()
+            );
+        }
+
+        return deserializer;
     }
 
 }

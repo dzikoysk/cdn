@@ -10,7 +10,7 @@ public final class Entry extends AbstractConfigurationElement<String> {
 
     private final String record;
 
-    private Entry(String record, String name, List<String> description, String value) {
+    private Entry(String record, String name, List<? extends String> description, String value) {
         super(name, description, value);
         this.record = record;
     }
@@ -24,7 +24,11 @@ public final class Entry extends AbstractConfigurationElement<String> {
         return record;
     }
 
-    public static Entry of(String record, List<String> description) {
+    public static Entry ofPair(String key, Object value, List<? extends String> description) {
+        return of(key + ": " + value, description);
+    }
+
+    public static Entry of(String record, List<? extends String> description) {
         String[] elements = StringUtils.splitFirst(record, CdnConstants.OPERATOR);
         String key = elements.length > 0 ? elements[0].trim() : record;
         String value = elements.length == 2 ? elements[1].trim() : key;
