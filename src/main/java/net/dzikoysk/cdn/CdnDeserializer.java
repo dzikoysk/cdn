@@ -36,7 +36,7 @@ final class CdnDeserializer<T> {
                 continue;
             }
 
-            if (cdn.getConfiguration().getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class) && !field.isAnnotationPresent(CustomComposer.class)) {
+            if (cdn.getSettings().getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class) && !field.isAnnotationPresent(CustomComposer.class)) {
                 throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
             }
 
@@ -93,13 +93,13 @@ final class CdnDeserializer<T> {
             deserializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
-            deserializer = cdn.getConfiguration().getDeserializers().get(type);
+            deserializer = cdn.getSettings().getDeserializers().get(type);
         }
 
         if (deserializer == null) {
             throw new UnsupportedOperationException(
                     "Missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "' type. Available deserializers: " +
-                            cdn.getConfiguration().getDeserializers().keySet().toString()
+                            cdn.getSettings().getDeserializers().keySet().toString()
             );
         }
 

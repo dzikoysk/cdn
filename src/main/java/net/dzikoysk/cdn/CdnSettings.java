@@ -15,6 +15,7 @@ public final class CdnSettings {
 
     private final Map<Class<?>, Serializer<Object>> serializers = new HashMap<>();
     private final Map<Class<?>, Deserializer<Object>> deserializers = new HashMap<>();
+    private final Map<String, String> placeholders = new HashMap<>();
     private boolean indentationEnabled;
 
     {
@@ -55,6 +56,11 @@ public final class CdnSettings {
         return this;
     }
 
+    public CdnSettings registerPlaceholders(Map<String, String> placeholders) {
+        this.placeholders.putAll(placeholders);
+        return this;
+    }
+
     public CdnSettings enableIndentationFormatting() {
         this.indentationEnabled = true;
         return this;
@@ -62,6 +68,10 @@ public final class CdnSettings {
 
     public boolean isIndentationEnabled() {
         return indentationEnabled;
+    }
+
+    public Map<? extends String, ? extends String> getPlaceholders() {
+        return placeholders;
     }
 
     public Map<Class<?>, Deserializer<Object>> getDeserializers() {

@@ -66,4 +66,17 @@ class CdnWriterTest {
         })
     }
 
+    @Test
+    void 'should replace simple placeholder' () {
+        def entry = Entry.of('key: value', ['# ${{placeholder}}' ])
+        def cdn = CDN.configure()
+            .registerPlaceholders([ 'placeholder': 'dance with me' ])
+            .build()
+
+        assertEquals """
+        # dance with me
+        key: value
+        """.stripIndent().trim(), cdn.compose(entry)
+    }
+
 }

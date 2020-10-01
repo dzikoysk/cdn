@@ -25,7 +25,7 @@ final class CdnReader {
     }
 
     public Configuration read(String source) {
-        if (cdn.getConfiguration().isIndentationEnabled()) {
+        if (cdn.getSettings().isIndentationEnabled()) {
             source = new CdnPrettier(source).tryToConvertIndentationInADumbWay();
         }
 

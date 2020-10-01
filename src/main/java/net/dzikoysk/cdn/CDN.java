@@ -31,7 +31,7 @@ public final class CDN {
         return compose(new CdnSerializer(this).serialize(entity));
     }
 
-    public CdnSettings getConfiguration() {
+    public CdnSettings getSettings() {
         return configuration;
     }
 
