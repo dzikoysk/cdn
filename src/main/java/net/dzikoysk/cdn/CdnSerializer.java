@@ -64,7 +64,7 @@ final class CdnSerializer {
                 Section section = root.append(new Section(CdnConstants.ARRAY_SEPARATOR, field.getName(), description));
                 Collection<Object> collection = (Collection<Object>) value;
                 Class<?> collectionType = CdnUtils.getGenericType(field);
-                Serializer<Object> serializer = cdn.getConfiguration().getSerializers().get(collectionType);
+                Serializer<Object> serializer = getSerializer(collectionType, field);
 
                 for (Object element : collection) {
                     ConfigurationElement<?> configurationElement = serializer.serialize("", element, Collections.emptyList());
@@ -84,17 +84,7 @@ final class CdnSerializer {
                 continue;
             }
 
-            Serializer<Object> serializer = cdn.getConfiguration().getSerializers().get(value.getClass());
-
-            if (serializer == null && field.isAnnotationPresent(CustomComposer.class)) {
-                CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
-                serializer = (Serializer<Object>) customComposer.value().getConstructor().newInstance();
-            }
-
-            if (serializer == null) {
-                throw new UnsupportedOperationException("Cannot serialize " + value.getClass() + " - missing serializer");
-            }
-
+            Serializer<Object> serializer = getSerializer(value.getClass(), field);
             root.append(serializer.serialize(field.getName(), value, description));
         }
     }

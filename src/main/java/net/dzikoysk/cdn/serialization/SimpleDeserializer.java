@@ -6,7 +6,7 @@ import net.dzikoysk.cdn.model.ConfigurationElement;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default T deserialize(ConfigurationElement<?> source) {
+    default T deserialize(ConfigurationElement<?> source, T defaultValue) {
         return deserializeEntry(source.getValue().toString());
     }
 
