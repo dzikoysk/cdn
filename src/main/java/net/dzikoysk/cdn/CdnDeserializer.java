@@ -1,11 +1,13 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -26,6 +28,15 @@ final class CdnDeserializer<T> {
 
     private void deserialize(Object instance, Section root) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
+            // ignore Groovy properties
+            if (!Modifier.isPublic(field.getModifiers()) || field.getName().startsWith("__$") || field.getName().startsWith("$")) {
+                continue;
+            }
+
+            if (cdn.getConfiguration().getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class)) {
+                throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
+            }
+
             ConfigurationElement<?> element = root.get(field.getName());
 
             if (element == null) {
