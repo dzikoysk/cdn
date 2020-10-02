@@ -13,6 +13,7 @@ class CdnDeserializerTest {
         section: {
           subEntry: 7
           list: [
+            key: value
             value
           ],
           custom: {
@@ -23,7 +24,7 @@ class CdnDeserializerTest {
 
         assertEquals 'custom value', configuration.rootEntry
         assertEquals 7, configuration.section.subEntry
-        assertEquals Collections.singletonList('value'), configuration.section.list
+        assertEquals Arrays.asList('key: value', 'value'), configuration.section.list
         assertEquals 'rtx', configuration.section.custom.id
         assertEquals 3080, configuration.section.custom.count
     }
