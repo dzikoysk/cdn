@@ -58,7 +58,9 @@ final class CdnWriter {
                     content.append(":");
                 }
                 else {
-                    content.append(" ").append(section.getOperators()[0]);
+                    // Don't add space to unnamed sections
+                    // ~ https://github.com/dzikoysk/cdn/issues/29
+                    content.append(section.getName().isEmpty() ? "" : " ").append(section.getOperators()[0]);
                 }
 
                 content.append(CdnConstants.LINE_SEPARATOR);
