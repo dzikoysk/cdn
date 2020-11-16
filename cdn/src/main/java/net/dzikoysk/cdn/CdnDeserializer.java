@@ -1,6 +1,7 @@
 package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.entity.CustomComposer;
+import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
@@ -25,6 +26,12 @@ final class CdnDeserializer<T> {
     protected T deserialize(Class<T> scheme, Configuration content) throws Exception {
         T instance = scheme.getConstructor().newInstance();
         deserialize(instance, content);
+
+        if (instance instanceof DeserializationHandler) {
+            DeserializationHandler<T> handler = ObjectUtils.cast(instance);
+            instance = handler.handle(ObjectUtils.cast(instance));
+        }
+
         return instance;
     }
 
