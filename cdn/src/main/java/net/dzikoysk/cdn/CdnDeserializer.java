@@ -10,7 +10,6 @@ import net.dzikoysk.cdn.serialization.Deserializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +30,7 @@ final class CdnDeserializer<T> {
 
     private void deserialize(Object instance, Section root) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
-            // ignore Groovy properties
-            if (!Modifier.isPublic(field.getModifiers()) || field.getName().startsWith("__$") || field.getName().startsWith("$")) {
+            if (CdnUtils.isIgnored(field)) {
                 continue;
             }
 

@@ -1,6 +1,9 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.Exclude;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -33,6 +36,19 @@ public final class CdnUtils {
         }
 
         return value;
+    }
+
+    static boolean isIgnored(Field field) {
+        if (!Modifier.isPublic(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+            return true;
+        }
+
+        // ignore Groovy properties
+        if (field.getName().startsWith("__$") || field.getName().startsWith("$")) {
+            return true;
+        }
+
+        return field.isAnnotationPresent(Exclude.class);
     }
 
 }

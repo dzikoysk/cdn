@@ -11,7 +11,6 @@ import net.dzikoysk.cdn.serialization.Serializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +42,7 @@ final class CdnSerializer {
         Class<?> scheme = entity.getClass();
 
         for (Field field : scheme.getDeclaredFields()) {
-            if (!Modifier.isPublic(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+            if (CdnUtils.isIgnored(field)) {
                 continue;
             }
 
