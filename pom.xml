@@ -7,7 +7,7 @@
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 
     <scm>
         <connection>scm:git:https://github.com/dzikoysk/cdn.git</connection>

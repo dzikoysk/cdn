@@ -13,7 +13,7 @@ public final class Configuration extends Section {
         this(new ArrayList<>());
     }
 
-    public Configuration(List<ConfigurationElement<?>> elements) {
+    public Configuration(List<? extends ConfigurationElement<?>> elements) {
         super(CdnConstants.OBJECT_SEPARATOR, StringUtils.EMPTY, Collections.emptyList(), elements);
     }
 

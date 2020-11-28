@@ -10,29 +10,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Section extends AbstractConfigurationElement<List<ConfigurationElement<?>>> {
+public class Section extends AbstractConfigurationElement<List<? extends ConfigurationElement<?>>> {
 
     private final String[] operators;
 
-    public Section(String name, List<String> description) {
+    public Section(String name, List<? extends String> description) {
         this(CdnConstants.OBJECT_SEPARATOR, name, description);
     }
 
-    public Section(String[] operators, String name, List<String> description) {
+    public Section(String[] operators, String name, List<? extends String> description) {
         this(operators, name, description, new ArrayList<>());
     }
 
-    public Section(String name, List<String> description, List<ConfigurationElement<?>> value) {
+    public Section(String name, List<? extends String> description, List<? extends ConfigurationElement<?>> value) {
         this(CdnConstants.OBJECT_SEPARATOR, name, description, value);
     }
 
-    public Section(String[] operators, String name, List<String> description, List<ConfigurationElement<?>> value) {
+    public Section(String[] operators, String name, List<? extends String> description, List<? extends ConfigurationElement<?>> value) {
         super(name, description, value);
         this.operators = operators;
     }
 
     public <E extends ConfigurationElement<?>> E append(E element) {
-        super.value.add(element);
+        super.value.add(ObjectUtils.cast(element));
         return element;
     }
 
@@ -76,16 +76,16 @@ public class Section extends AbstractConfigurationElement<List<ConfigurationElem
         return null;
     }
 
-    public List<String> getList(String key) {
+    public List<? extends String> getList(String key) {
         return getList(key, Collections.emptyList());
     }
 
-    public List<String> getList(String key, List<String> defaultValue) {
+    public List<? extends String> getList(String key, List<String> defaultValue) {
         Section section = getSection(key);
         return section != null ? section.getList() : defaultValue;
     }
 
-    public List<String> getList() {
+    public List<? extends String> getList() {
         List<String> values = new ArrayList<>(getValue().size());
         int listOperators = 0;
 

@@ -100,7 +100,7 @@ The output looks exactly like the input above.
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 </dependency>
 ```
 
