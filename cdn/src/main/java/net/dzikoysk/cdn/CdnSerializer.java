@@ -69,7 +69,7 @@ final class CdnSerializer {
                     ConfigurationElement<?> configurationElement = serializer.serialize("", element, Collections.emptyList());
 
                     if (configurationElement instanceof Entry) {
-                        if (cdn.getSettings().isIndentationEnabled()) {
+                        if (cdn.getSettings().isYamlLikeEnabled()) {
                             configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord(), configurationElement.getDescription());
                         }
                     }

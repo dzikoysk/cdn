@@ -1,10 +1,12 @@
 package net.dzikoysk.cdn.model
 
+import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.*
 
-class SectionTest {
+@CompileStatic
+final class SectionTest {
 
     static final Section SECTION = new Section('name', ['# comment' ], [
         new Section("sub", [], [
@@ -21,33 +23,34 @@ class SectionTest {
 
     @Test
     void 'should return int' () {
-        assertEquals 7, SECTION.getInt('sub.int-entry').get()
+        assertEquals 7, SECTION.getInt('sub.int-entry', 0)
     }
 
     @Test
     void 'should return boolean' () {
-        assertEquals true, SECTION.getBoolean('sub.boolKey').get()
+        assertEquals true, SECTION.getBoolean('sub.boolKey', false)
     }
 
     @Test
     void 'should return null' () {
-        assertNull SECTION.get('sub.unknown')
-        assertNull SECTION.get('unknown.entry')
+        assertTrue SECTION.get('sub.unknown').isEmpty()
+        assertTrue SECTION.get('unknown.entry').isEmpty()
     }
 
     @Test
     void 'should contain entry' () {
         assertTrue SECTION.has('sub')
+        assertFalse SECTION.has('unknown')
     }
 
     @Test
     void 'should return entry of sub section' () {
-        assertEquals 'value', SECTION.getString('sub.entry').get()
+        assertEquals 'value', SECTION.getString('sub.entry', 'default')
     }
 
     @Test
     void 'should return entry' () {
-        assertEquals SECTION.getSection('sub').getEntry('int-entry'), SECTION.getSection(0).getEntry(1)
+        assertEquals SECTION.getEntry('sub.int-entry').get(), SECTION.getSection(0).get().getEntry(1).get()
     }
 
     @Test
@@ -68,7 +71,7 @@ class SectionTest {
             ])
         ])
 
-        assertEquals(['record 1', '- record 2 : with semicolon'], section.getList('list'))
+        assertEquals(['record 1', '- record 2 : with semicolon'], section.getList('list', [ 'default' ]))
     }
 
     @Test

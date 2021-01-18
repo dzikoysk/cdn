@@ -4,16 +4,19 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 
 #### Features
 - [x] Simple and easy to use
-- [x] Performant
-- [x] Respecting comment entries
+- [x] Automatic structure updates
+- [x] Supports Java, Kotlin and Groovy
+- [x] Performant and lightweight _(~ 90kB)_
+- [x] Respecting properties order and comment entries
 - [x] Bidirectional parse and compose of CDN sources
 - [x] Serialization and deserialization of Java entities 
+- [x] Indentation based configuration _(YAML-like)_
+- [x] [`@Contract` support](https://www.jetbrains.com/help/idea/contract-annotations.html)
+- [x] Null-safe querying API 
 - [x] 95%+ test coverage
-- [x] Indentation based configuration
 - [ ] Docs
 
 #### Usage
-Let's say we want to maintain the following configuration:
 
 <table>
 <tr>
@@ -23,9 +26,9 @@ Let's say we want to maintain the following configuration:
 </tr>
 <tr>
 <td>
-<pre lang="php">
-// entry comment
-key: value
+<pre lang="javascript">
+# entry comment
+key: value <br>
 # section description
 section {
   sub {
@@ -35,15 +38,7 @@ section {
       1st element
       2nd element
     ]
-    list2 {
-      3rd element
-      4th element
-    }
   }
-<br>
-  &#35; section entry
-  &#35; description
-  sectionEntry: 7
 }
 </pre>
 </td>
@@ -52,44 +47,63 @@ section {
 </td>
 <td>
 <pre lang="yaml">
-// entry comment
-key: value
+# entry comment
+key: value <br>
 # section description
 section:
   sub:
     // sub entry description
     subEntry: subValue
     list1:
-      1st element
-      2nd element
-    list2: {
-      3rd element
-      4rd element
-    }
-<br>
-  &#35; section entry
-  &#35; description
-  sectionEntry: 7
+      - 1st element
+      - 2nd element
 </pre>
 </td>
 </tr>
 </table>
 
+##### Class based
+
+```java
+public final class Configuration implements Serializable {
+
+    @Description("# ~~~~~~~~~~~~~~~~~~~~~ #")
+    @Description("#      Application      #")
+    @Description("# ~~~~~~~~~~~~~~~~~~~~~ #")
+
+    @Description("")
+    @Description("# Hostname")
+    public String hostname = "0.0.0.0";
+
+}
+```
+
+Handling:
+
+```java
+// Load configuration
+Configuration configuration = CDN.defaultInstance().parse(Configuration.class, configurationSource)
+println configuration.hostname
+
+// Save
+configuration.hostname = "localhost"
+FileUtils.overrideFile(configurationFile, CDN.defaultInstance().compose(configuration))
+
+```
+
+##### Manual
+
 To load CDN source, use:
 
 ```java
-Configuration configuration = CDN.parse(source);
-
-// get some values
+// Parse configuration
+Configuration configuration = CDN.getDefaultInstance().parse(source);
 String keyValue = configuration.getString("key");
 String subValue = configuration.getString("section.sub.subEntry");
 Integer random = configuration.getInt("section.sectionEntry");
-```
 
-You can also compose CDN element to text:
-
-```java
-String source = CDN.compose(configuration);
+// Configuration to string 
+String source = CDN.getDefaultInstance().render(configuration);
 ```
 
 The output looks exactly like the input above. 
@@ -100,7 +114,7 @@ The output looks exactly like the input above.
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn</artifactId>
-    <version>1.5.3</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 
@@ -112,3 +126,9 @@ Repository:
     <url>https://repo.panda-lang.org/releases</url>
 </repository>
 ```
+
+#### Who's using
+
+* [Reposilite](https://github.com/dzikoysk/reposilite)
+* [Panda](https://github.com/panda-lang/panda)
+* [FunnyGuilds](https://github.com/FunnyGuilds/FunnyGuilds)

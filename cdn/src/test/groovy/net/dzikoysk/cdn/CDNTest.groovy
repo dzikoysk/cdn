@@ -23,7 +23,7 @@ class CDNTest {
         """.stripIndent().trim()
 
         def result = CDN.defaultInstance().parse(source)
-        assertEquals source, CDN.defaultInstance().compose(result)
+        assertEquals source, CDN.defaultInstance().render(result)
     }
 
     @Test
@@ -43,8 +43,8 @@ class CDNTest {
         def jsonResult = CDN.defaultInstance().parseJson(json)
         def cdnResult = CDN.defaultInstance().parse(cdn)
 
-        assertEquals cdnResult.getString('key'), jsonResult.getString('key')
-        assertEquals cdnResult.getList('array'), jsonResult.getList('array')
+        assertEquals cdnResult.getString('object.key', 'defaultCDN'), jsonResult.getString('object.key', 'defaultJSON')
+        assertEquals cdnResult.getList('array', [ 'defaultCDN' ]), jsonResult.getList('array', [ 'defaultJSON' ])
     }
 
 }

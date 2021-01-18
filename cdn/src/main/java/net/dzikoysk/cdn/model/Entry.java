@@ -30,8 +30,14 @@ public final class Entry extends AbstractConfigurationElement<String> {
 
     public static Entry of(String record, List<? extends String> description) {
         String[] elements = StringUtils.splitFirst(record, CdnConstants.OPERATOR);
-        String key = elements.length > 0 ? elements[0].trim() : record;
-        String value = elements.length == 2 ? elements[1].trim() : key;
+
+        String key = elements.length > 0
+                ? elements[0].trim()
+                : record;
+
+        String value = elements.length == 2
+                ? elements[1].trim()
+                : key;
 
         if (value.endsWith(CdnConstants.SEPARATOR)) {
             value = value.substring(0, value.length() - 1);

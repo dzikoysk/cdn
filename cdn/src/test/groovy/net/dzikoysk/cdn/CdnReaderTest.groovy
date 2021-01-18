@@ -1,18 +1,17 @@
 package net.dzikoysk.cdn
 
-
+import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.*
 
-class CdnReaderTest {
+@CompileStatic
+final class CdnReaderTest {
 
     @Test
     void 'should return entry' () {
         def result = CDN.defaultInstance().parse('key: value')
-        def entry = result.get('key')
-
-        assertNotNull entry
+        def entry = result.getEntry('key').get()
         assertEquals 'key', entry.getName()
         assertEquals 'value', entry.getValue()
     }
@@ -27,11 +26,11 @@ class CdnReaderTest {
         }
         ''')
 
-        def section = result.getSection('section')
+        def section = result.getSection('section').get()
         assertNotNull section
         assertEquals([ '# comment1', '// comment2' ], section.getDescription())
 
-        def entry = section.getEntry('entry')
+        def entry = section.getEntry('entry').get()
         assertNotNull entry
         assertEquals 'value', entry.getValue()
     }
@@ -60,7 +59,7 @@ class CdnReaderTest {
     @Test
     void 'should use prettier' () {
         def cdn = CDN.configure()
-            .enableIndentationFormatting()
+            .enableYamlLikeFormatting()
             .build()
 
         def configuration = cdn.parse("""
@@ -68,7 +67,7 @@ class CdnReaderTest {
           key : value
         """.stripIndent())
 
-        assertEquals "value", configuration.getString("section.key").get()
+        assertEquals "value", configuration.getString("section.key", 'default')
     }
 
     @Test
@@ -77,8 +76,8 @@ class CdnReaderTest {
         " key ": " value "
         ''')
 
-        assertEquals ' key ', result.get(' key ').getName()
-        assertEquals ' value ', result.getString(' key ').get()
+        assertEquals ' key ', result.get(' key ').get().getName()
+        assertEquals ' value ', result.getString(' key ', 'default')
     }
 
     static class ConfigTest {
@@ -101,7 +100,7 @@ class CdnReaderTest {
         c: d
         """)
 
-        assertEquals 'b', result.getString('a').get()
+        assertEquals 'b', result.getString('a', 'default')
     }
 
     @Test
@@ -113,8 +112,8 @@ class CdnReaderTest {
         }
         """)
 
-        assertEquals 'b', result.getString('a').get()
-        assertEquals 'd', result.getString('c').get()
+        assertEquals 'b', result.getString('a', 'default')
+        assertEquals 'd', result.getString('c', 'default')
     }
 
 }

@@ -1,11 +1,12 @@
 package net.dzikoysk.cdn
 
-
+import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
-class CdnPrettierTest {
+@CompileStatic
+final class CdnPrettierTest {
 
     @Test
     void 'should convert json like format to cdn' () {
@@ -26,7 +27,7 @@ class CdnPrettierTest {
         """.stripIndent().trim(), source)
 
         def configuration = CDN.defaultInstance().parse(source)
-        def list = configuration.getSection('list')
+        def list = configuration.getSection('list').get()
         assertEquals 2, list.size()
     }
 
@@ -34,7 +35,7 @@ class CdnPrettierTest {
     void 'should convert json like list' () {
         def source = new CdnPrettier('{ "list": [ "a", "b", "c" ] }').tryToInsertNewLinesInADumbWay()
         println source
-        assertEquals([ 'a', 'b', 'c' ], CDN.defaultInstance().parse(source).getList('list'))
+        assertEquals([ 'a', 'b', 'c' ], CDN.defaultInstance().parse(source).getList('list', [ 'default' ]))
     }
 
     @Test

@@ -2,12 +2,12 @@ package net.dzikoysk.cdn.model;
 
 import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnUtils;
+import org.jetbrains.annotations.Contract;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 import org.panda_lang.utilities.commons.function.Option;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Section extends AbstractConfigurationElement<List<? extends ConfigurationElement<?>>> {
@@ -36,56 +36,70 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
         return element;
     }
 
+    @Contract("null -> false")
     public boolean has(String key) {
-        return get(key) != null;
+        return get(key).isDefined();
     }
 
     public int size() {
         return getValue().size();
     }
 
-    public ConfigurationElement<?> get(int index) {
-        return getValue().get(index);
+    private <T> Option<T> get(int index, Class<T> type) {
+        return get(index).map(element -> ObjectUtils.cast(type, element));
     }
 
-    public ConfigurationElement<?> get(String key) {
-        ConfigurationElement<?> result = null;
+    public Option<ConfigurationElement<?>> get(int index) {
+        return Option.when(index > -1 && index < size(), () -> getValue().get(index));
+    }
+
+    private <T> Option<T> get(String key, Class<T> type) {
+        return get(key).map(element -> {
+            T value = ObjectUtils.cast(type, element);
+
+            if (value == null) {
+                throw new IllegalStateException("Property '" + key + "' of type " + element.getClass() + " cannot be queried as " + type);
+            }
+
+            return value;
+        });
+    }
+
+    @Contract("null -> null")
+    public Option<ConfigurationElement<?>> get(String key) {
+        if (key == null) {
+            return Option.none();
+        }
 
         for (ConfigurationElement<?> element : getValue()) {
             if (key.equals(element.getName())) {
-                result = element;
-                break;
+                return Option.of(element);
             }
         }
 
-        if (result != null || !key.contains(".")) {
-            return result;
-        }
+        return Option.when(key.contains("."), StringUtils.split(key, "."))
+                .flatMap(qualifier -> {
+                    Option<Section> section = Option.of(this);
 
-        String[] qualifier = StringUtils.split(key, ".");
-        Section section = this;
+                    for (int index = 0; index < qualifier.length - 1 && section.isDefined(); index++) {
+                        int currentIndex = index;
+                        section = section.flatMap(value -> value.getSection(qualifier[currentIndex]));
+                    }
 
-        for (int index = 0; index < qualifier.length - 1 && section != null; index++) {
-            section = section.getSection(qualifier[index]);
-        }
-
-        if (section != null) {
-            return section.get(qualifier[qualifier.length - 1]);
-        }
-
-        return null;
+                    return section.flatMap(value -> value.get(qualifier[qualifier.length - 1]));
+                });
     }
 
-    public List<? extends String> getList(String key) {
-        return getList(key, Collections.emptyList());
+    @Contract("_, null -> null")
+    public List<String> getList(String key, List<String> defaultValue) {
+        return getList(key).orElseGet(() -> defaultValue);
     }
 
-    public List<? extends String> getList(String key, List<String> defaultValue) {
-        Section section = getSection(key);
-        return section != null ? section.getList() : defaultValue;
+    public Option<List<String>> getList(String key) {
+        return getSection(key).map(Section::getList);
     }
 
-    public List<? extends String> getList() {
+    public List<String> getList() {
         List<String> values = new ArrayList<>(getValue().size());
         int listOperators = 0;
 
@@ -120,48 +134,44 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
     }
 
     public Option<Boolean> getBoolean(String key) {
-        return Option.of(getBoolean(key, null));
+        return getString(key).map(Boolean::parseBoolean);
     }
 
-    public Boolean getBoolean(String key, Boolean defaultValue) {
-        return getString(key)
-                .map(Boolean::parseBoolean)
-                .orElseGet(defaultValue);
+    public boolean getBoolean(String key, boolean defaultValue) {
+        return getBoolean(key).orElseGet(defaultValue);
     }
 
     public Option<Integer> getInt(String key) {
-        return Option.of(getInt(key, null));
+        return getString(key).map(Integer::parseInt);
     }
 
-    public Integer getInt(String key, Integer defaultValue) {
-        return getString(key)
-                .map(Integer::parseInt)
-                .orElseGet(defaultValue);
-    }
-
-    public String getString(String key, String defaultValue) {
-        Entry entry = getEntry(key);
-        return entry != null ? entry.getValue() : defaultValue;
+    public int getInt(String key, int defaultValue) {
+        return getInt(key).orElseGet(defaultValue);
     }
 
     public Option<String> getString(String key) {
-        return Option.of(getString(key, null));
+        return getEntry(key).map(Entry::getValue);
     }
 
-    public Entry getEntry(int index) {
-        return ObjectUtils.cast(get(index));
+    @Contract("_, null -> null")
+    public String getString(String key, String defaultValue) {
+        return getString(key).orElseGet(defaultValue);
     }
 
-    public Entry getEntry(String key) {
-        return ObjectUtils.cast(get(key));
+    public Option<Entry> getEntry(int index) {
+        return get(index, Entry.class);
     }
 
-    public Section getSection(int index) {
-        return ObjectUtils.cast(get(index));
+    public Option<Entry> getEntry(String key) {
+        return get(key, Entry.class);
     }
 
-    public Section getSection(String key) {
-        return ObjectUtils.cast(get(key));
+    public Option<Section> getSection(int index) {
+        return get(index, Section.class);
+    }
+
+    public Option<Section> getSection(String key) {
+        return get(key, Section.class);
     }
 
     public String[] getOperators() {

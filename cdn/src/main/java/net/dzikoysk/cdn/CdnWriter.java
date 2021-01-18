@@ -31,12 +31,14 @@ final class CdnWriter {
     private void render(StringBuilder content, int level, ConfigurationElement<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
 
+        // render multiline description
         for (String comment : element.getDescription()) {
             content.append(indentation)
                     .append(comment)
                     .append(CdnConstants.LINE_SEPARATOR);
         }
 
+        // render simple entry
         if (element instanceof Entry) {
             Entry entry = (Entry) element;
 
@@ -47,6 +49,7 @@ final class CdnWriter {
             return;
         }
 
+        // render section
         if (element instanceof Section) {
             Section section = (Section) element;
             boolean isRoot = section instanceof Configuration;
@@ -54,7 +57,7 @@ final class CdnWriter {
             if (!isRoot) {
                 content.append(indentation).append(section.getName());
 
-                if (cdn.getSettings().isIndentationEnabled()) {
+                if (cdn.getSettings().isYamlLikeEnabled()) {
                     content.append(":");
                 }
                 else {
@@ -66,13 +69,18 @@ final class CdnWriter {
                 content.append(CdnConstants.LINE_SEPARATOR);
             }
 
-            int subLevel = isRoot ? level : level + 1;
+            // do not indent root sections
+            int subLevel = isRoot
+                    ? level
+                    : level + 1;
 
+            // render section content
             for (ConfigurationElement<?> sectionElement : section.getValue()) {
                 render(content, subLevel, sectionElement);
             }
 
-            if (!isRoot && !cdn.getSettings().isIndentationEnabled()) {
+            // append opening operator for cdn format
+            if (!isRoot && !cdn.getSettings().isYamlLikeEnabled()) {
                 content.append(indentation)
                         .append(section.getOperators()[1])
                         .append(CdnConstants.LINE_SEPARATOR);

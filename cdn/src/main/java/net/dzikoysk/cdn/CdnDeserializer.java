@@ -9,6 +9,7 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
+import org.panda_lang.utilities.commons.function.Option;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -45,21 +46,19 @@ final class CdnDeserializer<T> {
                 throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
             }
 
-            ConfigurationElement<?> element = root.get(field.getName());
+            Option<ConfigurationElement<?>> elementValue = root.get(field.getName());
 
-            if (element == null) {
+            if (elementValue.isEmpty()) {
                 continue;
             }
 
+            ConfigurationElement<?> element = elementValue.get();
             Object defaultValue = field.get(instance);
 
             if (field.isAnnotationPresent(CustomComposer.class)) {
-                Object value = getDeserializer(field.getType(), field).deserialize(element, defaultValue, false);
-                field.set(instance, value);
-                continue;
+                deserialize(instance, field, defaultValue, element);
             }
-
-            if (element instanceof Section) {
+            else if (element instanceof Section) {
                 Section section = (Section) element;
 
                 if (!List.class.isAssignableFrom(field.getType())) {
@@ -71,23 +70,27 @@ final class CdnDeserializer<T> {
                 Class<?> genericType = CdnUtils.getGenericType(field);
                 Deserializer<Object> deserializer = getDeserializer(genericType, field);
 
-                for (String record : root.getList(field.getName())) {
-                    result.add(deserializer.deserialize(Entry.of(record, Collections.emptyList()), null, true));
-                }
+                root.getList(field.getName()).peek(list -> {
+                    list.forEach(record -> result.add(deserializer.deserialize(Entry.of(record, Collections.emptyList()), null, true)));
+                });
 
                 field.set(instance, result);
-                continue;
             }
+            else if (element instanceof Entry) {
+                Option<Entry> entry = root.getEntry(field.getName());
 
-            Entry entry = root.getEntry(field.getName());
-
-            if (entry == null) {
-                continue;
+                if (entry.isDefined()) {
+                    deserialize(instance, field, defaultValue, entry.get());
+                }
             }
-
-            Deserializer<Object> deserializer = getDeserializer(field.getType(), field);
-            field.set(instance, deserializer.deserialize(entry, defaultValue, false));
+            else throw new UnsupportedOperationException("Unknown ConfigurationElement: " + element);
         }
+    }
+
+    private void deserialize(Object instance, Field field, Object defaultValue, ConfigurationElement<?> element) throws Exception {
+        Deserializer<Object> deserializer = getDeserializer(field.getType(), field);
+        Object value = deserializer.deserialize(element, defaultValue, false);
+        field.set(instance, value);
     }
 
     private Deserializer<Object> getDeserializer(Class<?> type, Field field) throws Exception {

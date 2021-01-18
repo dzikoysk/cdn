@@ -5,14 +5,14 @@ import net.dzikoysk.cdn.model.ConfigurationElement;
 
 public final class CDN {
 
-    private final CdnSettings configuration;
+    private final CdnSettings settings;
 
-    CDN(CdnSettings configuration) {
-        this.configuration = configuration;
+    CDN(CdnSettings settings) {
+        this.settings = settings;
     }
 
     public Configuration parse(String source) {
-        return new CdnReader(this).read(source);
+        return new CdnReader(settings).read(source);
     }
 
     public Configuration parseJson(String source) {
@@ -23,16 +23,16 @@ public final class CDN {
         return new CdnDeserializer<T>(this).deserialize(scheme, parse(source));
     }
 
-    public String compose(ConfigurationElement<?> element) {
+    public String render(ConfigurationElement<?> element) {
         return new CdnWriter(this).render(element);
     }
 
-    public String compose(Object entity) {
-        return compose(new CdnSerializer(this).serialize(entity));
+    public String render(Object entity) {
+        return render(new CdnSerializer(this).serialize(entity));
     }
 
     public CdnSettings getSettings() {
-        return configuration;
+        return settings;
     }
 
     public static CdnSettings configure() {
@@ -41,6 +41,12 @@ public final class CDN {
 
     public static CDN defaultInstance() {
         return configure().build();
+    }
+
+    public static CDN defaultYamlLikeInstance() {
+        return configure()
+                .enableYamlLikeFormatting()
+                .build();
     }
 
 }

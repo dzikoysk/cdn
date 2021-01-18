@@ -20,7 +20,7 @@ public final class CdnUtils {
 
             try {
                 return Class.forName(genericType.getTypeName());
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException classNotFoundException) {
                 throw new IllegalArgumentException("Cannot find generic type " + genericType);
             }
         }

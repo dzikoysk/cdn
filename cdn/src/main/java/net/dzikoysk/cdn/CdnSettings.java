@@ -6,6 +6,7 @@ import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 import net.dzikoysk.cdn.serialization.SimpleSerializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,26 +17,47 @@ public final class CdnSettings {
     private final Map<Class<?>, Serializer<Object>> serializers = new HashMap<>();
     private final Map<Class<?>, Deserializer<Object>> deserializers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
-    private boolean indentationEnabled;
+    private boolean yamlLikeEnabled;
 
     {
-        serializer(String.class, Object::toString);
+        serializer(boolean.class, Object::toString);
         serializer(Boolean.class, Object::toString);
-        serializer(Integer.class, Object::toString);
-        serializer(Double.class, Object::toString);
-
-        deserializer(String.class, string -> string);
+        deserializer(boolean.class, Boolean::parseBoolean);
         deserializer(Boolean.class, Boolean::parseBoolean);
-        deserializer(Integer.class, Integer::parseInt);
-        deserializer(Double.class, Double::parseDouble);
 
-        deserializer(List.class, value -> {
+        serializer(int.class, Object::toString);
+        serializer(Integer.class, Object::toString);
+        deserializer(int.class, Integer::parseInt);
+        deserializer(Integer.class, Integer::parseInt);
+
+        serializer(long.class, Object::toString);
+        serializer(Long.class, Object::toString);
+        deserializer(long.class, Long::parseLong);
+        deserializer(Long.class, Long::parseLong);
+
+        serializer(Float.class, Object::toString);
+        serializer(Float.class, Object::toString);
+        deserializer(Float.class, Float::parseFloat);
+        deserializer(Float.class, Float::parseFloat);
+        
+        serializer(double.class, Object::toString);
+        serializer(Double.class, Object::toString);
+        deserializer(double.class, Double::parseDouble);
+        deserializer(Double.class, Double::parseDouble);
+        
+        deserializer(String.class, string -> string);
+        serializer(String.class, Object::toString);
+
+        SimpleDeserializer<Object> simpleListDeserializer = value -> {
             if (value.equals("[]")) {
                 return Collections.emptyList();
             }
 
             throw new UnsupportedOperationException("Cannot deserialize list of " + value);
-        });
+        };
+
+        deserializer(List.class, simpleListDeserializer);
+        deserializer(ArrayList.class, simpleListDeserializer);
     }
 
     public <T> CdnSettings serializer(Class<T> type, SimpleSerializer<Object> serializer) {
@@ -61,13 +83,13 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings enableIndentationFormatting() {
-        this.indentationEnabled = true;
+    public CdnSettings enableYamlLikeFormatting() {
+        this.yamlLikeEnabled = true;
         return this;
     }
 
-    public boolean isIndentationEnabled() {
-        return indentationEnabled;
+    public boolean isYamlLikeEnabled() {
+        return yamlLikeEnabled;
     }
 
     public Map<? extends String, ? extends String> getPlaceholders() {

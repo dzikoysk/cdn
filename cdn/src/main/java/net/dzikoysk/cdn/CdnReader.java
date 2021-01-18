@@ -1,11 +1,11 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
-import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
-import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.StringUtils;
+import org.panda_lang.utilities.commons.function.Option;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,20 +15,21 @@ import java.util.stream.Collectors;
 
 final class CdnReader {
 
-    private final CDN cdn;
+    private final CdnSettings settings;
     private final Configuration root = new Configuration();
     private final Stack<Section> sections = new Stack<>();
     private List<String> description = new ArrayList<>();
 
-    public CdnReader(CDN cdn) {
-        this.cdn = cdn;
+    CdnReader(CdnSettings settings) {
+        this.settings = settings;
     }
 
     public Configuration read(String source) {
-        if (cdn.getSettings().isIndentationEnabled()) {
+        if (settings.isYamlLikeEnabled()) {
             source = new CdnPrettier(source).tryToConvertIndentationInADumbWay();
         }
 
+        // replace system-dependent line separators with unified one
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);
 
         List<String> lines = Arrays.stream(normalizedSource.split(CdnConstants.LINE_SEPARATOR))
@@ -39,11 +40,13 @@ final class CdnReader {
             line = line.trim();
             String originalLine = line;
 
+            // handle description
             if (line.isEmpty() || line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
                 description.add(line);
                 continue;
             }
 
+            // remove operator at the end of line
             if (line.endsWith(CdnConstants.SEPARATOR)) {
                 line = line.substring(0, line.length() - CdnConstants.SEPARATOR.length()).trim();
             }
@@ -82,16 +85,12 @@ final class CdnReader {
             description = new ArrayList<>();
         }
 
-        // map json-like formats with declared root operators
-        if (root.size() == 1) {
-            Section section = ObjectUtils.cast(Section.class, root.get(0));
-
-            if (section != null && section.getName().isEmpty()) {
-                return new Configuration(section.getValue());
-            }
-        }
-
-        return root;
+        // flat map json-like formats with declared root operators
+        return Option.when(root.size() == 1, root)
+                .flatMap(root -> root.getSection(0))
+                .filter(element -> element.getName().isEmpty())
+                .map(element -> new Configuration(element.getValue()))
+                .orElseGet(root);
     }
 
     private void appendElement(ConfigurationElement<?> element) {

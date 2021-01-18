@@ -16,7 +16,7 @@ class CdnWriterTest {
         assertEquals """
         # description
         key: value
-        """.stripIndent().trim(), CDN.defaultInstance().compose(entry)
+        """.stripIndent().trim(), CDN.defaultInstance().render(entry)
     }
 
     @Test
@@ -27,7 +27,7 @@ class CdnWriterTest {
         # description
         section {
         }
-        """.stripIndent().trim(), CDN.defaultInstance().compose(section)
+        """.stripIndent().trim(), CDN.defaultInstance().render(section)
     }
 
     @Test
@@ -46,19 +46,19 @@ class CdnWriterTest {
             entry: value
           }
         }
-        """.stripIndent().trim(), CDN.defaultInstance().compose(section)
+        """.stripIndent().trim(), CDN.defaultInstance().render(section)
     }
 
     @Test
     void 'should compose indentation based source' () {
         def cdn = CDN.configure()
-            .enableIndentationFormatting()
+            .enableYamlLikeFormatting()
             .build()
 
         assertEquals """
         section:
           key: value
-        """.stripIndent().trim(), cdn.compose(new Object() {
+        """.stripIndent().trim(), cdn.render(new Object() {
             @SectionLink
             public Object section = new Object() {
                 public String key = "value"
@@ -76,7 +76,7 @@ class CdnWriterTest {
         assertEquals """
         # dance with me
         key: value
-        """.stripIndent().trim(), cdn.compose(entry)
+        """.stripIndent().trim(), cdn.render(entry)
     }
 
 }
