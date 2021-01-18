@@ -1,7 +1,7 @@
 package net.dzikoysk.cdn;
 
 import org.panda_lang.utilities.commons.StringUtils;
-import org.panda_lang.utilities.commons.text.ContentJoiner;
+import org.panda_lang.utilities.commons.text.Joiner;
 
 import static net.dzikoysk.cdn.CdnConstants.*;
 
@@ -16,7 +16,7 @@ final class CdnPrettier {
     }
 
     String tryToInsertNewLinesInADumbWay() {
-        return ContentJoiner.on("").join(lines, String::trim).toString()
+        return Joiner.on("").join(lines, String::trim).toString()
                 .replace(OBJECT_SEPARATOR[0], OBJECT_SEPARATOR[0] + LINE_SEPARATOR)
                 .replace(OBJECT_SEPARATOR[1], LINE_SEPARATOR + OBJECT_SEPARATOR[1] + LINE_SEPARATOR)
                 .replace(ARRAY_SEPARATOR[0], ARRAY_SEPARATOR[0] + LINE_SEPARATOR)
