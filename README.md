@@ -87,7 +87,7 @@ println configuration.hostname
 
 // Save
 configuration.hostname = "localhost"
-FileUtils.overrideFile(configurationFile, CDN.defaultInstance().compose(configuration))
+FileUtils.overrideFile(configurationFile, CDN.defaultInstance().render(configuration))
 
 ```
 
