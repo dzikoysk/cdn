@@ -5,6 +5,8 @@ import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serialization.Composer
 
+import java.lang.reflect.Type
+
 class TestConfigurationCustomObject {
 
     private final String id
@@ -26,7 +28,7 @@ class TestConfigurationCustomObject {
     static class CustomObjectComposer implements Composer<TestConfigurationCustomObject> {
 
         @Override
-        TestConfigurationCustomObject deserialize(ConfigurationElement<?> source, TestConfigurationCustomObject defaultValue, boolean listEntry) {
+        TestConfigurationCustomObject deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, TestConfigurationCustomObject defaultValue, boolean listEntry) {
             if (!(source instanceof Section)) {
                 throw new IllegalArgumentException('Unsupported element')
             }
@@ -39,7 +41,7 @@ class TestConfigurationCustomObject {
         }
 
         @Override
-        ConfigurationElement<?> serialize(String key, TestConfigurationCustomObject entity, List<String> description) {
+        ConfigurationElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, TestConfigurationCustomObject entity) {
             def section = new Section(key, description)
             section.append(Entry.ofPair('id', entity.id, []))
             section.append(Entry.ofPair('count', entity.count, []))

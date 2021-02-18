@@ -1,5 +1,8 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.defaults.ListComposer;
+import net.dzikoysk.cdn.defaults.MapComposer;
+import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
 import net.dzikoysk.cdn.serialization.SimpleDeserializer;
@@ -7,7 +10,6 @@ import net.dzikoysk.cdn.serialization.SimpleSerializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,16 +50,15 @@ public final class CdnSettings {
         deserializer(String.class, string -> string);
         serializer(String.class, Object::toString);
 
-        SimpleDeserializer<Object> simpleListDeserializer = value -> {
-            if (value.equals("[]")) {
-                return Collections.emptyList();
-            }
+        ListComposer<Object> listComposer = new ListComposer<>();
+        serializer(List.class, listComposer);
+        serializer(ArrayList.class, listComposer);
+        deserializer(List.class, listComposer);
+        deserializer(ArrayList.class, listComposer);
 
-            throw new UnsupportedOperationException("Cannot deserialize list of " + value);
-        };
-
-        deserializer(List.class, simpleListDeserializer);
-        deserializer(ArrayList.class, simpleListDeserializer);
+        Composer<Object> mapComposer = new MapComposer<>();
+        deserializer(Map.class, mapComposer);
+        deserializer(HashMap.class, mapComposer);
     }
 
     public <T> CdnSettings serializer(Class<T> type, SimpleSerializer<Object> serializer) {

@@ -4,20 +4,18 @@ import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
-import net.dzikoysk.cdn.model.ConfigurationElement;
-import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
+import org.jetbrains.annotations.Nullable;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-final class CdnSerializer {
+public final class CdnSerializer {
 
     private final CDN cdn;
 
@@ -37,7 +35,6 @@ final class CdnSerializer {
         return root;
     }
 
-    @SuppressWarnings("unchecked")
     private void serialize(Section root, Object entity) throws Exception {
         Class<?> scheme = entity.getClass();
 
@@ -57,50 +54,30 @@ final class CdnSerializer {
                 continue;
             }
 
-            Object value = field.get(entity);
-
-            if (List.class.isAssignableFrom(field.getType())) {
-                Section section = root.append(new Section(CdnConstants.ARRAY_SEPARATOR, field.getName(), description));
-                Collection<Object> collection = (Collection<Object>) value;
-                Class<?> collectionType = CdnUtils.getGenericType(field);
-                Serializer<Object> serializer = getSerializer(collectionType, field);
-
-                for (Object element : collection) {
-                    ConfigurationElement<?> configurationElement = serializer.serialize("", element, Collections.emptyList());
-
-                    if (configurationElement instanceof Entry) {
-                        if (cdn.getSettings().isYamlLikeEnabled()) {
-                            configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord(), configurationElement.getDescription());
-                        }
-                    }
-                    else {
-                        throw new UnsupportedOperationException("#todo @makub");
-                    }
-
-                    section.append(configurationElement);
-                }
-
-                continue;
-            }
-
-            Serializer<Object> serializer = getSerializer(value.getClass(), field);
-            root.append(serializer.serialize(field.getName(), value, description));
+            Serializer<Object> serializer = getSerializer(cdn.getSettings(), field.getType(), field);
+            root.append(serializer.serialize(cdn.getSettings(), description, field.getName(), field.getGenericType(), field.get(entity)));
         }
     }
 
-    private Serializer<Object> getSerializer(Class<?> type, Field field) throws Exception {
-        Serializer<Object> serializer;
 
-        if (field.isAnnotationPresent(CustomComposer.class)) {
+    public static Serializer<Object> getSerializer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
+        Serializer<Object> serializer = null;
+
+        if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
             CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
             serializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
-             serializer = cdn.getSettings().getSerializers().get(type);
+            for (Entry<Class<?>, Serializer<Object>> serializerEntry : settings.getSerializers().entrySet()) {
+                if (type.isAssignableFrom(serializerEntry.getKey())) {
+                    serializer = serializerEntry.getValue();
+                    break;
+                }
+            }
         }
 
         if (serializer == null) {
-            throw new UnsupportedOperationException("Cannot serialize field '" + field.getType().getSimpleName() + " " + field.getName() + "' - missing serializer");
+            throw new UnsupportedOperationException("Cannot serialize '" + type  + "' - missing serializer");
         }
 
         return serializer;
