@@ -11,6 +11,7 @@ import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +58,12 @@ public final class CdnSettings {
         deserializer(ArrayList.class, listComposer);
 
         Composer<Object> mapComposer = new MapComposer<>();
+        serializer(Map.class, mapComposer);
+        serializer(HashMap.class, mapComposer);
+        serializer(LinkedHashMap.class, mapComposer);
         deserializer(Map.class, mapComposer);
         deserializer(HashMap.class, mapComposer);
+        deserializer(LinkedHashMap.class, mapComposer);
     }
 
     public <T> CdnSettings serializer(Class<T> type, SimpleSerializer<Object> serializer) {

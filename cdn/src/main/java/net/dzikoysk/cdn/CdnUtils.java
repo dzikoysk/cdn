@@ -35,6 +35,10 @@ public final class CdnUtils {
     }
 
     public static Class<?> toClass(Type type) {
+        if (type instanceof ParameterizedType) {
+            return toClass(((ParameterizedType) type).getRawType());
+        }
+
         try {
             return Class.forName(type.getTypeName());
         } catch (ClassNotFoundException classNotFoundException) {
