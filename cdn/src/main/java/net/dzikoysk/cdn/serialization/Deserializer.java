@@ -8,6 +8,6 @@ import java.lang.reflect.Type;
 @FunctionalInterface
 public interface Deserializer<T> {
 
-    T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean listEntry) throws Exception;
+    T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception;
 
 }

@@ -23,10 +23,10 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean listEntry) throws Exception {
+    public T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            String value = listEntry ? entry.getRecord() : entry.getValue();
+            String value = entryAsRecord ? entry.getRecord() : entry.getValue();
 
             if (value.equals("[]")) {
                 return (T) Collections.emptyMap();
@@ -49,16 +49,16 @@ public final class MapComposer<T> implements Composer<T> {
                 Entry entry = (Entry) element;
 
                 result.put(
-                        keySerializer.deserialize(settings, Entry.of(entry.getName(), entry.getDescription()), collectionTypes[0], null, listEntry),
-                        valueSerializer.deserialize(settings, Entry.of(entry.getValue(), Collections.emptyList()), collectionTypes[1], null, listEntry)
+                        keySerializer.deserialize(settings, Entry.of(entry.getName(), entry.getDescription()), collectionTypes[0], null, entryAsRecord),
+                        valueSerializer.deserialize(settings, Entry.of(entry.getValue(), Collections.emptyList()), collectionTypes[1], null, entryAsRecord)
                 );
             }
             else if (element instanceof Section) {
                 Section subSection = (Section) element;
 
                 result.put(
-                        keySerializer.deserialize(settings, Entry.of(subSection.getName(), subSection.getDescription()), collectionTypes[0], null, listEntry),
-                        valueSerializer.deserialize(settings, subSection, collectionTypes[1], null, listEntry)
+                        keySerializer.deserialize(settings, Entry.of(subSection.getName(), subSection.getDescription()), collectionTypes[0], null, entryAsRecord),
+                        valueSerializer.deserialize(settings, subSection, collectionTypes[1], null, entryAsRecord)
                 );
             }
             else throw new UnsupportedOperationException("Unsupported section map");
@@ -69,15 +69,20 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Section serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
-        Section section = new Section(CdnConstants.OBJECT_SEPARATOR, key, description);
-
+    public ConfigurationElement<? extends Object> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
         Map<Object, Object> map = (Map<Object, Object>) entity;
+
+        if (map.isEmpty()) {
+            return Entry.ofPair(key, "[]", description);
+        }
+
         Type[] collectionTypes = CdnUtils.getGenericTypes(genericType);
         Class<?>[] collectionTypesClasses = CdnUtils.getGenericClasses(genericType);
 
         Serializer<?> keySerializer = CdnSerializer.getSerializer(settings, collectionTypesClasses[0], null);
         Serializer<?> valueSerializer = CdnSerializer.getSerializer(settings, collectionTypesClasses[1], null);
+
+        Section section = new Section(CdnConstants.OBJECT_SEPARATOR, key, description);
 
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             ConfigurationElement<?> keyElement = keySerializer.serialize(settings, Collections.emptyList(), "", collectionTypes[0], ObjectUtils.cast(entry.getKey()));

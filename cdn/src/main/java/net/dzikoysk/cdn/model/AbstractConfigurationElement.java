@@ -10,7 +10,7 @@ abstract class AbstractConfigurationElement<T> implements ConfigurationElement<T
     protected final List<? extends String> description;
     protected final T value;
 
-    protected AbstractConfigurationElement(String name, List<? extends String> description,  T value) {
+    protected AbstractConfigurationElement(String name, List<? extends String> description, T value) {
         this.name = name;
         this.description = description;
         this.value = value;

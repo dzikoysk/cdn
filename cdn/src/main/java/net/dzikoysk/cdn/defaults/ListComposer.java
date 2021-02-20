@@ -22,16 +22,15 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean listEntry) throws Exception {
+    public T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            String value = listEntry ? entry.getRecord() : entry.getValue();
 
-            if (value.equals("[]")) {
+            if (entry.getRecord().trim().endsWith("[]")) {
                 return (T) Collections.emptyList();
             }
 
-            throw new UnsupportedOperationException("Cannot deserialize list of " + value);
+            throw new UnsupportedOperationException("Cannot deserialize list of " + entry);
         }
 
         Section section = (Section) source;
@@ -43,6 +42,19 @@ public final class ListComposer<T> implements Composer<T> {
         List<Object> result = new ArrayList<>();
 
         for (ConfigurationElement<?> element : section.getValue()) {
+            if (settings.isYamlLikeEnabled()) {
+                if (element instanceof Entry) {
+                    element = Entry.of(((Entry) element).getRecord().replaceFirst(CdnConstants.LIST, "").trim(), element.getDescription());
+                }
+                /*
+                else if (element instanceof Section) {
+                    Section sectionElement = (Section) element;
+                    element = new Section(sectionElement.getOperators(), CdnConstants.LIST + " " + element.getName(), sectionElement.getDescription(), sectionElement.getValue());
+                }
+                else throw new UnsupportedOperationException("Unsupported list component: " + element);
+                 */
+            }
+
             result.add(deserializer.deserialize(settings, element, collectionType, null, true));
         }
 
@@ -52,23 +64,32 @@ public final class ListComposer<T> implements Composer<T> {
     @Override
     @SuppressWarnings("unchecked")
     public ConfigurationElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
-        Section section = new Section(CdnConstants.ARRAY_SEPARATOR, key, description);
-
         Collection<Object> collection = (Collection<Object>) entity;
+
+        if (collection.isEmpty()) {
+            return Entry.ofPair(key, "[]", description);
+        }
+
         Type collectionType = CdnUtils.getGenericTypes(genericType)[0];
         Class<?> collectionTypeClass = CdnUtils.toClass(collectionType);
         Serializer<Object> serializer = CdnSerializer.getSerializer(settings, collectionTypeClass, null);
 
+        Section section = new Section(CdnConstants.ARRAY_SEPARATOR, key, description);
+
         for (Object element : collection) {
             ConfigurationElement<?> configurationElement = serializer.serialize(settings, Collections.emptyList(), "", collectionType, element);
 
-            if (configurationElement instanceof Entry) {
-                if (settings.isYamlLikeEnabled()) {
-                    configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord(), configurationElement.getDescription());
+            if (settings.isYamlLikeEnabled()) {
+                if (configurationElement instanceof Entry) {
+                    configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord().trim(), configurationElement.getDescription());
                 }
-            }
-            else {
-                throw new UnsupportedOperationException("#todo @makub");
+                /*
+                else if (configurationElement instanceof Section) {
+                    Section sectionElement = (Section) configurationElement;
+                    configurationElement = new Section(sectionElement.getOperators(), CdnConstants.LIST + " " + configurationElement.getName(), sectionElement.getDescription(), sectionElement.getValue());
+                }
+                else throw new UnsupportedOperationException("Unsupported list component: " + configurationElement);
+                 */
             }
 
             section.append(configurationElement);

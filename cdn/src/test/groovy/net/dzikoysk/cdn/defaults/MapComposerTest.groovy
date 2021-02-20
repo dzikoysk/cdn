@@ -73,4 +73,16 @@ class MapComposerTest {
         assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
     }
 
+
+    @Test
+    void 'should parse and render empty map' () {
+        def source = """
+        map: []
+        """.stripIndent().trim()
+
+        def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, source)
+        assertEquals(Collections.emptyMap(), configuration.map)
+        assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
+    }
+
 }

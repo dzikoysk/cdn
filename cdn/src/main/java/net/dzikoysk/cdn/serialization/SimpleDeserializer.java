@@ -10,13 +10,13 @@ import java.lang.reflect.Type;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean listEntry) {
+    default T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
         if (!(source instanceof Entry)) {
             throw new UnsupportedOperationException("Simple deserializer can deserialize only entries");
         }
 
         Entry entry = (Entry) source;
-        return deserializeEntry(listEntry ? entry.getRecord() : entry.getValue());
+        return deserializeEntry(entryAsRecord ? entry.getRecord() : entry.getValue());
     }
 
     T deserializeEntry(String source);
