@@ -116,4 +116,14 @@ final class CdnReaderTest {
         assertEquals 'd', result.getString('c', 'default')
     }
 
+    @Test
+    void 'should read lines with brackets' () {
+        def result = CDN.defaultYamlLikeInstance().parse('''
+        section:
+            key: {value}
+        ''')
+
+        assertEquals '{value}', result.getString('section.key', '')
+    }
+
 }

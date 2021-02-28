@@ -72,12 +72,11 @@ final class CdnReader {
             else if (!sections.isEmpty() && line.endsWith(sections.peek().getOperators()[1])) {
                 String lineBefore = trimSeparator(line);
 
-                if (!lineBefore.isEmpty()) {
-                    throw new UnsupportedOperationException("Unsupported section ending");
+                // skip values with section operators
+                if (lineBefore.isEmpty()) {
+                    sections.pop();
+                    continue;
                 }
-
-                sections.pop();
-                continue;
             }
 
             // add standard entry
