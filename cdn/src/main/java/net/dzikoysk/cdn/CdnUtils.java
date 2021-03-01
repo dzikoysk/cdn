@@ -56,6 +56,16 @@ public final class CdnUtils {
         return value;
     }
 
+    public static String stringify(String value) {
+        if (!value.startsWith("\"") && !value.endsWith("\"")) {
+            if (value.trim().length() != value.length() || value.endsWith(",")) {
+                return "\"" + value + "\"";
+            }
+        }
+
+        return value;
+    }
+
     static boolean isIgnored(Field field) {
         if (!Modifier.isPublic(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
             return true;

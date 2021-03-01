@@ -12,7 +12,7 @@ public interface SimpleDeserializer<T> extends Deserializer<T> {
     @Override
     default T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
         if (!(source instanceof Entry)) {
-            throw new UnsupportedOperationException("Simple deserializer can deserialize only entries");
+            throw new UnsupportedOperationException("Simple deserializer can deserialize only entries (" + genericType + " from " + source.getName() + ":" + source.getClass() + ")");
         }
 
         Entry entry = (Entry) source;

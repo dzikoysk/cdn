@@ -150,7 +150,9 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
     }
 
     public Option<String> getString(String key) {
-        return getEntry(key).map(Entry::getValue);
+        return getEntry(key)
+                .map(Entry::getValue)
+                .map(CdnUtils::destringify);
     }
 
     @Contract("_, null -> null")
