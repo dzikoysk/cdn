@@ -1,6 +1,5 @@
 # CDN ![CDN CI](https://github.com/dzikoysk/cdn/workflows/CDN%20CI/badge.svg)  [![Build Status](https://travis-ci.com/dzikoysk/cdn.svg?branch=master)](https://travis-ci.com/dzikoysk/cdn) [![Coverage Status](https://coveralls.io/repos/github/dzikoysk/cdn/badge.svg?branch=master)](https://coveralls.io/github/dzikoysk/cdn?branch=master) [![CodeFactor](https://www.codefactor.io/repository/github/dzikoysk/cdn/badge)](https://www.codefactor.io/repository/github/dzikoysk/cdn)
-CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON5 *(JSON for Humans)* format for Java projects.
-
+CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON5 *(JSON for Humans)* format for JVM based apps. Handles [CDN](https://github.com/dzikoysk/cdn), [JSON](https://www.json.org) and [YAML](https://yaml.org)-like configurations with built-in support for comments and automatic scheme updates.
 
 #### Features
 - [x] Simple and easy to use
@@ -8,9 +7,10 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 - [x] Supports Java, Kotlin and Groovy
 - [x] Performant and lightweight _(~ 90kB)_
 - [x] Respecting properties order and comment entries
-- [x] Bidirectional parse and compose of CDN sources
+- [x] Bidirectional parse and render of CDN sources
 - [x] Serialization and deserialization of Java entities 
 - [x] Indentation based configuration _(YAML-like)_
+- [x] Compatibility with JSON format
 - [x] [`@Contract` support](https://www.jetbrains.com/help/idea/contract-annotations.html)
 - [x] Null-safe querying API 
 - [x] 95%+ test coverage
@@ -128,7 +128,6 @@ Repository:
 ```
 
 #### Who's using
-
-* [Reposilite](https://github.com/dzikoysk/reposilite)
 * [Panda](https://github.com/panda-lang/panda)
+* [Reposilite](https://github.com/dzikoysk/reposilite)
 * [FunnyGuilds](https://github.com/FunnyGuilds/FunnyGuilds)
