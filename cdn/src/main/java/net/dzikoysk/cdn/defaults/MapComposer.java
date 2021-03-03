@@ -28,7 +28,7 @@ public final class MapComposer<T> implements Composer<T> {
             Entry entry = (Entry) source;
             String value = entryAsRecord ? entry.getRecord() : entry.getValue();
 
-            if (value.equals("[]")) {
+            if (value.equals("[]") || entry.getRecord().equals(value)) {
                 return (T) Collections.emptyMap();
             }
 

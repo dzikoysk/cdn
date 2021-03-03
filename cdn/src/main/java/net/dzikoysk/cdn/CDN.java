@@ -20,7 +20,7 @@ public final class CDN {
     }
 
     public <T> T parse(Class<T> scheme, String source) throws Exception {
-        return new CdnDeserializer<T>(this).deserialize(scheme, parse(source));
+        return new CdnDeserializer<T>(settings).deserialize(scheme, parse(source));
     }
 
     public String render(ConfigurationElement<?> element) {
@@ -28,7 +28,7 @@ public final class CDN {
     }
 
     public String render(Object entity) {
-        return render(new CdnSerializer(this).serialize(entity));
+        return render(new CdnSerializer(settings).serialize(entity));
     }
 
     public CdnSettings getSettings() {

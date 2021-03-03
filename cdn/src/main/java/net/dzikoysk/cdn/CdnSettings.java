@@ -48,7 +48,7 @@ public final class CdnSettings {
         deserializer(double.class, Double::parseDouble);
         deserializer(Double.class, Double::parseDouble);
         
-        deserializer(String.class, value -> CdnUtils.destringify(value));
+        deserializer(String.class, CdnUtils::destringify);
         serializer(String.class, value -> CdnUtils.stringify(value.toString()));
 
         ListComposer<Object> listComposer = new ListComposer<>();

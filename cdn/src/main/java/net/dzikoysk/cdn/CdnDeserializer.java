@@ -3,7 +3,7 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.entity.SectionLink;
-import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.entity.SectionValue;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
@@ -15,13 +15,13 @@ import java.lang.reflect.Field;
 
 public final class CdnDeserializer<T> {
 
-    private final CDN cdn;
+    private final CdnSettings settings;
 
-    CdnDeserializer(CDN cdn) {
-        this.cdn = cdn;
+    CdnDeserializer(CdnSettings settings) {
+        this.settings = settings;
     }
 
-    protected T deserialize(Class<T> scheme, Configuration content) throws Exception {
+    protected T deserialize(Class<T> scheme, Section content) throws Exception {
         T instance = scheme.getConstructor().newInstance();
         deserialize(instance, content);
 
@@ -33,9 +33,7 @@ public final class CdnDeserializer<T> {
         return instance;
     }
 
-    private void deserialize(Object instance, Section root) throws Exception {
-        CdnSettings settings = cdn.getSettings();
-
+    private Object deserialize(Object instance, Section root) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (CdnUtils.isIgnored(field)) {
                 continue;
@@ -55,18 +53,21 @@ public final class CdnDeserializer<T> {
             Object defaultValue = field.get(instance);
 
             if (field.isAnnotationPresent(SectionLink.class)) {
-                deserialize(field.get(instance), (Section) element);
+                deserialize(defaultValue, (Section) element);
                 continue;
             }
 
-            deserialize(cdn.getSettings(), instance, field, defaultValue, element);
+            deserialize(settings, instance, field, defaultValue, element);
         }
+
+        return instance;
     }
 
-    private void deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, ConfigurationElement<?> element) throws Exception {
+    private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, ConfigurationElement<?> element) throws Exception {
         Deserializer<Object> deserializer = getDeserializer(settings, field.getType(), field);
         Object value = deserializer.deserialize(settings, element, field.getGenericType(), defaultValue, false);
         field.set(instance, value);
+        return value;
     }
 
     public static Deserializer<Object> getDeserializer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
@@ -80,11 +81,17 @@ public final class CdnDeserializer<T> {
             deserializer = settings.getDeserializers().get(type);
         }
 
+        if (type.isAnnotationPresent(SectionValue.class)) {
+            CdnDeserializer<Object> sectionDeserializer = new CdnDeserializer<>(settings);
+
+            return (s, source, genericType, defaultValue, entryAsRecord) -> {
+                //noinspection unchecked
+                return sectionDeserializer.deserialize((Class<Object>) type, (Section) source);
+            };
+        }
+
         if (deserializer == null) {
-            throw new UnsupportedOperationException(
-                    "Missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "' type. Available deserializers: " +
-                            settings.getDeserializers().keySet().toString()
-            );
+            throw new UnsupportedOperationException("Missing deserializer for '" + type + "' type. Available deserializers: " + settings.getDeserializers().keySet().toString());
         }
 
         return deserializer;

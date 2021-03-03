@@ -3,6 +3,7 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.entity.SectionLink;
+import net.dzikoysk.cdn.entity.SectionValue;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 public final class CdnSerializer {
 
-    private final CDN cdn;
+    private final CdnSettings settings;
 
-    CdnSerializer(CDN cdn) {
-        this.cdn = cdn;
+    CdnSerializer(CdnSettings settings) {
+        this.settings = settings;
     }
 
     public Configuration serialize(Object entity) {
@@ -35,7 +36,7 @@ public final class CdnSerializer {
         return root;
     }
 
-    private void serialize(Section root, Object entity) throws Exception {
+    private Section serialize(Section root, Object entity) throws Exception {
         Class<?> scheme = entity.getClass();
 
         for (Field field : scheme.getDeclaredFields()) {
@@ -54,11 +55,12 @@ public final class CdnSerializer {
                 continue;
             }
 
-            Serializer<Object> serializer = getSerializer(cdn.getSettings(), field.getType(), field);
-            root.append(serializer.serialize(cdn.getSettings(), description, field.getName(), field.getGenericType(), field.get(entity)));
+            Serializer<Object> serializer = getSerializer(settings, field.getType(), field);
+            root.append(serializer.serialize(settings, description, field.getName(), field.getGenericType(), field.get(entity)));
         }
-    }
 
+        return root;
+    }
 
     public static Serializer<Object> getSerializer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
         Serializer<Object> serializer = null;
@@ -74,6 +76,15 @@ public final class CdnSerializer {
                     break;
                 }
             }
+        }
+
+        if (type.isAnnotationPresent(SectionValue.class)) {
+            CdnSerializer sectionSerializer = new CdnSerializer(settings);
+
+            return (s, description, key, genericType, entity) -> {
+                Section section = new Section(CdnConstants.OBJECT_SEPARATOR, key, description);
+                return sectionSerializer.serialize(section, entity);
+            };
         }
 
         if (serializer == null) {
