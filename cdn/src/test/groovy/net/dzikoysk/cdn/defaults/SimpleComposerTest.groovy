@@ -11,13 +11,18 @@ class SimpleComposerTest {
         @Description('# Separator with space')
         public String separator = ", "
 
+        public String empty = ""
+
     }
 
+    // Make sure that these tricky values are properly handled by CDN
+    // ~ https://github.com/dzikoysk/cdn/issues/40 - comma operator
+    // ~ https://github.com/dzikoysk/cdn/issues/43 - empty strings
     @Test
-    void 'should' () {
+    void 'should properly serialize and deserialize empty value, value with comma and values with spaces' () {
         String currentSource = CDN.defaultYamlLikeInstance().render(new Configuration())
 
-        1.upto(5) {
+        1.upto(3) {
             println(currentSource)
             def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, currentSource)
             currentSource = CDN.defaultYamlLikeInstance().render(configuration)

@@ -28,6 +28,7 @@ public final class CdnUtils {
     public static Class<?>[] getGenericClasses(Field field) {
         return getGenericClasses(field.getGenericType());
     }
+
     public static Class<?>[] getGenericClasses(Type type) {
         return Arrays.stream(getGenericTypes(type))
                 .map(CdnUtils::toClass)
@@ -58,7 +59,7 @@ public final class CdnUtils {
 
     public static String stringify(String value) {
         if (!value.startsWith("\"") && !value.endsWith("\"")) {
-            if (value.trim().length() != value.length() || value.endsWith(",")) {
+            if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",")) {
                 return "\"" + value + "\"";
             }
         }
