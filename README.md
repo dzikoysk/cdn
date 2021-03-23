@@ -5,7 +5,7 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 - [x] Simple and easy to use
 - [x] Automatic structure updates
 - [x] Supports Java, Kotlin and Groovy
-- [x] Performant and lightweight _(~ 90kB)_
+- [x] Performant and lightweight _(~ 45kB)_
 - [x] Respecting properties order and comment entries
 - [x] Bidirectional parse and render of CDN sources
 - [x] Serialization and deserialization of Java entities 
