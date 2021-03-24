@@ -1,16 +1,19 @@
 package net.dzikoysk.cdn.formats
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.converters.YamlConverter
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-final class YamlFormatterTest {
+final class YamlConverterTest {
+
+    private final YamlConverter converter = new YamlConverter()
 
     @Test
     void 'should convert indentation to brackets' () {
-        def prettier = new YamlFormatter("""
+        def source = """
         key: value
         
         section:
@@ -18,7 +21,7 @@ final class YamlFormatterTest {
             subKey: value
           # comment
           key: value
-        """.stripIndent().trim())
+        """.stripIndent().trim()
 
         assertEquals("""\
         key: value
@@ -30,7 +33,7 @@ final class YamlFormatterTest {
           # comment
           key: value
         }
-        """.stripIndent(), prettier.tryToConvertIndentationInADumbWay())
+        """.stripIndent(), converter.convertToCdn(source))
     }
 
 }
