@@ -1,5 +1,6 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.formats.JsonFormatter;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 
@@ -16,7 +17,7 @@ public final class CDN {
     }
 
     public Configuration parseJson(String source) {
-        return parse(new CdnPrettier(source).tryToInsertNewLinesInADumbWay());
+        return parse(new JsonFormatter(source).convertJsonToCdn());
     }
 
     public <T> T parse(Class<T> scheme, String source) throws Exception {

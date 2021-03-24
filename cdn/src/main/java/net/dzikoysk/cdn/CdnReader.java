@@ -1,5 +1,6 @@
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.formats.YamlFormatter;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 import net.dzikoysk.cdn.model.Entry;
@@ -26,7 +27,7 @@ final class CdnReader {
 
     public Configuration read(String source) {
         if (settings.isYamlLikeEnabled()) {
-            source = new CdnPrettier(source).tryToConvertIndentationInADumbWay();
+            source = new YamlFormatter(source).tryToConvertIndentationInADumbWay();
         }
 
         // replace system-dependent line separators with unified one
