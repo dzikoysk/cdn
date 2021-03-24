@@ -4,7 +4,7 @@ CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON
 #### Features
 - [x] Simple and easy to use
 - [x] Automatic structure updates
-- [x] Supports Java, Kotlin and Groovy
+- [x] Supports Java, Kotlin _(dedicated wrapper)_ and Groovy
 - [x] Performant and lightweight _(~ 45kB)_
 - [x] Respecting properties order and comment entries
 - [x] Bidirectional parse and render of CDN sources
@@ -110,6 +110,17 @@ The output looks exactly like the input above.
 
 #### Maven
 
+Repository:
+
+```xml
+<repository>
+    <id>panda-repository</id>
+    <url>https://repo.panda-lang.org/releases</url>
+</repository>
+```
+
+Default artifact:
+
 ```xml
 <dependency>
     <groupId>net.dzikoysk</groupId>
@@ -118,13 +129,14 @@ The output looks exactly like the input above.
 </dependency>
 ```
 
-Repository:
+Kotlin extension:
 
 ```xml
-<repository>
-    <id>panda-repository</id>
-    <url>https://repo.panda-lang.org/releases</url>
-</repository>
+<dependency>
+    <groupId>net.dzikoysk</groupId>
+    <artifactId>cdn-kt</artifactId>
+    <version>1.6.6</version>
+</dependency>
 ```
 
 #### Who's using

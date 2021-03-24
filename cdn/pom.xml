@@ -3,7 +3,7 @@
     <parent>
         <artifactId>cdn-parent</artifactId>
         <groupId>net.dzikoysk</groupId>
-        <version>1.6.6</version>
+        <version>1.7.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,8 +20,9 @@
         <dependency>
             <groupId>org.panda-lang</groupId>
             <artifactId>panda-utilities</artifactId>
-            <version>0.2.1-alpha</version>
+            <version>0.4.0-alpha</version>
         </dependency>
+
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
@@ -63,6 +64,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <minimizeJar>true</minimizeJar>
+                </configuration>
             </plugin>
         </plugins>
     </build>
