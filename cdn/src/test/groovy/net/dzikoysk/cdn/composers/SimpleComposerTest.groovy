@@ -1,6 +1,6 @@
 package net.dzikoysk.cdn.defaults
 
-import net.dzikoysk.cdn.CDN
+import net.dzikoysk.cdn.Cdn
 import net.dzikoysk.cdn.entity.Description
 import org.junit.jupiter.api.Test
 
@@ -20,12 +20,12 @@ class SimpleComposerTest {
     // ~ https://github.com/dzikoysk/cdn/issues/43 - empty strings
     @Test
     void 'should properly serialize and deserialize empty value, value with comma and values with spaces' () {
-        String currentSource = CDN.defaultYamlLikeInstance().render(new Configuration())
+        String currentSource = Cdn.defaultYamlLikeInstance().render(new Configuration())
 
         1.upto(3) {
             println(currentSource)
-            def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, currentSource)
-            currentSource = CDN.defaultYamlLikeInstance().render(configuration)
+            def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, currentSource)
+            currentSource = Cdn.defaultYamlLikeInstance().render(configuration)
         }
     }
 

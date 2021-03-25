@@ -1,6 +1,6 @@
 package net.dzikoysk.cdn.defaults
 
-import net.dzikoysk.cdn.CDN
+import net.dzikoysk.cdn.Cdn
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -27,9 +27,9 @@ class ListComposerTest {
             "b"
         ]
 
-        def configuration = CDN.defaultInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
         assertEquals(list, configuration.list)
-        assertEquals(source, CDN.defaultInstance().render(configuration))
+        assertEquals(source, Cdn.defaultInstance().render(configuration))
     }
 
 
@@ -46,9 +46,9 @@ class ListComposerTest {
             "b"
         ]
 
-        def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
         assertEquals(list, configuration.list)
-        assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
     }
 
     @Test
@@ -57,9 +57,9 @@ class ListComposerTest {
         list: []
         """.stripIndent().trim()
 
-        def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
         assertEquals(Collections.emptyList(), configuration.list)
-        assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
     }
 
 }

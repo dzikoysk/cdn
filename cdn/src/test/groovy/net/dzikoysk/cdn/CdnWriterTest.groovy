@@ -16,7 +16,7 @@ class CdnWriterTest {
         assertEquals """
         # description
         key: value
-        """.stripIndent().trim(), CDN.defaultInstance().render(entry)
+        """.stripIndent().trim(), Cdn.defaultInstance().render(entry)
     }
 
     @Test
@@ -27,7 +27,7 @@ class CdnWriterTest {
         # description
         section {
         }
-        """.stripIndent().trim(), CDN.defaultInstance().render(section)
+        """.stripIndent().trim(), Cdn.defaultInstance().render(section)
     }
 
     @Test
@@ -46,12 +46,12 @@ class CdnWriterTest {
             entry: value
           }
         }
-        """.stripIndent().trim(), CDN.defaultInstance().render(section)
+        """.stripIndent().trim(), Cdn.defaultInstance().render(section)
     }
 
     @Test
     void 'should compose indentation based source' () {
-        def cdn = CDN.configure()
+        def cdn = Cdn.configure()
             .enableYamlLikeFormatting()
             .build()
 
@@ -69,7 +69,7 @@ class CdnWriterTest {
     @Test
     void 'should replace simple placeholder' () {
         def entry = Entry.of('key: value', ['# ${{placeholder}}' ])
-        def cdn = CDN.configure()
+        def cdn = Cdn.configure()
             .registerPlaceholders([ 'placeholder': 'dance with me' ])
             .build()
 

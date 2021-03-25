@@ -1,7 +1,7 @@
 package net.dzikoysk.cdn.defaults
 
 import groovy.transform.EqualsAndHashCode
-import net.dzikoysk.cdn.CDN
+import net.dzikoysk.cdn.Cdn
 import net.dzikoysk.cdn.entity.SectionValue
 import org.junit.jupiter.api.Test
 
@@ -41,9 +41,9 @@ class MapComposerTest {
             ]
         ]
 
-        def configuration = CDN.defaultInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
         assertEquals(map, configuration.map)
-        assertEquals(source, CDN.defaultInstance().render(configuration))
+        assertEquals(source, Cdn.defaultInstance().render(configuration))
     }
 
 
@@ -70,9 +70,9 @@ class MapComposerTest {
             ]
         ]
 
-        def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
         assertEquals(map, configuration.map)
-        assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
     }
 
 
@@ -82,9 +82,9 @@ class MapComposerTest {
         map: []
         """.stripIndent().trim()
 
-        def configuration = CDN.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
         assertEquals(Collections.emptyMap(), configuration.map)
-        assertEquals(source, CDN.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
     }
 
     @Test
@@ -98,8 +98,8 @@ class MapComposerTest {
         ]
         """.stripIndent().trim()
 
-        def configuration = CDN.defaultInstance().parse(Configuration.class, source)
-        println CDN.defaultYamlLikeInstance().render(configuration)
+        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
+        println Cdn.defaultYamlLikeInstance().render(configuration)
     }
 
 
@@ -141,9 +141,9 @@ class MapComposerTest {
                 "second": second
         ]
 
-        def configuration = CDN.defaultInstance().parse(ConfigurationWithSection.class, source)
+        def configuration = Cdn.defaultInstance().parse(ConfigurationWithSection.class, source)
         assertEquals(map, configuration.groups)
-        assertEquals(source, CDN.defaultInstance().render(configuration))
+        assertEquals(source, Cdn.defaultInstance().render(configuration))
     }
 
 }

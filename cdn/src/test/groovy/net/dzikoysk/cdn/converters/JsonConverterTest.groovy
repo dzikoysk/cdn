@@ -1,8 +1,7 @@
 package net.dzikoysk.cdn.converters
 
 import groovy.transform.CompileStatic
-import net.dzikoysk.cdn.CDN
-import net.dzikoysk.cdn.converters.JsonConverter
+import net.dzikoysk.cdn.Cdn
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -29,7 +28,7 @@ final class JsonConverterTest {
         }
         """.stripIndent().trim(), source)
 
-        def configuration = CDN.defaultInstance().parse(source)
+        def configuration = Cdn.defaultInstance().parse(source)
         def list = configuration.getSection('list').get()
         assertEquals 2, list.size()
     }
@@ -37,7 +36,7 @@ final class JsonConverterTest {
     @Test
     void 'should convert json like list' () {
         def source = converter.convertToCdn('{ "list": [ "a", "b", "c" ] }')
-        assertEquals([ 'a', 'b', 'c' ], CDN.defaultInstance().parse(source).getList('list', [ 'default' ]))
+        assertEquals([ 'a', 'b', 'c' ], Cdn.defaultInstance().parse(source).getList('list', ['default' ]))
     }
 
     @Test

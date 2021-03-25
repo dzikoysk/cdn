@@ -28,7 +28,7 @@ class CdnSerializerTest {
             count: 3070
           }
         }
-        """.stripIndent().trim(), CDN.defaultInstance().render(new TestConfiguration())
+        """.stripIndent().trim(), Cdn.defaultInstance().render(new TestConfiguration())
     }
 
     @Test
@@ -49,7 +49,7 @@ class CdnSerializerTest {
           custom:
             id: rtx
             count: 3070
-        """.stripIndent().trim(), CDN.configure().enableYamlLikeFormatting().build().render(new TestConfiguration())
+        """.stripIndent().trim(), Cdn.configure().enableYamlLikeFormatting().build().render(new TestConfiguration())
     }
 
 }

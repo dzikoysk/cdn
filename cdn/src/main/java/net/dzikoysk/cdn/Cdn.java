@@ -4,11 +4,11 @@ import net.dzikoysk.cdn.converters.JsonConverter;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.ConfigurationElement;
 
-public final class CDN {
+public final class Cdn {
 
     private final CdnSettings settings;
 
-    CDN(CdnSettings settings) {
+    Cdn(CdnSettings settings) {
         this.settings = settings;
     }
 
@@ -40,11 +40,11 @@ public final class CDN {
         return new CdnSettings();
     }
 
-    public static CDN defaultInstance() {
+    public static Cdn defaultInstance() {
         return configure().build();
     }
 
-    public static CDN defaultYamlLikeInstance() {
+    public static Cdn defaultYamlLikeInstance() {
         return configure()
                 .enableYamlLikeFormatting()
                 .build();

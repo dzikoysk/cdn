@@ -1,4 +1,4 @@
-package net.dzikoysk.cdn.defaults;
+package net.dzikoysk.cdn.composers;
 
 import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnDeserializer;

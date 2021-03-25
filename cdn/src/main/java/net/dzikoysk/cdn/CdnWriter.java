@@ -10,9 +10,9 @@ import java.util.Map;
 
 final class CdnWriter {
 
-    private final CDN cdn;
+    private final Cdn cdn;
 
-    CdnWriter(CDN cdn) {
+    CdnWriter(Cdn cdn) {
         this.cdn = cdn;
     }
 

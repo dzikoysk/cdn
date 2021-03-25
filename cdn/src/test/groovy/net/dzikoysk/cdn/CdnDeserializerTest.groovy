@@ -8,7 +8,7 @@ class CdnDeserializerTest {
 
     @Test
     void 'should deserialize source into scheme' () {
-        def configuration = CDN.defaultInstance().parse(TestConfiguration.class, """
+        def configuration = Cdn.defaultInstance().parse(TestConfiguration.class, """
         rootEntry: custom value
         section: {
           subEntry: 7

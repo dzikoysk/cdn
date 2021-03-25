@@ -1,7 +1,7 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.defaults.ListComposer;
-import net.dzikoysk.cdn.defaults.MapComposer;
+import net.dzikoysk.cdn.composers.ListComposer;
+import net.dzikoysk.cdn.composers.MapComposer;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
@@ -110,8 +110,8 @@ public final class CdnSettings {
         return serializers;
     }
 
-    public CDN build() {
-        return new CDN(this);
+    public Cdn build() {
+        return new Cdn(this);
     }
 
 }

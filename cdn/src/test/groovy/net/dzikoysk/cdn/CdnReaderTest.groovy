@@ -10,7 +10,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should return entry' () {
-        def result = CDN.defaultInstance().parse('key: value')
+        def result = Cdn.defaultInstance().parse('key: value')
         def entry = result.getEntry('key').get()
         assertEquals 'key', entry.getName()
         assertEquals 'value', entry.getValue()
@@ -18,7 +18,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = CDN.defaultInstance().parse('''
+        def result = Cdn.defaultInstance().parse('''
         # comment1
         // comment2
         section {
@@ -37,7 +37,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should return nested section' () {
-        def result = CDN.defaultInstance().parse('''
+        def result = Cdn.defaultInstance().parse('''
         # c1
         s1 {
             # c2
@@ -52,13 +52,13 @@ final class CdnReaderTest {
 
     @Test
     void 'should skip empty lines' () {
-        def result = CDN.defaultInstance().parse('')
+        def result = Cdn.defaultInstance().parse('')
         assertTrue result.getValue().isEmpty()
     }
 
     @Test
     void 'should use prettier' () {
-        def cdn = CDN.configure()
+        def cdn = Cdn.configure()
             .enableYamlLikeFormatting()
             .build()
 
@@ -72,7 +72,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should read quoted key and value' () {
-        def result = CDN.defaultInstance().parse('''
+        def result = Cdn.defaultInstance().parse('''
         " key ": " value "
         ''')
 
@@ -86,7 +86,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should read empty yaml list' () {
-        def result = CDN.defaultInstance().parse(ConfigTest.class, '''
+        def result = Cdn.defaultInstance().parse(ConfigTest.class, '''
         list: []
         ''')
 
@@ -95,7 +95,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should remove semicolons' () {
-        def result = CDN.defaultInstance().parse("""
+        def result = Cdn.defaultInstance().parse("""
         a: b,
         c: d
         """)
@@ -105,7 +105,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should ignore empty root section' () {
-        def result = CDN.defaultInstance().parse("""
+        def result = Cdn.defaultInstance().parse("""
         {
           "a": "b",
           "c": "d"
@@ -118,7 +118,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should read lines with brackets' () {
-        def result = CDN.defaultYamlLikeInstance().parse('''
+        def result = Cdn.defaultYamlLikeInstance().parse('''
         section:
             key: {value}
         ''')
