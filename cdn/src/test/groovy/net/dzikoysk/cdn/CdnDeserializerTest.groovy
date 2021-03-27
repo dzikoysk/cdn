@@ -1,26 +1,28 @@
 package net.dzikoysk.cdn
 
+import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
+@CompileStatic
 class CdnDeserializerTest {
 
     @Test
     void 'should deserialize source into scheme' () {
-        def configuration = Cdn.defaultInstance().parse(TestConfiguration.class, """
+        def configuration = CdnFactory.createStandard().load("""
         rootEntry: custom value
-        section: {
+        section {
           subEntry: 7
-          list: [
+          list [
             key: value
             value
           ],
-          custom: {
+          custom {
             count: 3080
           }
         }
-        """)
+        """, TestConfiguration.class)
 
         assertEquals 'custom value', configuration.rootEntry
         assertEquals 7, configuration.section.subEntry

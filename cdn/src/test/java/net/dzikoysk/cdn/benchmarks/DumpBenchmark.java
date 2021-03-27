@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import net.dzikoysk.cdn.Cdn;
+import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.entity.SectionLink;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
@@ -33,14 +34,14 @@ public class DumpBenchmark extends BenchmarkSpec {
 
     }
 
-    private static final Cdn CDN = Cdn.defaultInstance();
+    private static final Cdn CDN = CdnFactory.createStandard();
     private static final Gson GSON = new Gson();
     private static final Yaml YAML = new Yaml();
     private static final ObjectMapper JACKSON = new ObjectMapper();
 
     @Benchmark
     public String cdn() {
-        return Cdn.defaultInstance().render(new Entity());
+        return CdnFactory.createStandard().render(new Entity());
     }
 
     @Benchmark

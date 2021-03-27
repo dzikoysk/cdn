@@ -1,12 +1,15 @@
-package net.dzikoysk.cdn.defaults
+package net.dzikoysk.cdn.composers
 
+import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import net.dzikoysk.cdn.Cdn
+import net.dzikoysk.cdn.CdnFactory
 import net.dzikoysk.cdn.entity.SectionValue
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
+@CompileStatic
 class MapComposerTest {
 
     static class Configuration {
@@ -14,7 +17,10 @@ class MapComposerTest {
         public Map<Integer, Map<Integer, String>> map = Collections.emptyMap()
         
     }
-    
+
+    private final Cdn cdn = CdnFactory.createStandard()
+    private final Cdn yaml = CdnFactory.createYamlLike()
+
     @Test
     void 'should parse and compose maps' () {
         def source = """
@@ -41,9 +47,9 @@ class MapComposerTest {
             ]
         ]
 
-        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
+        def configuration = cdn.load(source, Configuration.class)
         assertEquals(map, configuration.map)
-        assertEquals(source, Cdn.defaultInstance().render(configuration))
+        assertEquals(source, cdn.render(configuration))
     }
 
 
@@ -70,9 +76,9 @@ class MapComposerTest {
             ]
         ]
 
-        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = yaml.load(source, Configuration.class)
         assertEquals(map, configuration.map)
-        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, yaml.render(configuration))
     }
 
 
@@ -82,11 +88,12 @@ class MapComposerTest {
         map: []
         """.stripIndent().trim()
 
-        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = yaml.load(source, Configuration.class)
         assertEquals(Collections.emptyMap(), configuration.map)
-        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, yaml.render(configuration))
     }
 
+    /* ???
     @Test
     void 'should generate only with keys' () {
         def source = """
@@ -98,10 +105,10 @@ class MapComposerTest {
         ]
         """.stripIndent().trim()
 
-        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
-        println Cdn.defaultYamlLikeInstance().render(configuration)
+        def configuration = cdn.load(source, Configuration.class)
+        println yaml.render(configuration)
     }
-
+    */
 
     static class ConfigurationWithSection {
 
@@ -141,9 +148,9 @@ class MapComposerTest {
                 "second": second
         ]
 
-        def configuration = Cdn.defaultInstance().parse(ConfigurationWithSection.class, source)
+        def configuration = cdn.load(source, ConfigurationWithSection.class)
         assertEquals(map, configuration.groups)
-        assertEquals(source, Cdn.defaultInstance().render(configuration))
+        assertEquals(source, cdn.render(configuration))
     }
 
 }

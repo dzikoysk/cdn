@@ -2,15 +2,17 @@ package net.dzikoysk.cdn.composers;
 
 import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnDeserializer;
+import net.dzikoysk.cdn.CdnFeature;
 import net.dzikoysk.cdn.CdnSerializer;
 import net.dzikoysk.cdn.CdnSettings;
-import net.dzikoysk.cdn.CdnUtils;
-import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.NamedElement;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
+import net.dzikoysk.cdn.utils.GenericUtils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,11 +24,11 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
-            if (entry.getRecord().trim().endsWith("[]")) {
+            if (entry.getUnitValue().trim().endsWith("[]")) {
                 return (T) Collections.emptyList();
             }
 
@@ -35,24 +37,15 @@ public final class ListComposer<T> implements Composer<T> {
 
         Section section = (Section) source;
 
-        Type collectionType = CdnUtils.getGenericTypes(genericType)[0];
-        Class<?> collectionTypeClass = CdnUtils.toClass(collectionType);
+        Type collectionType = GenericUtils.getGenericTypes(genericType)[0];
+        Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
 
         Deserializer<Object> deserializer = CdnDeserializer.getDeserializer(settings, collectionTypeClass, null);
         List<Object> result = new ArrayList<>();
 
-        for (ConfigurationElement<?> element : section.getValue()) {
-            if (settings.isYamlLikeEnabled()) {
-                if (element instanceof Entry) {
-                    element = Entry.of(((Entry) element).getRecord().replaceFirst(CdnConstants.LIST, "").trim(), element.getDescription());
-                }
-                /*
-                else if (element instanceof Section) {
-                    Section sectionElement = (Section) element;
-                    element = new Section(sectionElement.getOperators(), CdnConstants.LIST + " " + element.getName(), sectionElement.getDescription(), sectionElement.getValue());
-                }
-                else throw new UnsupportedOperationException("Unsupported list component: " + element);
-                 */
+        for (Element<?> element : section.getValue()) {
+            for (CdnFeature feature : settings.getFeatures()) {
+                element = feature.resolveArrayValue(element);
             }
 
             result.add(deserializer.deserialize(settings, element, collectionType, null, true));
@@ -63,36 +56,27 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public ConfigurationElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
         Collection<Object> collection = (Collection<Object>) entity;
 
         if (collection.isEmpty()) {
-            return Entry.ofPair(key, "[]", description);
+            return new Entry(description, key, "[]");
         }
 
-        Type collectionType = CdnUtils.getGenericTypes(genericType)[0];
-        Class<?> collectionTypeClass = CdnUtils.toClass(collectionType);
+        Type collectionType = GenericUtils.getGenericTypes(genericType)[0];
+        Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
         Serializer<Object> serializer = CdnSerializer.getSerializer(settings, collectionTypeClass, null);
 
-        Section section = new Section(CdnConstants.ARRAY_SEPARATOR, key, description);
+        Section section = new Section(description, CdnConstants.ARRAY_SEPARATOR, key);
 
         for (Object element : collection) {
-            ConfigurationElement<?> configurationElement = serializer.serialize(settings, Collections.emptyList(), "", collectionType, element);
+            Element<?> serializedElement = serializer.serialize(settings, Collections.emptyList(), "", collectionType, element);
 
-            if (settings.isYamlLikeEnabled()) {
-                if (configurationElement instanceof Entry) {
-                    configurationElement = Entry.of(CdnConstants.LIST + " " + ((Entry) configurationElement).getRecord().trim(), configurationElement.getDescription());
-                }
-                /*
-                else if (configurationElement instanceof Section) {
-                    Section sectionElement = (Section) configurationElement;
-                    configurationElement = new Section(sectionElement.getOperators(), CdnConstants.LIST + " " + configurationElement.getName(), sectionElement.getDescription(), sectionElement.getValue());
-                }
-                else throw new UnsupportedOperationException("Unsupported list component: " + configurationElement);
-                 */
+            for (CdnFeature feature : settings.getFeatures()) {
+                serializedElement = feature.visitArrayValue(serializedElement);
             }
 
-            section.append(configurationElement);
+            section.append(serializedElement);
         }
 
         return section;

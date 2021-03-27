@@ -1,13 +1,12 @@
-package net.dzikoysk.cdn.converters;
+package net.dzikoysk.cdn.features;
 
 import net.dzikoysk.cdn.CdnConstants;
-import net.dzikoysk.cdn.CdnConverter;
 import org.panda_lang.utilities.commons.CharacterUtils;
 import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.Stack;
 
-public final class JsonConverter implements CdnConverter {
+public final class JsonFeature extends DefaultFeature {
 
     private static final char[] SEQUENCES = { '"', '\''};
     private static final char[] OPENING_OPERATORS = { '{', '[' };

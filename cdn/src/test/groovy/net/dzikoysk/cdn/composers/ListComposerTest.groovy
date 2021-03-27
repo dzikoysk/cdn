@@ -1,10 +1,12 @@
-package net.dzikoysk.cdn.defaults
+package net.dzikoysk.cdn.composers
 
-import net.dzikoysk.cdn.Cdn
+import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.CdnFactory
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
+@CompileStatic
 class ListComposerTest {
 
     static class Configuration {
@@ -27,28 +29,9 @@ class ListComposerTest {
             "b"
         ]
 
-        def configuration = Cdn.defaultInstance().parse(Configuration.class, source)
+        def configuration = CdnFactory.createStandard().load(source, Configuration.class)
         assertEquals(list, configuration.list)
-        assertEquals(source, Cdn.defaultInstance().render(configuration))
-    }
-
-
-    @Test
-    void 'should parse and render yaml like lists' () {
-        def source = """
-        list:
-          - a
-          - b
-        """.stripIndent().trim()
-
-        def list = [
-            "a",
-            "b"
-        ]
-
-        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
-        assertEquals(list, configuration.list)
-        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, CdnFactory.createStandard().render(configuration))
     }
 
     @Test
@@ -57,9 +40,9 @@ class ListComposerTest {
         list: []
         """.stripIndent().trim()
 
-        def configuration = Cdn.defaultYamlLikeInstance().parse(Configuration.class, source)
+        def configuration = CdnFactory.createYamlLike().load(source, Configuration.class)
         assertEquals(Collections.emptyList(), configuration.list)
-        assertEquals(source, Cdn.defaultYamlLikeInstance().render(configuration))
+        assertEquals(source, CdnFactory.createYamlLike().render(configuration))
     }
 
 }

@@ -1,10 +1,11 @@
 package net.dzikoysk.cdn
 
-
+import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
+@CompileStatic
 class CdnSerializerTest {
 
     @Test
@@ -28,7 +29,7 @@ class CdnSerializerTest {
             count: 3070
           }
         }
-        """.stripIndent().trim(), Cdn.defaultInstance().render(new TestConfiguration())
+        """.stripIndent().trim(), CdnFactory.createStandard().render(new TestConfiguration())
     }
 
     @Test
@@ -49,7 +50,7 @@ class CdnSerializerTest {
           custom:
             id: rtx
             count: 3070
-        """.stripIndent().trim(), Cdn.configure().enableYamlLikeFormatting().build().render(new TestConfiguration())
+        """.stripIndent().trim(), CdnFactory.createYamlLike().render(new TestConfiguration())
     }
 
 }

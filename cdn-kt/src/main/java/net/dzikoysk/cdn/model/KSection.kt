@@ -1,9 +1,9 @@
 package net.dzikoysk.cdn.model
 
-open class KSection(val section: Section) : KConfigurationElement<MutableList<out ConfigurationElement<*>>>(section) {
+open class KSection(val section: Section) : KNamedElement<MutableList<out Element<*>>>(section) {
 
-    fun <E : KConfigurationElement<*>> append(element: E): E {
-        section.append(element.configurationElement)
+    fun <E : KNamedElement<*>> append(element: E): E {
+        section.append(element.namedElement)
         return element
     }
 
@@ -11,13 +11,11 @@ open class KSection(val section: Section) : KConfigurationElement<MutableList<ou
 
     fun size(): Int = section.size()
 
-    fun get(index: Int): KConfigurationElement<*>? = section.get(index).orNull?.let { KConfigurationElement(it) }
+    fun get(index: Int): KElement<*>? = section.get(index).orNull?.let { KElement(it) }
 
-    fun get(key: String): KConfigurationElement<*>? = section.get(key).orNull?.let { KConfigurationElement(it) }
+    fun get(key: String): KElement<*>? = section.get(key).orNull?.let { KElement(it) }
 
     fun getList(key: String): List<String>? = section.getList(key).orNull
-
-    fun getList(): List<String> = section.list
 
     fun getBoolean(key: String): Boolean? = section.getBoolean(key).orNull
 

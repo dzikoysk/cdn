@@ -49,7 +49,7 @@ public final class CdnSerializer {
                     .collect(Collectors.toList());
 
             if (field.isAnnotationPresent(SectionLink.class)) {
-                Section section = new Section(CdnConstants.OBJECT_SEPARATOR, field.getName(), description);
+                Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, field.getName());
                 root.append(section);
                 serialize(section, field.get(entity));
                 continue;
@@ -82,7 +82,7 @@ public final class CdnSerializer {
             CdnSerializer sectionSerializer = new CdnSerializer(settings);
 
             return (s, description, key, genericType, entity) -> {
-                Section section = new Section(CdnConstants.OBJECT_SEPARATOR, key, description);
+                Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, key);
                 return sectionSerializer.serialize(section, entity);
             };
         }

@@ -1,9 +1,11 @@
 package net.dzikoysk.cdn
 
+import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.entity.SectionLink
 import net.dzikoysk.cdn.entity.CustomComposer
 
+@CompileStatic
 class TestConfiguration {
 
     @Description('# Root entry description')

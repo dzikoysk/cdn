@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.*
 @CompileStatic
 final class SectionTest {
 
-    static final Section SECTION = new Section('name', ['# comment' ], [
-        new Section("sub", [], [
-            Entry.of("entry: value", []),
-            Entry.of("int-entry: 7", []),
-            Entry.ofPair('boolKey', 'true', [])
+    static final Section SECTION = new Section([ '# comment' ], 'name', [
+        new Section([], "sub", [
+            new Entry([], "entry", "value"),
+            new Entry([], "int-entry", "7"),
+            new Entry([], 'boolKey', 'true')
         ])
     ])
 
@@ -55,33 +55,11 @@ final class SectionTest {
 
     @Test
     void 'should append sub element' () {
-        Section section = new Section('section', [])
+        Section section = new Section([], 'section')
         assertTrue section.getValue().isEmpty()
 
-        section.append(Entry.of('entry: value', []))
+        section.append(new Entry([], 'entry', 'value'))
         assertEquals 1, section.getValue().size()
-    }
-
-    @Test
-    void 'should return list' () {
-        Section section = new Section('section', [], [
-            new Section('list', [], [
-                Entry.of('record 1', []),
-                Entry.of('- record 2 : with semicolon', [])
-            ])
-        ])
-
-        assertEquals(['record 1', '- record 2 : with semicolon'], section.getList('list', [ 'default' ]))
-    }
-
-    @Test
-    void 'should remove list operators' () {
-        Section section = new Section('list', [], [
-            Entry.of('- val1 ', []),
-            Entry.of('- " val2 "', [])
-        ])
-
-        assertEquals(['val1', ' val2 '], section.getList())
     }
 
 }

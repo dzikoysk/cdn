@@ -1,12 +1,14 @@
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.model.ConfigurationElement
+import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.model.Element
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serialization.Composer
 
 import java.lang.reflect.Type
 
+@CompileStatic
 class TestConfigurationCustomObject {
 
     private final String id
@@ -28,7 +30,7 @@ class TestConfigurationCustomObject {
     static class CustomObjectComposer implements Composer<TestConfigurationCustomObject> {
 
         @Override
-        TestConfigurationCustomObject deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
+        TestConfigurationCustomObject deserialize(CdnSettings settings, Element<?> source, Type genericType, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
             if (!(source instanceof Section)) {
                 throw new IllegalArgumentException('Unsupported element')
             }
@@ -41,11 +43,11 @@ class TestConfigurationCustomObject {
         }
 
         @Override
-        ConfigurationElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, TestConfigurationCustomObject entity) {
-            def section = new Section(key, description)
-            section.append(Entry.ofPair('id', entity.id, []))
-            section.append(Entry.ofPair('count', entity.count, []))
-            return section;
+        Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, TestConfigurationCustomObject entity) {
+            def section = new Section(description, key)
+            section.append(new Entry([], 'id', entity.id))
+            section.append(new Entry([], 'count', entity.count.toString()))
+            return section
         }
     }
 

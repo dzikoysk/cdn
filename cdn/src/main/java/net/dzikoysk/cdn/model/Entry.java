@@ -1,43 +1,23 @@
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
-import org.panda_lang.utilities.commons.StringUtils;
-
 import java.util.List;
 
-public final class Entry extends AbstractConfigurationElement<String> {
+public class Entry extends AbstractNamedElement<Unit> {
 
-    private final String record;
+    public Entry(List<? extends String> description, String name, Unit value) {
+        super(description, name, value);
+    }
 
-    private Entry(String record, String name, List<? extends String> description, String value) {
-        super(name, description, value);
-        this.record = record;
+    public Entry(List<? extends String> description, String name, String value) {
+        this(description, name, new Unit(value));
     }
 
     public String getRecord() {
-        return record;
+        return name + ": " + getUnitValue();
     }
 
-    public static Entry ofPair(String key, Object value, List<? extends String> description) {
-        return of(key + ": " + value, description);
-    }
-
-    public static Entry of(String record, List<? extends String> description) {
-        String[] elements = StringUtils.splitFirst(record, CdnConstants.OPERATOR);
-
-        String key = elements.length > 0
-                ? elements[0].trim()
-                : record;
-
-        String value = elements.length == 2
-                ? elements[1].trim()
-                : key;
-
-        if (value.endsWith(CdnConstants.SEPARATOR)) {
-            value = value.substring(0, value.length() - 1);
-        }
-
-        return new Entry(record, key, description, value);
+    public String getUnitValue() {
+        return getValue().getValue();
     }
 
 }
