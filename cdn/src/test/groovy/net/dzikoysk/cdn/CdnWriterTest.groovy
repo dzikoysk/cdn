@@ -1,40 +1,43 @@
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.entity.SectionLink
+import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
+@CompileStatic
 class CdnWriterTest {
+
+    private final Cdn cdn = CdnFactory.createStandard()
 
     @Test
     void 'should compose simple entry' () {
-        def entry = Entry.of('key: value', ['# description' ])
+        def entry = new Entry(['# description' ], 'key', 'value')
 
         assertEquals """
         # description
         key: value
-        """.stripIndent().trim(), Cdn.defaultInstance().render(entry)
+        """.stripIndent().trim(), cdn.render(entry)
     }
 
     @Test
     void 'should compose simple section' () {
-        def section = new Section('section', ['# description' ])
+        def section = new Section(['# description' ], 'section')
 
         assertEquals """
         # description
         section {
         }
-        """.stripIndent().trim(), Cdn.defaultInstance().render(section)
+        """.stripIndent().trim(), cdn.render(section)
     }
 
     @Test
     void 'should compose section with sub section and entry' () {
-        def section = new Section('section', ['# description' ], [
-            new Section('sub', [], [
-                Entry.of('entry: value', ['# entry comment' ])
+        def section = new Section(['# description' ], 'section', [
+            new Section([], 'sub', [
+                new Entry(['# entry comment'], 'entry', 'value')
             ])
         ])
 
@@ -46,29 +49,12 @@ class CdnWriterTest {
             entry: value
           }
         }
-        """.stripIndent().trim(), Cdn.defaultInstance().render(section)
-    }
-
-    @Test
-    void 'should compose indentation based source' () {
-        def cdn = Cdn.configure()
-            .enableYamlLikeFormatting()
-            .build()
-
-        assertEquals """
-        section:
-          key: value
-        """.stripIndent().trim(), cdn.render(new Object() {
-            @SectionLink
-            public Object section = new Object() {
-                public String key = "value"
-            }
-        })
+        """.stripIndent().trim(), cdn.render(section)
     }
 
     @Test
     void 'should replace simple placeholder' () {
-        def entry = Entry.of('key: value', ['# ${{placeholder}}' ])
+        def entry = new Entry([ '# ${{placeholder}}' ], 'key', 'value')
         def cdn = Cdn.configure()
             .registerPlaceholders([ 'placeholder': 'dance with me' ])
             .build()

@@ -4,15 +4,15 @@ import net.dzikoysk.cdn.CdnUtils;
 
 import java.util.List;
 
-abstract class AbstractConfigurationElement<T> implements ConfigurationElement<T> {
+abstract class AbstractNamedElement<T> implements NamedElement<T> {
 
-    protected final String name;
     protected final List<? extends String> description;
+    protected final String name;
     protected final T value;
 
-    protected AbstractConfigurationElement(String name, List<? extends String> description, T value) {
-        this.name = name;
+    protected AbstractNamedElement(List<? extends String> description, String name, T value) {
         this.description = description;
+        this.name = name;
         this.value = value;
     }
 

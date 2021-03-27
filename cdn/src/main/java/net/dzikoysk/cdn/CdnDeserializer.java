@@ -4,7 +4,7 @@ import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.entity.SectionValue;
-import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import org.jetbrains.annotations.Nullable;
@@ -43,13 +43,13 @@ public final class CdnDeserializer<T> {
                 throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
             }
 
-            Option<ConfigurationElement<?>> elementValue = root.get(field.getName());
+            Option<Element<?>> elementValue = root.get(field.getName());
 
             if (elementValue.isEmpty()) {
                 continue;
             }
 
-            ConfigurationElement<?> element = elementValue.get();
+            Element<?> element = elementValue.get();
             Object defaultValue = field.get(instance);
 
             if (field.isAnnotationPresent(SectionLink.class)) {
@@ -63,7 +63,7 @@ public final class CdnDeserializer<T> {
         return instance;
     }
 
-    private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, ConfigurationElement<?> element) throws Exception {
+    private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, Element<?> element) throws Exception {
         Deserializer<Object> deserializer = getDeserializer(settings, field.getType(), field);
         Object value = deserializer.deserialize(settings, element, field.getGenericType(), defaultValue, false);
         field.set(instance, value);

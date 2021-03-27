@@ -1,8 +1,7 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.converters.JsonConverter;
 import net.dzikoysk.cdn.model.Configuration;
-import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.NamedElement;
 
 public final class Cdn {
 
@@ -12,20 +11,16 @@ public final class Cdn {
         this.settings = settings;
     }
 
-    public Configuration parse(String source) {
+    public Configuration load(String source) {
         return new CdnReader(settings).read(source);
     }
 
-    public Configuration parseJson(String source) {
-        return parse(new JsonConverter().convertToCdn(source));
+    public <T> T load(String source, Class<T> scheme) throws Exception {
+        return new CdnDeserializer<T>(settings).deserialize(scheme, load(source));
     }
 
-    public <T> T parse(Class<T> scheme, String source) throws Exception {
-        return new CdnDeserializer<T>(settings).deserialize(scheme, parse(source));
-    }
-
-    public String render(ConfigurationElement<?> element) {
-        return new CdnWriter(this).render(element);
+    public String render(NamedElement<?> element) {
+        return new CdnWriter(settings).render(element);
     }
 
     public String render(Object entity) {
@@ -38,16 +33,6 @@ public final class Cdn {
 
     public static CdnSettings configure() {
         return new CdnSettings();
-    }
-
-    public static Cdn defaultInstance() {
-        return configure().build();
-    }
-
-    public static Cdn defaultYamlLikeInstance() {
-        return configure()
-                .enableYamlLikeFormatting()
-                .build();
     }
 
 }

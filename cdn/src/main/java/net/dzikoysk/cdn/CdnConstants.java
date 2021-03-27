@@ -6,7 +6,7 @@ public class CdnConstants {
 
     public static final String OPERATOR = ":";
 
-    public static final String LIST = "-";
+    public static final String ARRAY = "-";
 
     public static final String SEPARATOR = ",";
 

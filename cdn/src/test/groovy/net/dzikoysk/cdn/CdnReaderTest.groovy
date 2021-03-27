@@ -8,17 +8,19 @@ import static org.junit.jupiter.api.Assertions.*
 @CompileStatic
 final class CdnReaderTest {
 
+    private final Cdn cdn = CdnFactory.createStandard()
+
     @Test
     void 'should return entry' () {
-        def result = Cdn.defaultInstance().parse('key: value')
+        def result = cdn.load('key: value')
         def entry = result.getEntry('key').get()
         assertEquals 'key', entry.getName()
-        assertEquals 'value', entry.getValue()
+        assertEquals 'value', entry.getUnitValue()
     }
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = Cdn.defaultInstance().parse('''
+        def result = cdn.load('''
         # comment1
         // comment2
         section {
@@ -32,12 +34,12 @@ final class CdnReaderTest {
 
         def entry = section.getEntry('entry').get()
         assertNotNull entry
-        assertEquals 'value', entry.getValue()
+        assertEquals 'value', entry.getUnitValue()
     }
 
     @Test
     void 'should return nested section' () {
-        def result = Cdn.defaultInstance().parse('''
+        def result = cdn.load('''
         # c1
         s1 {
             # c2
@@ -52,31 +54,17 @@ final class CdnReaderTest {
 
     @Test
     void 'should skip empty lines' () {
-        def result = Cdn.defaultInstance().parse('')
+        def result = cdn.load('')
         assertTrue result.getValue().isEmpty()
     }
 
     @Test
-    void 'should use prettier' () {
-        def cdn = Cdn.configure()
-            .enableYamlLikeFormatting()
-            .build()
-
-        def configuration = cdn.parse("""
-        section :
-          key : value
-        """.stripIndent())
-
-        assertEquals "value", configuration.getString("section.key", 'default')
-    }
-
-    @Test
     void 'should read quoted key and value' () {
-        def result = Cdn.defaultInstance().parse('''
+        def result = cdn.load('''
         " key ": " value "
         ''')
 
-        assertEquals ' key ', result.get(' key ').get().getName()
+        assertEquals ' key ', result.getEntry(' key ').get().getName()
         assertEquals ' value ', result.getString(' key ', 'default')
     }
 
@@ -86,16 +74,16 @@ final class CdnReaderTest {
 
     @Test
     void 'should read empty yaml list' () {
-        def result = Cdn.defaultInstance().parse(ConfigTest.class, '''
+        def result = cdn.load('''
         list: []
-        ''')
+        ''', ConfigTest.class)
 
         assertEquals Collections.emptyList(), result.list
     }
 
     @Test
     void 'should remove semicolons' () {
-        def result = Cdn.defaultInstance().parse("""
+        def result = cdn.load("""
         a: b,
         c: d
         """)
@@ -105,7 +93,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should ignore empty root section' () {
-        def result = Cdn.defaultInstance().parse("""
+        def result = cdn.load("""
         {
           "a": "b",
           "c": "d"
@@ -114,16 +102,6 @@ final class CdnReaderTest {
 
         assertEquals 'b', result.getString('a', 'default')
         assertEquals 'd', result.getString('c', 'default')
-    }
-
-    @Test
-    void 'should read lines with brackets' () {
-        def result = Cdn.defaultYamlLikeInstance().parse('''
-        section:
-            key: {value}
-        ''')
-
-        assertEquals '{value}', result.getString('section.key', '')
     }
 
 }

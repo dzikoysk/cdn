@@ -10,6 +10,7 @@ import net.dzikoysk.cdn.serialization.SimpleSerializer;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ public final class CdnSettings {
     private final Map<Class<?>, Serializer<Object>> serializers = new HashMap<>();
     private final Map<Class<?>, Deserializer<Object>> deserializers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
+    private final Collection<CdnFeature> features = new ArrayList<>();
     private boolean yamlLikeEnabled;
 
     {
@@ -89,6 +91,12 @@ public final class CdnSettings {
         return this;
     }
 
+    public CdnSettings installFeature(CdnFeature feature) {
+        features.add(feature);
+        return this;
+    }
+
+/*
     public CdnSettings enableYamlLikeFormatting() {
         this.yamlLikeEnabled = true;
         return this;
@@ -96,6 +104,11 @@ public final class CdnSettings {
 
     public boolean isYamlLikeEnabled() {
         return yamlLikeEnabled;
+    }
+*/
+
+    public Collection<CdnFeature> getFeatures() {
+        return features;
     }
 
     public Map<? extends String, ? extends String> getPlaceholders() {

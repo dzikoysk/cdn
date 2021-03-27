@@ -1,8 +1,9 @@
 package net.dzikoysk.cdn.serialization;
 
 import net.dzikoysk.cdn.CdnSettings;
-import net.dzikoysk.cdn.model.ConfigurationElement;
+import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Unit;
 
 import java.lang.reflect.Type;
 
@@ -10,15 +11,22 @@ import java.lang.reflect.Type;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default T deserialize(CdnSettings settings, ConfigurationElement<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
-        if (!(source instanceof Entry)) {
-            throw new UnsupportedOperationException("Simple deserializer can deserialize only entries (" + genericType + " from " + source.getName() + ":" + source.getClass() + ")");
+    default T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
+        if (source instanceof Unit) {
+            return deserialize((Unit) source);
         }
 
-        Entry entry = (Entry) source;
-        return deserializeEntry(entryAsRecord ? entry.getRecord() : entry.getValue());
+        if (source instanceof Entry) {
+            return deserialize((Unit) source.getValue());
+        }
+
+        throw new UnsupportedOperationException("Simple deserializer can deserialize only units (" + genericType + " from " + source.getClass() + ")");
     }
 
-    T deserializeEntry(String source);
+    default T deserialize(Unit unit) {
+        return deserialize(unit.getValue());
+    }
+
+    T deserialize(String source);
 
 }

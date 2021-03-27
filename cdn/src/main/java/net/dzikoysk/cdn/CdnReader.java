@@ -1,10 +1,10 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.converters.YamlConverter;
+import net.dzikoysk.cdn.model.Array;
 import net.dzikoysk.cdn.model.Configuration;
-import net.dzikoysk.cdn.model.ConfigurationElement;
-import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.model.Unit;
 import org.panda_lang.utilities.commons.StringUtils;
 import org.panda_lang.utilities.commons.function.Option;
 
@@ -26,8 +26,8 @@ final class CdnReader {
     }
 
     public Configuration read(String source) {
-        if (settings.isYamlLikeEnabled()) {
-            source = new YamlConverter().convertToCdn(source);
+        for (CdnFeature feature : settings.getFeatures()) {
+            source = feature.convertToCdn(source);
         }
 
         // replace system-dependent line separators with unified one
@@ -62,7 +62,10 @@ final class CdnReader {
                     sectionName = sectionName.substring(0, sectionName.length() - CdnConstants.OPERATOR.length()).trim();
                 }
 
-                Section section = new Section(isArray ? CdnConstants.ARRAY_SEPARATOR : CdnConstants.OBJECT_SEPARATOR, sectionName, description);
+                Section section = isArray
+                        ? new Array(description, sectionName)
+                        : new Section(description, sectionName);
+
                 appendElement(section);
                 sections.push(section); // has to be after append
 
@@ -81,7 +84,16 @@ final class CdnReader {
             }
 
             // add standard entry
-            appendElement(Entry.of(originalLine, description));
+            Unit unit = new Unit(originalLine);
+            boolean isInArray = false;
+
+            for (CdnFeature feature : settings.getFeatures()) {
+                if (isInArray = feature.resolveArray(sections, unit)) {
+                    break;
+                }
+            }
+
+            appendElement(isInArray ? unit : unit.toEntry(description));
             description = new ArrayList<>();
         }
 
@@ -93,13 +105,8 @@ final class CdnReader {
                 .orElseGet(root);
     }
 
-    private void appendElement(ConfigurationElement<?> element) {
-        if (sections.isEmpty()) {
-            root.append(element);
-        }
-        else {
-            sections.peek().append(element);
-        }
+    private Element<?> appendElement(Element<?> element) {
+        return sections.isEmpty() ? root.append(element) : sections.peek().append(element);
     }
 
     private String trimSeparator(String line) {

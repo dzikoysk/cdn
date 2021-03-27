@@ -10,28 +10,28 @@ import org.panda_lang.utilities.commons.function.Option;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Section extends AbstractConfigurationElement<List<? extends ConfigurationElement<?>>> {
+public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
 
     private final String[] operators;
 
-    public Section(String name, List<? extends String> description) {
-        this(CdnConstants.OBJECT_SEPARATOR, name, description);
+    public Section(List<? extends String> description, String name) {
+        this(description, CdnConstants.OBJECT_SEPARATOR, name);
     }
 
-    public Section(String[] operators, String name, List<? extends String> description) {
-        this(operators, name, description, new ArrayList<>());
+    public Section(List<? extends String> description, String[] operators, String name) {
+        this(description, operators, name, new ArrayList<>());
     }
 
-    public Section(String name, List<? extends String> description, List<? extends ConfigurationElement<?>> value) {
-        this(CdnConstants.OBJECT_SEPARATOR, name, description, value);
+    public Section(List<? extends String> description, String name, List<? extends Element<?>> value) {
+        this(description, CdnConstants.OBJECT_SEPARATOR, name, value);
     }
 
-    public Section(String[] operators, String name, List<? extends String> description, List<? extends ConfigurationElement<?>> value) {
-        super(name, description, value);
+    public Section(List<? extends String> description, String[] operators, String name, List<? extends Element<?>> value) {
+        super(description, name, value);
         this.operators = operators;
     }
 
-    public <E extends ConfigurationElement<?>> E append(E element) {
+    public <E extends Element<?>> E append(E element) {
         super.value.add(ObjectUtils.cast(element));
         return element;
     }
@@ -49,7 +49,7 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
         return get(index).map(element -> ObjectUtils.cast(type, element));
     }
 
-    public Option<ConfigurationElement<?>> get(int index) {
+    public Option<Element<?>> get(int index) {
         return Option.when(index > -1 && index < size(), () -> getValue().get(index));
     }
 
@@ -66,14 +66,18 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
     }
 
     @Contract("null -> null")
-    public Option<ConfigurationElement<?>> get(String key) {
+    public Option<Element<?>> get(String key) {
         if (key == null) {
             return Option.none();
         }
 
-        for (ConfigurationElement<?> element : getValue()) {
-            if (key.equals(element.getName())) {
-                return Option.of(element);
+        for (Element<?> element : getValue()) {
+            if (element instanceof NamedElement) {
+                NamedElement<?> namedElement = (NamedElement<?>) element;
+
+                if (key.equals(namedElement.getName())) {
+                    return Option.of(element);
+                }
             }
         }
 
@@ -96,41 +100,7 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
     }
 
     public Option<List<String>> getList(String key) {
-        return getSection(key).map(Section::getList);
-    }
-
-    public List<String> getList() {
-        List<String> values = new ArrayList<>(getValue().size());
-        int listOperators = 0;
-
-        for (ConfigurationElement<?> element : getValue()) {
-            if (element instanceof Entry) {
-                Entry entry = (Entry) element;
-                String record = entry.getRecord();
-
-                if (record.startsWith(CdnConstants.LIST)) {
-                    listOperators++;
-                }
-
-                if (record.endsWith(CdnConstants.SEPARATOR)) {
-                    record = record.substring(0, record.length() - CdnConstants.SEPARATOR.length());
-                }
-
-                values.add(record);
-            }
-        }
-
-        for (int index = 0; index < values.size(); index++) {
-            String element = values.get(index);
-
-            if (listOperators == values.size()) {
-                element = element.substring(1).trim();
-            }
-
-            values.set(index, CdnUtils.destringify(element));
-        }
-
-        return values;
+        return getArray(key).map(Array::getList);
     }
 
     public Option<Boolean> getBoolean(String key) {
@@ -151,7 +121,7 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
 
     public Option<String> getString(String key) {
         return getEntry(key)
-                .map(Entry::getValue)
+                .map(Entry::getUnitValue)
                 .map(CdnUtils::destringify);
     }
 
@@ -166,6 +136,18 @@ public class Section extends AbstractConfigurationElement<List<? extends Configu
 
     public Option<Entry> getEntry(String key) {
         return get(key, Entry.class);
+    }
+
+    public Option<Array> getArray(int index) {
+        return getSection(index).map(Section::toArray);
+    }
+
+    public Option<Array> getArray(String key) {
+        return getSection(key).map(Section::toArray);
+    }
+
+    private Array toArray() {
+        return new Array(description, name, value);
     }
 
     public Option<Section> getSection(int index) {
