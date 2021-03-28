@@ -8,6 +8,9 @@ import net.dzikoysk.cdn.model.Unit;
 import java.util.Arrays;
 import java.util.Stack;
 
+/**
+ * Default implementation of CDN file format
+ */
 public class DefaultFeature implements CdnFeature {
 
     @Override

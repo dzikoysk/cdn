@@ -6,6 +6,9 @@ import org.panda_lang.utilities.commons.StringUtils;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents the smallest piece of information in configuration
+ */
 public final class Unit implements Element<String> {
 
     private final String value;

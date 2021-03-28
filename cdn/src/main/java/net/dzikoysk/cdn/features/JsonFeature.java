@@ -6,6 +6,9 @@ import org.panda_lang.utilities.commons.StringUtils;
 
 import java.util.Stack;
 
+/**
+ * Implementation of JSON file format based on default implementation of CDN format.
+ */
 public final class JsonFeature extends DefaultFeature {
 
     private static final char[] SEQUENCES = { '"', '\''};

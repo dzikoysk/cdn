@@ -10,6 +10,9 @@ import org.panda_lang.utilities.commons.function.Option;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a list of configuration elements
+ */
 public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
 
     private final String[] operators;
