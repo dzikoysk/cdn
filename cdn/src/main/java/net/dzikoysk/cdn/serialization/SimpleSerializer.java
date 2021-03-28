@@ -9,6 +9,13 @@ import org.panda_lang.utilities.commons.StringUtils;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * Represents process of converting Java object into simple configuration element (Units and Entries)
+ *
+ * @param <T> the type of serialized value
+ * @see net.dzikoysk.cdn.model.Unit
+ * @see net.dzikoysk.cdn.model.Entry
+ */
 @FunctionalInterface
 public interface SimpleSerializer<T> extends Serializer<T> {
 

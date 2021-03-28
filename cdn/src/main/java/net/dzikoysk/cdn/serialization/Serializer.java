@@ -6,6 +6,11 @@ import net.dzikoysk.cdn.model.Element;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * Represents process of converting Java object into configuration element
+ *
+ * @param <T> the type of serialized value
+ */
 @FunctionalInterface
 public interface Serializer<T> {
 

@@ -7,6 +7,11 @@ import net.dzikoysk.cdn.model.Unit;
 
 import java.lang.reflect.Type;
 
+/**
+ * Represents process of converting simple configuration element (Units and Entries) into the Java object
+ *
+ * @param <T> the type of deserialized value
+ */
 @FunctionalInterface
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 

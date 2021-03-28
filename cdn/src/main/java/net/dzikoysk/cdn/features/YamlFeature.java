@@ -11,6 +11,14 @@ import java.util.Stack;
 
 import static net.dzikoysk.cdn.CdnConstants.ARRAY;
 
+/**
+ * Implementation of YAML-like format. Supported features:
+ * <ul>
+ *     <li>Indentation based formatting</li>
+ *     <li>Colon operator after section names</li>
+ *     <li>Dash operator before array entry</li>
+ * </ul>
+ */
 public final class YamlFeature implements CdnFeature {
 
     @Override

@@ -6,6 +6,9 @@ import net.dzikoysk.cdn.CdnUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents section of direct values such as e.g. {@link net.dzikoysk.cdn.model.Unit}s
+ */
 public class Array extends Section {
 
     public Array(List<? extends String> description, String name) {

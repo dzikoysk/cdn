@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents the root section
+ */
 public final class Configuration extends Section {
 
     public Configuration() {
