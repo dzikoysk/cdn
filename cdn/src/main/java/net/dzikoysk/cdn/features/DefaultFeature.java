@@ -14,7 +14,10 @@ public class DefaultFeature implements CdnFeature {
     public void visitSectionOpening(StringBuilder output, String indentation, Section section) {
         // Don't add space to unnamed sections
         // ~ https://github.com/dzikoysk/cdn/issues/29
-        output.append(section.getName().isEmpty() ? "" : " ").append(section.getOperators()[0]);
+        output.append(indentation)
+                .append(section.getName())
+                .append(section.getName().isEmpty() ? "" : " ").append(section.getOperators()[0])
+                .append(CdnConstants.LINE_SEPARATOR);
     }
 
     @Override

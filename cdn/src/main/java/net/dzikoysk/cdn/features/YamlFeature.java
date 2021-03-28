@@ -21,7 +21,9 @@ public final class YamlFeature implements CdnFeature {
 
     @Override
     public void visitSectionOpening(StringBuilder output, String indentation, Section section) {
-        output.append(":");
+        output.append(indentation)
+                .append(section.getName()).append(":")
+                .append(CdnConstants.LINE_SEPARATOR);
     }
 
     @Override

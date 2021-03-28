@@ -1,9 +1,8 @@
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.model.Element;
-import net.dzikoysk.cdn.model.NamedElement;
-import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Configuration;
+import net.dzikoysk.cdn.model.Element;
+import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
 import org.panda_lang.utilities.commons.StringUtils;
@@ -18,7 +17,7 @@ final class CdnWriter {
         this.settings = settings;
     }
 
-    public String render(NamedElement<?> element) {
+    public String render(Element<?> element) {
         StringBuilder content = new StringBuilder();
         render(content, 0, element);
         String result = content.toString();
@@ -57,13 +56,9 @@ final class CdnWriter {
             boolean isRoot = section instanceof Configuration;
 
             if (!isRoot) {
-                output.append(indentation).append(section.getName());
-
                 for (CdnFeature feature : settings.getFeatures()) {
                     feature.visitSectionOpening(output, indentation, section);
                 }
-
-                output.append(CdnConstants.LINE_SEPARATOR);
             }
 
             // do not indent root sections
