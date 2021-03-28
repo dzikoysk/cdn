@@ -70,7 +70,7 @@ public final class CdnSerializer {
             serializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
-            for (Entry<Class<?>, Serializer<Object>> serializerEntry : settings.getSerializers().entrySet()) {
+            for (Entry<? extends Class<?>, ? extends Serializer<Object>> serializerEntry : settings.getSerializers().entrySet()) {
                 if (type.isAssignableFrom(serializerEntry.getKey())) {
                     serializer = serializerEntry.getValue();
                     break;

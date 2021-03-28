@@ -2,8 +2,12 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.entity.Exclude;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 public final class CdnUtils {
 
@@ -40,6 +44,10 @@ public final class CdnUtils {
         }
 
         return value;
+    }
+
+    public static String readFile(File file, Charset charset) throws IOException {
+        return new String(Files.readAllBytes(file.toPath()), charset);
     }
 
 }
