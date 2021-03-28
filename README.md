@@ -1,79 +1,63 @@
 # CDN ![CDN CI](https://github.com/dzikoysk/cdn/workflows/CDN%20CI/badge.svg)  [![Build Status](https://travis-ci.com/dzikoysk/cdn.svg?branch=master)](https://travis-ci.com/dzikoysk/cdn) [![Coverage Status](https://coveralls.io/repos/github/dzikoysk/cdn/badge.svg?branch=master)](https://coveralls.io/github/dzikoysk/cdn?branch=master) [![CodeFactor](https://www.codefactor.io/repository/github/dzikoysk/cdn/badge)](https://www.codefactor.io/repository/github/dzikoysk/cdn)
-CDN *(Configuration Data Notation)* - fast, simple and enhanced standard of JSON5 *(JSON for Humans)* format for JVM based apps. Handles [CDN](https://github.com/dzikoysk/cdn), [JSON](https://www.json.org) and [YAML](https://yaml.org)-like configurations with built-in support for comments and automatic scheme updates.
+Simple and fast configuration library for JVM based apps, powered by CDN *(Configuration Data Notation)* format, based on enhanced JSON for Humans standard. Handles [CDN](https://github.com/dzikoysk/cdn), [JSON](https://www.json.org) and [YAML](https://yaml.org)-like configurations with built-in support for comments and automatic scheme updates.
 
-#### Features
-- [x] Simple and easy to use
-- [x] Automatic structure updates
+## Overview
 - [x] Supports Java, Kotlin _(dedicated wrapper)_ and Groovy
-- [x] Performant and lightweight _(~ 45kB)_
-- [x] Respecting properties order and comment entries
+- [x] Automatically updates configuration structure and migrates user's values
+- [x] Lightweight ~ 50kB (no extra dependencies) 
+- [x] Respects properties order and comment entries
 - [x] Bidirectional parse and render of CDN sources
 - [x] Serialization and deserialization of Java entities 
 - [x] Indentation based configuration _(YAML-like)_
 - [x] Compatibility with JSON format
-- [x] [`@Contract` support](https://www.jetbrains.com/help/idea/contract-annotations.html)
-- [x] Null-safe querying API 
+- [x] Null-safe querying API with [`@Contract`](https://www.jetbrains.com/help/idea/contract-annotations.html) support
 - [x] 95%+ test coverage
-- [ ] Docs
+- [x] Actively supported and docs
 
-#### Usage
+### Table of Contents
+* [Installation](#installation)
+    * [Maven artifact](#gradle)
+    * [Manual](#manual)
+* [Using the Library](#using-the-library)
+    * [TL;DR](#tldr)
+    * [Load configuration](#load-configuration) 
+    * [Update properties](#update-properties) 
+    * [Save configuration](#save-configuration) 
+    * [Supported formats](#supported-formats)
 
-<table>
-<tr>
-<th>Standard <i>(default)</i></th>
-<td>Compatibility</td>
-<th>Indentation based</th>
-</tr>
-<tr>
-<td>
-<pre lang="javascript">
-# entry comment
-key: value <br>
-# section description
-section {
-  sub {
-    // sub entry description
-    subEntry: subValue
-    list1 [
-      1st element
-      2nd element
-    ]
-  }
+### Installation
+
+#### Gradle
+
+```groovy
+repositories {
+    maven { url 'https://repo.panda-lang.org/releases' }
 }
-</pre>
-</td>
-<td align="center">
-  ⇄ <br> <i>both are valid</i>
-</td>
-<td>
-<pre lang="yaml">
-# entry comment
-key: value <br>
-# section description
-section:
-  sub:
-    // sub entry description
-    subEntry: subValue
-    list1:
-      - 1st element
-      - 2nd element
-</pre>
-</td>
-</tr>
-</table>
 
-##### Class based
+dependencies {
+    // Default
+    implementation 'net.dzikoysk:cdn:1.7.0-SNAPSHOT'
+    // Kotlin wrapper
+    implementation 'net.dzikoysk:cdn-kt:1.7.0-SNAPSHOT'
+}
+```
+
+#### Manual
+
+You can find all available versions in the repository:
+
+* [Repository - Artifact net.dzikoysk:cdn](https://repo.panda-lang.org/net/dzikoysk/cdn)
+
+### Using the library
+
+#### TLDR
+A brief summary of how to use the library.
 
 ```java
-public final class Configuration implements Serializable {
+public final class AwesomeConfig {
 
-    @Description("# ~~~~~~~~~~~~~~~~~~~~~ #")
-    @Description("#      Application      #")
-    @Description("# ~~~~~~~~~~~~~~~~~~~~~ #")
-
-    @Description("")
-    @Description("# Hostname")
-    public String hostname = "0.0.0.0";
+    @Description("# Comment")
+    public String property = "default value";
 
 }
 ```
@@ -81,63 +65,131 @@ public final class Configuration implements Serializable {
 Handling:
 
 ```java
+Cdn cdn = CdnFactory.createStandard();
+File configurationFile = new File("./config.cdn");
+
 // Load configuration
-Configuration configuration = CDN.defaultInstance().parse(Configuration.class, configurationSource)
-println configuration.hostname
-
-// Save
-configuration.hostname = "localhost"
-FileUtils.overrideFile(configurationFile, CDN.defaultInstance().render(configuration))
-
+AwesomeConfig configuration = cdn.load(configurationFile, AwesomeConfig.class)
+// Modify configuration
+configuration.property = "modified value";
+// Save configuration
+cdn.render(configuration, configurationFile);
 ```
 
-##### Manual
+To explore all features, take a look at other chapters.
 
-To load CDN source, use:
+#### Load configuration
+
+By default, CDN is meant to use class-based configuration.
+It means that configurations are accessed through the standard Java instance.
+Let's say we'd like to maintain this configuration:
+
+```hocon
+hostname: 'localhost'
+```
+
+At first, every configuration is loaded into the `Configuration` object.
 
 ```java
-// Parse configuration
-Configuration configuration = CDN.getDefaultInstance().parse(source);
-String keyValue = configuration.getString("key");
-String subValue = configuration.getString("section.sub.subEntry");
-Integer random = configuration.getInt("section.sectionEntry");
-
-// Configuration to string 
-String source = CDN.getDefaultInstance().render(configuration);
+Configuration configuration = cdn.load("hostname: localhost")
+String hostname = configuration.getString("hostname", "default value, if the requested one was not found")
 ```
 
-The output looks exactly like the input above. 
+To avoid such a cringe configuration handling, we can just map this configuration into the Java object.
+Let's declare the scheme:
 
-#### Maven
-
-Repository:
-
-```xml
-<repository>
-    <id>panda-repository</id>
-    <url>https://repo.panda-lang.org/releases</url>
-</repository>
+```java
+public final class Config {
+    
+    public String hostname = "default value";
+    
+}
 ```
 
-Default artifact:
+The last thing to do is to provide this class during the load process:
 
-```xml
-<dependency>
-    <groupId>net.dzikoysk</groupId>
-    <artifactId>cdn</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
-</dependency>
+```java
+Config config = cdn.load("hostname: localhost", Config.class)
+config.hostname // returns 'localhost'
 ```
 
-Kotlin extension:
+#### Update properties
 
-```xml
-<dependency>
-    <groupId>net.dzikoysk</groupId>
-    <artifactId>cdn-kt</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
-</dependency>
+Configurations can be updated in both variants. 
+As you can see in the previous chapter, we've declared hostname field as non-final.
+It means we can just update it's value and CDN will update this field during next render.
+
+```java
+config.hostname = "new value";
 ```
+
+For configuration without scheme, we can use `setString` method:
+
+```java
+configuration.setString("hostname", "new value");
+```
+
+#### Save configuration
+
+CDN can render configuration elements and entities using `render` methods.
+The output depends on the installed format. 
+
+#### Supported formats
+Various formats ae supported through the `Feature` api. 
+Available format features:
+
+* DefaultFeature (CDN)
+* JsonFeature
+* YamlFeature
+
+Output comparison:
+ 
+<table>
+ <tr>
+  <th>Standard</th>
+  <th>JSON feature</th>
+  <th>YAML-like feature</th>
+ </tr>
+ <tr>
+  <td>
+   <pre lang="javascript">
+# entry comment
+key: value
+# section description
+section {
+  list [
+    1st element
+    2nd element
+  ]
+}
+   </pre>
+  </td>
+  <td>
+   <pre lang="javascript">
+# entry comment
+key: value
+# section description
+"section": {
+ list1 [
+  1st element
+  2nd element
+ ]
+}
+   </pre>
+  </td>
+  <td>
+   <pre lang="yaml">
+# entry comment
+key: value <br>
+# section description
+section:
+  list1:
+    - 1st element
+    - 2nd element
+   </pre>
+  </td>
+ </tr>
+</table>
 
 #### Who's using
 * [Panda](https://github.com/panda-lang/panda)

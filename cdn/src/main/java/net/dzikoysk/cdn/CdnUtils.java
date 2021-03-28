@@ -63,6 +63,10 @@ public final class CdnUtils {
     }
 
     public static String readFile(File file, Charset charset) throws IOException {
+        if (!file.exists()) {
+            return "";
+        }
+
         return new String(Files.readAllBytes(file.toPath()), charset);
     }
 

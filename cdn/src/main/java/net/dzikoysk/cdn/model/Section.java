@@ -24,6 +24,7 @@ import org.panda_lang.utilities.commons.StringUtils;
 import org.panda_lang.utilities.commons.function.Option;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +54,12 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
     public <E extends Element<?>> E append(E element) {
         super.value.add(ObjectUtils.cast(element));
         return element;
+    }
+
+    public void setString(String key, String value) {
+        getEntry(key)
+                .peek(entry -> entry.setValue(new Unit(value)))
+                .orElseGet(() -> append(new Entry(Collections.emptyList(), key, value)));
     }
 
     @Contract("null -> false")

@@ -24,11 +24,15 @@ abstract class AbstractNamedElement<T> implements NamedElement<T> {
 
     protected final List<? extends String> description;
     protected final String name;
-    protected final T value;
+    protected T value;
 
     protected AbstractNamedElement(List<? extends String> description, String name, T value) {
         this.description = description;
         this.name = name;
+        this.value = value;
+    }
+
+    public void setValue(T value) {
         this.value = value;
     }
 

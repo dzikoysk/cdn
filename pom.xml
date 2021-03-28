@@ -39,7 +39,7 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -94,11 +94,6 @@
                             <exclude>META-INF/**</exclude>
                         </excludes>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.eluder.coveralls</groupId>
-                    <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>4.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
