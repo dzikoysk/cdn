@@ -126,7 +126,7 @@ Default artifact:
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn</artifactId>
-    <version>1.6.6</version>
+    <version>1.7.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -136,7 +136,7 @@ Kotlin extension:
 <dependency>
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-kt</artifactId>
-    <version>1.6.6</version>
+    <version>1.7.0-SNAPSHOT</version>
 </dependency>
 ```
 
