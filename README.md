@@ -167,12 +167,12 @@ section {
   <td>
    <pre lang="javascript">
 # entry comment
-key: value
+"key": "value",
 # section description
 "section": {
- list1 [
-  1st element
-  2nd element
+ "list": [
+  "1st element",
+  "2nd element"
  ]
 }
    </pre>
@@ -183,7 +183,7 @@ key: value
 key: value <br>
 # section description
 section:
-  list1:
+  list:
     - 1st element
     - 2nd element
    </pre>
