@@ -34,18 +34,15 @@ public interface SimpleDeserializer<T> extends Deserializer<T> {
     @Override
     default T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
         if (source instanceof Unit) {
-            return deserialize((Unit) source);
+            return deserialize(((Unit) source).getValue());
         }
 
         if (source instanceof Entry) {
-            return deserialize((Unit) source.getValue());
+            Entry entry = (Entry) source;
+            return deserialize(entryAsRecord ? entry.getRaw() : entry.getUnitValue());
         }
 
         throw new UnsupportedOperationException("Simple deserializer can deserialize only units (" + genericType + " from " + source.getClass() + ")");
-    }
-
-    default T deserialize(Unit unit) {
-        return deserialize(unit.getValue());
     }
 
     T deserialize(String source);

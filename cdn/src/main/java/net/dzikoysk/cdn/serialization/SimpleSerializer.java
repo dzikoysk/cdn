@@ -37,7 +37,11 @@ public interface SimpleSerializer<T> extends Serializer<T> {
 
     @Override
     default Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) {
-        return StringUtils.isEmpty(key) ? new Unit(serialize(entity)) : new Entry(description, key, serialize(entity));
+        String result = serialize(entity);
+
+        return StringUtils.isEmpty(key) 
+                ? new Unit(serialize(entity)) 
+                : new Entry(description, key, result);
     }
 
     String serialize(T entity);

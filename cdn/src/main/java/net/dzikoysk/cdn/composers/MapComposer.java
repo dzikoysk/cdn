@@ -111,7 +111,7 @@ public final class MapComposer<T> implements Composer<T> {
                 section.append(valueElement);
             }
             else if (valueElement instanceof Entry) {
-                section.append(new Entry(keyElement.getDescription(), keyElement.getValue().toString(), ((Entry) valueElement).getUnitValue()));
+                section.append(valueElement);
             }
             else throw new UnsupportedOperationException("Unsupported value element in map: " + valueElement);
         }

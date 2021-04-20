@@ -58,7 +58,8 @@ public final class YamlFeature implements CdnFeature {
         }
         else if (element instanceof Entry) {
             Entry entry = (Entry) element;
-            element = new Entry(element.getDescription(), ARRAY + " " + entry.getName(), entry.getValue());
+            String key = ARRAY + " " + entry.getName();
+            element = new Entry(element.getDescription(), key, entry.getValue());
         }
         else if (element instanceof Section) {
             Section sectionElement = (Section) element;
@@ -79,7 +80,7 @@ public final class YamlFeature implements CdnFeature {
         }
         else if (element instanceof Entry) {
             Entry entry = (Entry) element;
-            element = new Entry(element.getDescription(), entry.getName().replaceFirst(CdnConstants.ARRAY, "").trim(), entry.getValue());
+            element = new Unit(entry.getRecord().replaceFirst(CdnConstants.ARRAY, ""));
         }
         else if (element instanceof Section) {
             Section sectionElement = (Section) element;

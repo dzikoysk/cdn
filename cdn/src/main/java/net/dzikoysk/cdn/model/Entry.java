@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.model;
 
+import net.dzikoysk.cdn.CdnConstants;
+
 import java.util.List;
 
 /**
@@ -23,12 +25,23 @@ import java.util.List;
  */
 public class Entry extends AbstractNamedElement<Unit> {
 
-    public Entry(List<? extends String> description, String name, Unit value) {
+    private final String raw;
+
+    public Entry(List<? extends String> description, String raw, String name, Unit value) {
         super(description, name, value);
+        this.raw = raw;
+    }
+
+    public Entry(List<? extends String> description, String raw, String name, String value) {
+        this(description, raw, name, new Unit(value));
+    }
+
+    public Entry(List<? extends String> description, String name, Unit value) {
+        this(description, name + CdnConstants.OPERATOR + value, name, value);
     }
 
     public Entry(List<? extends String> description, String name, String value) {
-        this(description, name, new Unit(value));
+        this(description, name + CdnConstants.OPERATOR + value, name, value);
     }
 
     /**
@@ -38,6 +51,15 @@ public class Entry extends AbstractNamedElement<Unit> {
      */
     public String getRecord() {
         return name + ": " + getUnitValue();
+    }
+
+    /**
+     * Get raw representation of entry
+     *
+     * @return raw record
+     */
+    public String getRaw() {
+        return raw;
     }
 
     /**

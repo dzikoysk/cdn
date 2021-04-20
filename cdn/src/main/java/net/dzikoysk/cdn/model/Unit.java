@@ -48,7 +48,7 @@ public final class Unit implements Element<String> {
             entryValue = entryValue.substring(0, entryValue.length() - 1);
         }
 
-        return new Entry(description, entryKey, entryValue);
+        return new Entry(description, value, entryKey, entryValue);
     }
 
     @Override

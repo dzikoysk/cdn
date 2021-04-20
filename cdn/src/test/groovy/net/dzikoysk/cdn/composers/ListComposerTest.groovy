@@ -30,19 +30,30 @@ class ListComposerTest {
         public List<String> list = Collections.emptyList()
         
     }
-    
+
     @Test
-    void 'should parse and render lists' () {
+    void 'should load empty list' () {
+        def source = """
+        list: []
+        """.stripIndent().trim()
+
+        def configuration = CdnFactory.createYamlLike().load(source, Configuration.class)
+        assertEquals(Collections.emptyList(), configuration.list)
+        assertEquals(source, CdnFactory.createYamlLike().render(configuration))
+    }
+
+    @Test
+    void 'should load list' () {
         def source = """
         list [
-          a
-          b
+          a:1
+          b:2
         ]
         """.stripIndent().trim()
 
         def list = [
-            "a",
-            "b"
+            "a:1",
+            "b:2"
         ]
 
         def configuration = CdnFactory.createStandard().load(source, Configuration.class)
@@ -51,14 +62,25 @@ class ListComposerTest {
     }
 
     @Test
-    void 'should parse and render empty list' () {
+    void 'should load object based list' () {
         def source = """
-        list: []
+        list {
+          a:1
+          b: 2
+        }
         """.stripIndent().trim()
 
-        def configuration = CdnFactory.createYamlLike().load(source, Configuration.class)
-        assertEquals(Collections.emptyList(), configuration.list)
-        assertEquals(source, CdnFactory.createYamlLike().render(configuration))
+        def configuration = CdnFactory.createStandard().load(source, Configuration.class)
+        assertEquals([ "a:1", "b: 2" ], configuration.list)
+
+        def formattedSource = """
+        list [
+          a:1
+          b: 2
+        ]
+        """.stripIndent().trim()
+
+        assertEquals(formattedSource, CdnFactory.createStandard().render(configuration))
     }
 
 }
