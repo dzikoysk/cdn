@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.features
+package net.dzikoysk.cdn.features.json
 
 import groovy.transform.CompileStatic
-import net.dzikoysk.cdn.CdnFactory
+import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.features.JsonFeature
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-final class JsonFeatureTest {
+final class JsonFeatureTest extends CdnSpec {
 
     private final JsonFeature converter = new JsonFeature()
 
     @Test
     void 'should convert json like format to cdn' () {
-        def source = converter.convertToCdn('{"list":[{"key":"value"},{"key":"value"}]}').trim()
+        def source = converter.convertToCdn(cfg('{"list":[{"key":"value"},{"key":"value"}]}'))
 
-        assertEquals("""
+        assertEquals(cfg("""
         {
           "list": [
             {
@@ -42,9 +43,9 @@ final class JsonFeatureTest {
             }
           ]
         }
-        """.stripIndent().trim(), source)
+        """), source)
 
-        def configuration = CdnFactory.createStandard().load(source)
+        def configuration = json.load(source)
         def list = configuration.getSection('list').get()
         assertEquals 2, list.size()
     }
@@ -52,25 +53,25 @@ final class JsonFeatureTest {
     @Test
     void 'should convert json like list' () {
         def source = converter.convertToCdn('{ "list": [ "a", "b", "c" ] }')
-        assertEquals([ 'a', 'b', 'c' ], CdnFactory.createStandard().load(source).getList('list', ['default' ]))
+        assertEquals([ 'a', 'b', 'c' ], standard.load(source).getList('list', ['default' ]))
     }
 
     @Test
     void 'should escape operators in strings' () {
-        def source = converter.convertToCdn('{"key":"{value}"}').trim()
+        def source = converter.convertToCdn(cfg('{"key":"{value}"}'))
 
-        assertEquals("""\
+        assertEquals(cfg("""
         {
           "key": "{value}"
         }
-        """.stripIndent().trim(), source)
+        """), source)
     }
 
     @Test
     void 'should parse json' () {
-        def json = '{ "object": { "key": "value" }, "array": [ "1", "2" ] }'
+        def source = '{ "object": { "key": "value" }, "array": [ "1", "2" ] }'
 
-        def cdn = """
+        def cdn = cfg("""
         object: {
           key: value
         }
@@ -78,14 +79,13 @@ final class JsonFeatureTest {
           1
           2
         ]
-        """
+        """)
 
-        def jsonResult = CdnFactory.createJson().load(json)
-        def cdnResult = CdnFactory.createStandard().load(cdn)
+        def jsonResult = json.load(source)
+        def standardResult = standard.load(cdn)
 
-        assertEquals cdnResult.getString('object.key', 'defaultCDN'), jsonResult.getString('object.key', 'defaultJSON')
-        assertEquals cdnResult.getList('array', [ 'defaultCDN' ]), jsonResult.getList('array', [ 'defaultJSON' ])
+        assertEquals standardResult.getString('object.key', 'defaultCDN'), jsonResult.getString('object.key', 'defaultJSON')
+        assertEquals standardResult.getList('array', [ 'defaultCDN' ]), jsonResult.getList('array', [ 'defaultJSON' ])
     }
-
 
 }

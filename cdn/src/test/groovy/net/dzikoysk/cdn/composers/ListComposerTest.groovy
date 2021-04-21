@@ -17,70 +17,88 @@
 package net.dzikoysk.cdn.composers
 
 import groovy.transform.CompileStatic
-import net.dzikoysk.cdn.CdnFactory
+import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.entity.SectionValue
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class ListComposerTest {
+class ListComposerTest extends CdnSpec {
 
-    static class Configuration {
+    static class ConfigurationWithLists {
     
         public List<String> list = Collections.emptyList()
+
+        public List<Element> elements = [new Element(), new Element() ]
+
+        @SectionValue
+        static class Element {
+
+            public String name = "default value"
+
+        }
         
     }
 
     @Test
-    void 'should load empty list' () {
-        def source = """
-        list: []
-        """.stripIndent().trim()
-
-        def configuration = CdnFactory.createYamlLike().load(source, Configuration.class)
-        assertEquals(Collections.emptyList(), configuration.list)
-        assertEquals(source, CdnFactory.createYamlLike().render(configuration))
-    }
-
-    @Test
     void 'should load list' () {
-        def source = """
+        def source = cfg("""
         list [
           a:1
           b:2
         ]
-        """.stripIndent().trim()
+        """)
 
-        def list = [
-            "a:1",
-            "b:2"
+        def configuration = standard.load(source, ConfigurationWithLists.class)
+        assertEquals([ "a:1", "b:2" ], configuration.list)
+
+        def expectedSource = cfg("""
+        list [
+          a:1
+          b:2
         ]
+        elements [
+          {
+            name: default value
+          }
+          {
+            name: default value
+          }
+        ]
+        """)
 
-        def configuration = CdnFactory.createStandard().load(source, Configuration.class)
-        assertEquals(list, configuration.list)
-        assertEquals(source, CdnFactory.createStandard().render(configuration))
+        assertEquals(expectedSource, standard.render(configuration))
     }
 
     @Test
     void 'should load object based list' () {
-        def source = """
+        def source = cfg("""
         list {
           a:1
           b: 2
         }
-        """.stripIndent().trim()
+        """)
 
-        def configuration = CdnFactory.createStandard().load(source, Configuration.class)
+        def configuration = standard.load(source, ConfigurationWithLists.class)
         assertEquals([ "a:1", "b: 2" ], configuration.list)
 
-        def formattedSource = """
+        def formattedSource = cfg("""
         list [
           a:1
           b: 2
         ]
-        """.stripIndent().trim()
+        elements [
+          {
+            name: default value
+          }
+          {
+            name: default value
+          }
+        ]
+        """)
 
-        assertEquals(formattedSource, CdnFactory.createStandard().render(configuration))
+        assertEquals(formattedSource, standard.render(configuration))
     }
 
 }

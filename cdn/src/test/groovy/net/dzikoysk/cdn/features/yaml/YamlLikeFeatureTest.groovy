@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.features
+package net.dzikoysk.cdn.features.yaml
 
 import groovy.transform.CompileStatic
-import net.dzikoysk.cdn.CdnFactory
+import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.SectionLink
+import net.dzikoysk.cdn.features.YamlFeature
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-final class YamlFeatureTest {
+final class YamlLikeFeatureTest extends CdnSpec {
 
     private final YamlFeature converter = new YamlFeature()
 
     @Test
     void 'should convert indentation to brackets' () {
-        def source = """
+        def source = cfg("""
         key: value
         
         section:
@@ -38,7 +39,7 @@ final class YamlFeatureTest {
             subKey: value
           # comment
           key: value
-        """.stripIndent().trim()
+        """)
 
         assertEquals("""\
         key: value
@@ -56,21 +57,21 @@ final class YamlFeatureTest {
 
     @Test
     void 'should parse and render yaml like lists' () {
-        def source = """
+        def source = cfg("""
         list:
           - a
           - b
-        """.stripIndent().trim()
+        """)
 
-        def configuration = CdnFactory.createYamlLike().load(source)
+        def configuration = yamlLike.load(source)
 
         assertEquals([ "a", "b" ], configuration.getArray('list').get().getList())
-        assertEquals(source, CdnFactory.createYamlLike().render(configuration))
+        assertEquals(source, yamlLike.render(configuration))
     }
 
     @Test
     void 'should read lines with brackets' () {
-        def result = CdnFactory.createYamlLike().load('''
+        def result = yamlLike.load('''
         section:
             key: {value}
         ''')
@@ -80,7 +81,7 @@ final class YamlFeatureTest {
 
     @Test
     void 'should use prettier' () {
-        def configuration = CdnFactory.createYamlLike().load("""
+        def configuration = yamlLike.load("""
         section :
           key : value
         """.stripIndent())
@@ -90,10 +91,10 @@ final class YamlFeatureTest {
 
     @Test
     void 'should compose indentation based source' () {
-        assertEquals """
+        assertEquals cfg("""
         section:
           key: value
-        """.stripIndent().trim(), CdnFactory.createYamlLike().render(new Object() {
+        """), yamlLike.render(new Object() {
             @SectionLink
             public Object section = new Object() {
                 public String key = "value"
