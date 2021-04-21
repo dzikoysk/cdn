@@ -18,7 +18,7 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.features.DefaultFeature;
 import net.dzikoysk.cdn.features.JsonFeature;
-import net.dzikoysk.cdn.features.YamlFeature;
+import net.dzikoysk.cdn.features.YamlLikeFeature;
 
 /**
  * Factory creates some predefined CDN instances
@@ -59,11 +59,11 @@ public final class CdnFactory {
      * </ul>
      *
      * @return the yaml-like implementation
-     * @see net.dzikoysk.cdn.features.YamlFeature
+     * @see net.dzikoysk.cdn.features.YamlLikeFeature
      */
     public static Cdn createYamlLike() {
         return Cdn.configure()
-                .installFeature(new YamlFeature())
+                .installFeature(new YamlLikeFeature())
                 .build();
     }
 

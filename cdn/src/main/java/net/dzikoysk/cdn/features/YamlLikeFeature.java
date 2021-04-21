@@ -35,11 +35,11 @@ import static net.dzikoysk.cdn.CdnConstants.ARRAY;
  *     <li>Dash operator before array entry</li>
  * </ul>
  */
-public final class YamlFeature implements CdnFeature {
+public final class YamlLikeFeature implements CdnFeature {
 
     @Override
     public String convertToCdn(String source) {
-        YamlConverter converter = new YamlConverter(source);
+        YamlLikeConverter converter = new YamlLikeConverter(source);
         return converter.convert();
     }
 

@@ -17,12 +17,13 @@
 package net.dzikoysk.cdn.model
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.CdnSpec
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class ArrayTest {
+class ArrayTest extends CdnSpec {
 
     @Test
     void 'should remove list operators' () {

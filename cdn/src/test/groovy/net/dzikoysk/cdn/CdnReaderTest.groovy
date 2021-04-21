@@ -22,13 +22,11 @@ import org.junit.jupiter.api.Test
 import static org.junit.jupiter.api.Assertions.*
 
 @CompileStatic
-final class CdnReaderTest {
-
-    private final Cdn cdn = CdnFactory.createStandard()
+final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should return entry' () {
-        def result = cdn.load('key: value')
+        def result = standard.load('key: value')
         def entry = result.getEntry('key').get()
         assertEquals 'key', entry.getName()
         assertEquals 'value', entry.getUnitValue()
@@ -36,13 +34,13 @@ final class CdnReaderTest {
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = cdn.load('''
+        def result = standard.load("""
         # comment1
         // comment2
         section {
             entry: value
         }
-        ''')
+        """)
 
         def section = result.getSection('section').get()
         assertNotNull section
@@ -55,7 +53,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should return nested section' () {
-        def result = cdn.load('''
+        def result = standard.load('''
         # c1
         s1 {
             # c2
@@ -70,13 +68,12 @@ final class CdnReaderTest {
 
     @Test
     void 'should skip empty lines' () {
-        def result = cdn.load('')
-        assertTrue result.getValue().isEmpty()
+        assertTrue standard.load('').getValue().isEmpty()
     }
 
     @Test
     void 'should read quoted key and value' () {
-        def result = cdn.load('''
+        def result = standard.load('''
         " key ": " value "
         ''')
 
@@ -84,22 +81,9 @@ final class CdnReaderTest {
         assertEquals ' value ', result.getString(' key ', 'default')
     }
 
-    static class ConfigTest {
-        public List<String> list = Collections.singletonList("element")
-    }
-
-    @Test
-    void 'should read empty yaml list' () {
-        def result = cdn.load('''
-        list: []
-        ''', ConfigTest.class)
-
-        assertEquals Collections.emptyList(), result.list
-    }
-
     @Test
     void 'should remove semicolons' () {
-        def result = cdn.load("""
+        def result = standard.load("""
         a: b,
         c: d
         """)
@@ -109,7 +93,7 @@ final class CdnReaderTest {
 
     @Test
     void 'should ignore empty root section' () {
-        def result = cdn.load("""
+        def result = standard.load("""
         {
           "a": "b",
           "c": "d"

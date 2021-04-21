@@ -20,13 +20,13 @@ import org.panda_lang.utilities.commons.StringUtils;
 
 import static net.dzikoysk.cdn.CdnConstants.*;
 
-final class YamlConverter {
+final class YamlLikeConverter {
 
     private final String[] lines;
     private final StringBuilder converted = new StringBuilder();
     private int previousIndentation = 0;
 
-    YamlConverter(String source) {
+    YamlLikeConverter(String source) {
         this.lines = StringUtils.split(source.replace(System.lineSeparator(), LINE_SEPARATOR), LINE_SEPARATOR);
     }
 

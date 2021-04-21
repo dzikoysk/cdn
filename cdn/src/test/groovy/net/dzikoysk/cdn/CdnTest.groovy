@@ -22,13 +22,11 @@ import org.junit.jupiter.api.Test
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class CdnTest {
-
-    private final Cdn cdn = CdnFactory.createStandard()
+class CdnTest extends CdnSpec {
 
     @Test
     void 'should parse and compose bidirectional input' () {
-        def source = """
+        def source = cfg("""
         # root description
         root {
           sub {
@@ -40,10 +38,10 @@ class CdnTest {
           # description
           rootEntry: rootValue
         }
-        """.stripIndent().trim()
+        """)
 
-        def result = cdn.load(source)
-        assertEquals source, cdn.render(result)
+        def result = standard.load(source)
+        assertEquals source, standard.render(result)
     }
 
 }

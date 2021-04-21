@@ -17,12 +17,13 @@
 package net.dzikoysk.cdn.model
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.CdnSpec
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.*
 
 @CompileStatic
-final class SectionTest {
+final class SectionTest extends CdnSpec {
 
     static final Section SECTION = new Section([ '# comment' ], 'name', [
         new Section([], "sub", [

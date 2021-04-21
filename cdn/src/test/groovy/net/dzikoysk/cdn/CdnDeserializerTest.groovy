@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class CdnDeserializerTest {
+class CdnDeserializerTest extends CdnSpec {
 
     @Test
     void 'should deserialize source into scheme' () {
-        def configuration = CdnFactory.createStandard().load("""
+        def configuration = standard.load("""
         rootEntry: custom value
         section {
           subEntry: 7

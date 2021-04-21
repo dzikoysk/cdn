@@ -14,31 +14,37 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.utils
+package net.dzikoysk.cdn.features.yaml
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.TestConfiguration
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertThrows
 
 @CompileStatic
-class GenericUtilsTest extends CdnSpec{
-
-    @SuppressWarnings('unused')
-    public static final Collection WITHOUT_GENERIC_TYPE = Collections.emptyList()
-    @SuppressWarnings('unused')
-    public static final Collection<String> WITH_GENERIC_TYPE = Collections.emptyList()
+class YamlLikeSerializerTest extends CdnSpec {
 
     @Test
-    void 'should fetch generic type' () {
-        assertEquals String.class, GenericUtils.getGenericClasses(GenericUtilsTest.class.getField('WITH_GENERIC_TYPE'))[0]
-    }
-
-    @Test
-    void 'should throw missing generic signature' () {
-        assertThrows IllegalArgumentException.class, { GenericUtils.getGenericTypes(GenericUtilsTest.class.getField('WITHOUT_GENERIC_TYPE')) }
+    void 'should serialize entity with indentation based formatting' () {
+        assertEquals cfg("""
+        # Root entry description
+        rootEntry: default value
+        
+        // Section description
+        section:
+          # Random value
+          subEntry: -1
+          # List description
+          list:
+            - record
+            - record : with : semicolons
+          # Custom object
+          custom:
+            id: rtx
+            count: 3070
+        """), yamlLike.render(new TestConfiguration())
     }
 
 }

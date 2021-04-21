@@ -17,12 +17,13 @@
 package net.dzikoysk.cdn.model
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.CdnSpec
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class EntryTest {
+class EntryTest extends CdnSpec {
 
     static final Entry ENTRY = new Entry(['// entry-comment' ], 'entry-name', 'entry-value')
 

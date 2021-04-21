@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.features.yaml
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.SectionLink
-import net.dzikoysk.cdn.features.YamlFeature
+import net.dzikoysk.cdn.features.YamlLikeFeature
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 @CompileStatic
 final class YamlLikeFeatureTest extends CdnSpec {
 
-    private final YamlFeature converter = new YamlFeature()
+    private final YamlLikeFeature converter = new YamlLikeFeature()
 
     @Test
     void 'should convert indentation to brackets' () {

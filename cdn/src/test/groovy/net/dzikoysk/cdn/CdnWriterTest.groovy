@@ -24,29 +24,27 @@ import org.junit.jupiter.api.Test
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-class CdnWriterTest {
-
-    private final Cdn cdn = CdnFactory.createStandard()
+class CdnWriterTest extends CdnSpec{
 
     @Test
     void 'should compose simple entry' () {
         def entry = new Entry(['# description' ], 'key', 'value')
 
-        assertEquals """
+        assertEquals cfg("""
         # description
         key: value
-        """.stripIndent().trim(), cdn.render(entry)
+        """), standard.render(entry)
     }
 
     @Test
     void 'should compose simple section' () {
         def section = new Section(['# description' ], 'section')
 
-        assertEquals """
+        assertEquals cfg("""
         # description
         section {
         }
-        """.stripIndent().trim(), cdn.render(section)
+        """), standard.render(section)
     }
 
     @Test
@@ -57,7 +55,7 @@ class CdnWriterTest {
             ])
         ])
 
-        assertEquals """
+        assertEquals cfg("""
         # description
         section {
           sub {
@@ -65,20 +63,21 @@ class CdnWriterTest {
             entry: value
           }
         }
-        """.stripIndent().trim(), cdn.render(section)
+        """), standard.render(section)
     }
 
     @Test
     void 'should replace simple placeholder' () {
         def entry = new Entry([ '# ${{placeholder}}' ], 'key', 'value')
+
         def cdn = Cdn.configure()
             .registerPlaceholders([ 'placeholder': 'dance with me' ])
             .build()
 
-        assertEquals """
+        assertEquals cfg("""
         # dance with me
         key: value
-        """.stripIndent().trim(), cdn.render(entry)
+        """), cdn.render(entry)
     }
 
 }

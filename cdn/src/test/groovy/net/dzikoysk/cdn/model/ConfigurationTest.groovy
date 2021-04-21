@@ -17,13 +17,14 @@
 package net.dzikoysk.cdn.model
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.CdnSpec
 import org.junit.jupiter.api.Test
 import org.panda_lang.utilities.commons.StringUtils
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-final class ConfigurationTest {
+final class ConfigurationTest extends CdnSpec {
 
     static final Configuration ROOT = new Configuration()
 
