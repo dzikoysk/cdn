@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.Description;
-import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
@@ -59,7 +59,7 @@ public final class CdnSerializer {
                     .flatMap(annotation -> Arrays.stream(annotation.value()))
                     .collect(Collectors.toList());
 
-            if (field.isAnnotationPresent(SectionLink.class)) {
+            if (field.isAnnotationPresent(Contextual.class)) {
                 Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, field.getName());
                 root.append(section);
                 serialize(section, field.get(entity));
@@ -69,8 +69,8 @@ public final class CdnSerializer {
             Object propertyValue = field.get(entity);
 
             if (propertyValue != null) {
-                Serializer<Object> serializer = CdnUtils.findComposer(settings, field.getType(), field);
-                root.append(serializer.serialize(settings, description, field.getName(), field.getGenericType(), propertyValue));
+                Serializer<Object> serializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), field);
+                root.append(serializer.serialize(settings, description, field.getName(), field.getAnnotatedType(), propertyValue));
             }
         }
 

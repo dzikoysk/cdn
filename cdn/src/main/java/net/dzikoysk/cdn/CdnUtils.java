@@ -16,16 +16,18 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.composers.ContextualsComposers;
+import net.dzikoysk.cdn.composers.ContextualComposers;
+import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
-import net.dzikoysk.cdn.entity.SectionValue;
 import net.dzikoysk.cdn.serialization.Composer;
+import net.dzikoysk.cdn.utils.GenericUtils;
 import org.jetbrains.annotations.Nullable;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
@@ -37,8 +39,12 @@ public final class CdnUtils {
 
     private CdnUtils() {}
 
+    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable Field field) throws Exception {
+        return findComposer(settings, GenericUtils.toClass(type.getType()), type, field);
+    }
+
     @SuppressWarnings("unchecked")
-    public static Composer<Object> findComposer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
+    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable Field field) throws Exception {
         Composer<?> composer = null;
 
         if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
@@ -47,7 +53,7 @@ public final class CdnUtils {
         }
         else {
             for (Entry<? extends Class<?>, ? extends Composer<?>> serializerEntry : settings.getComposers().entrySet()) {
-                if (type.isAssignableFrom(serializerEntry.getKey())) {
+                if (clazz.isAssignableFrom(serializerEntry.getKey())) {
                     composer = serializerEntry.getValue();
                     break;
                 }
@@ -55,7 +61,7 @@ public final class CdnUtils {
 
             if (composer == null) {
                 for (Entry<? extends Predicate<Class<?>>, ? extends Composer<?>> dynamicComposer : settings.getDynamicComposers().entrySet()) {
-                    if (dynamicComposer.getKey().test(type)) {
+                    if (dynamicComposer.getKey().test(clazz)) {
                         composer = dynamicComposer.getValue();
                         break;
                     }
@@ -63,12 +69,12 @@ public final class CdnUtils {
             }
         }
 
-        if (type.isAnnotationPresent(SectionValue.class)) {
-            composer = new ContextualsComposers();
+        if (clazz.isAnnotationPresent(Contextual.class)) {
+            composer = new ContextualComposers();
         }
 
         if (composer == null) {
-            throw new UnsupportedOperationException("Cannot find composer for '" + type  + "' type");
+            throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type");
         }
 
         return (Composer<Object>) composer;

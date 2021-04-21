@@ -17,8 +17,8 @@
 package net.dzikoysk.cdn
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.entity.Description
-import net.dzikoysk.cdn.entity.SectionLink
 import net.dzikoysk.cdn.entity.CustomComposer
 
 @CompileStatic
@@ -28,8 +28,7 @@ class TestConfiguration {
     public String rootEntry = "default value"
 
     @Description(['', '// Section description'])
-    @SectionLink
-    public SectionConfiguration section = new SectionConfiguration()
+    public @Contextual SectionConfiguration section = new SectionConfiguration()
 
     static class SectionConfiguration {
 

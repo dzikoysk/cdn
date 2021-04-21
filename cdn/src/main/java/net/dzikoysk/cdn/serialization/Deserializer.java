@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.serialization;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 
 /**
  * Represents process of converting configuration element into the Java object
@@ -31,6 +31,6 @@ import java.lang.reflect.Type;
 @FunctionalInterface
 public interface Deserializer<T> {
 
-    T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception;
+    T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception;
 
 }

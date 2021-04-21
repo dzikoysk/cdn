@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.composers
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import net.dzikoysk.cdn.CdnSpec
-import net.dzikoysk.cdn.entity.SectionValue
+import net.dzikoysk.cdn.entity.Contextual
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -35,7 +35,7 @@ class MapComposerTest extends CdnSpec {
                 'a': new Element(),
         ]
 
-        @SectionValue
+        @Contextual
         static class Element {
 
             public String name = "default name"
@@ -48,7 +48,7 @@ class MapComposerTest extends CdnSpec {
 
         public Map<String, Group> groups = [ "default": new Group() ]
 
-        @SectionValue
+        @Contextual
         @EqualsAndHashCode
         static class Group {
 

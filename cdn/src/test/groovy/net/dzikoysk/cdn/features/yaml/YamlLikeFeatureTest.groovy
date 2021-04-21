@@ -18,7 +18,7 @@ package net.dzikoysk.cdn.features.yaml
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
-import net.dzikoysk.cdn.entity.SectionLink
+import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.features.YamlLikeFeature
 import org.junit.jupiter.api.Test
 
@@ -95,8 +95,7 @@ final class YamlLikeFeatureTest extends CdnSpec {
         section:
           key: value
         """), yamlLike.render(new Object() {
-            @SectionLink
-            public Object section = new Object() {
+            public @Contextual Object section = new Object() {
                 public String key = "value"
             }
         })

@@ -22,7 +22,7 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Unit;
 import org.panda_lang.utilities.commons.StringUtils;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ import java.util.List;
 public interface SimpleSerializer<T> extends Serializer<T> {
 
     @Override
-    default Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) {
+    default Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
         String result = serialize(entity);
 
         return StringUtils.isEmpty(key) 

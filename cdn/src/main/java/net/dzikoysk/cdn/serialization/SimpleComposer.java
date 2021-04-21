@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.serialization;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 public final class SimpleComposer<T> implements Composer<T> {
@@ -33,13 +33,13 @@ public final class SimpleComposer<T> implements Composer<T> {
     }
 
     @Override
-    public T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception {
         return deserializer.deserialize(settings, source, type, defaultValue, entryAsRecord);
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
-        return serializer.serialize(settings, description, key, genericType, entity);
+    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
+        return serializer.serialize(settings, description, key, type, entity);
     }
 
 }

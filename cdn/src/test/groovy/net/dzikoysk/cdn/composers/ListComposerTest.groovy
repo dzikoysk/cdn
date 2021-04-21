@@ -18,7 +18,7 @@ package net.dzikoysk.cdn.composers
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
-import net.dzikoysk.cdn.entity.SectionValue
+import net.dzikoysk.cdn.entity.Contextual
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -26,19 +26,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 @CompileStatic
 class ListComposerTest extends CdnSpec {
 
+    @CompileStatic
     static class ConfigurationWithLists {
-    
+
         public List<String> list = Collections.emptyList()
 
-        public List<Element> elements = [new Element(), new Element() ]
+        public List<Element> elements = [ new Element(), new Element() ]
 
-        @SectionValue
+        @Contextual
         static class Element {
 
             public String name = "default value"
 
         }
-        
+
     }
 
     @Test

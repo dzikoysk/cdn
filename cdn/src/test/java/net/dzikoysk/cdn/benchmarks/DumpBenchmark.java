@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import net.dzikoysk.cdn.Cdn;
 import net.dzikoysk.cdn.CdnFactory;
-import net.dzikoysk.cdn.entity.SectionLink;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -39,7 +38,6 @@ public class DumpBenchmark extends BenchmarkSpec {
 
     public static class Entity {
 
-        @SectionLink
         public Entry entry = new Entry();
 
     }

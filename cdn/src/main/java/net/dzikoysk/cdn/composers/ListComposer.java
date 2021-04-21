@@ -27,9 +27,9 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
-import net.dzikoysk.cdn.utils.GenericUtils;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +39,7 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
@@ -50,13 +50,12 @@ public final class ListComposer<T> implements Composer<T> {
             throw new UnsupportedOperationException("Cannot deserialize list of " + entry);
         }
 
-        Section section = (Section) source;
+        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
+        AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
+        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, collectionType, null);
 
-        Type collectionType = GenericUtils.getGenericTypes(type)[0];
-        Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
-
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, collectionTypeClass, null);
         List<Object> result = new ArrayList<>();
+        Section section = (Section) source;
 
         for (Element<?> element : section.getValue()) {
             for (CdnFeature feature : settings.getFeatures()) {
@@ -71,16 +70,16 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
         Collection<Object> collection = (Collection<Object>) entity;
 
         if (collection.isEmpty()) {
             return new Entry(description, key, "[]");
         }
 
-        Type collectionType = GenericUtils.getGenericTypes(genericType)[0];
-        Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
-        Serializer<Object> serializer = CdnUtils.findComposer(settings, collectionTypeClass, null);
+        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
+        AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
+        Serializer<Object> serializer = CdnUtils.findComposer(settings, collectionType, null);
 
         Section section = new Section(description, CdnConstants.ARRAY_SEPARATOR, key);
 

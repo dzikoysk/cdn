@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
-import net.dzikoysk.cdn.entity.SectionLink;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
@@ -61,7 +61,7 @@ public final class CdnDeserializer<T> {
             Element<?> element = elementValue.get();
             Object defaultValue = field.get(instance);
 
-            if (field.isAnnotationPresent(SectionLink.class)) {
+            if (field.isAnnotationPresent(Contextual.class)) {
                 deserialize(defaultValue, (Section) element);
                 continue;
             }
@@ -73,8 +73,8 @@ public final class CdnDeserializer<T> {
     }
 
     private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, Element<?> element) throws Exception {
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, field.getType(), field);
-        Object value = deserializer.deserialize(settings, element, field.getGenericType(), defaultValue, false);
+        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), field);
+        Object value = deserializer.deserialize(settings, element, field.getAnnotatedType(), defaultValue, false);
         field.set(instance, value);
         return value;
     }

@@ -22,7 +22,7 @@ import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serialization.Composer
 
-import java.lang.reflect.Type
+import java.lang.reflect.AnnotatedType
 
 @CompileStatic
 class TestConfigurationCustomObject {
@@ -36,17 +36,17 @@ class TestConfigurationCustomObject {
     }
 
     int getCount() {
-        return count;
+        return count
     }
 
     String getId() {
-        return this.id;
+        return this.id
     }
 
     static class CustomObjectComposer implements Composer<TestConfigurationCustomObject> {
 
         @Override
-        TestConfigurationCustomObject deserialize(CdnSettings settings, Element<?> source, Type type, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
+        TestConfigurationCustomObject deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
             if (!(source instanceof Section)) {
                 throw new IllegalArgumentException('Unsupported element')
             }
@@ -59,7 +59,7 @@ class TestConfigurationCustomObject {
         }
 
         @Override
-        Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, TestConfigurationCustomObject entity) {
+        Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, TestConfigurationCustomObject entity) {
             def section = new Section(description, key)
             section.append(new Entry([], 'id', entity.id))
             section.append(new Entry([], 'count', entity.count.toString()))

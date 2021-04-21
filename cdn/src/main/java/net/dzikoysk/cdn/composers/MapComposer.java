@@ -27,10 +27,10 @@ import net.dzikoysk.cdn.model.Unit;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
-import net.dzikoysk.cdn.utils.GenericUtils;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +40,7 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
             // String value = entryAsRecord ? entry.get() : entry.getValue();
@@ -53,30 +53,33 @@ public final class MapComposer<T> implements Composer<T> {
             throw new UnsupportedOperationException("Cannot deserialize list of " + value);
         }
 
-        Section section = (Section) source;
-        Type[] collectionTypes = GenericUtils.getGenericTypes(type);
-        Class<?>[] collectionTypesClasses = GenericUtils.getGenericClasses(type);
+        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
+        AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
 
-        Deserializer<?> keySerializer = CdnUtils.findComposer(settings, collectionTypesClasses[0], null);
-        Deserializer<?> valueSerializer = CdnUtils.findComposer(settings, collectionTypesClasses[1], null);
+        AnnotatedType keyType = collectionTypes[0];
+        Deserializer<?> keySerializer = CdnUtils.findComposer(settings, keyType, null);
+
+        AnnotatedType valueType = collectionTypes[1];
+        Deserializer<?> valueSerializer = CdnUtils.findComposer(settings, valueType, null);
 
         Map<Object, Object> result = new LinkedHashMap<>();
+        Section section = (Section) source;
 
         for (Element<?> element : section.getValue()) {
             if (element instanceof Entry) {
                 Entry entry = (Entry) element;
 
                 result.put(
-                        keySerializer.deserialize(settings, new Unit(entry.getName()), collectionTypes[0], null, entryAsRecord),
-                        valueSerializer.deserialize(settings, entry.getValue(), collectionTypes[1], null, entryAsRecord)
+                        keySerializer.deserialize(settings, new Unit(entry.getName()), keyType, null, entryAsRecord),
+                        valueSerializer.deserialize(settings, entry.getValue(), valueType, null, entryAsRecord)
                 );
             }
             else if (element instanceof Section) {
                 Section subSection = (Section) element;
 
                 result.put(
-                        keySerializer.deserialize(settings, new Unit(subSection.getName()), collectionTypes[0], null, entryAsRecord),
-                        valueSerializer.deserialize(settings, subSection, collectionTypes[1], null, entryAsRecord)
+                        keySerializer.deserialize(settings, new Unit(subSection.getName()), keyType, null, entryAsRecord),
+                        valueSerializer.deserialize(settings, subSection, valueType, null, entryAsRecord)
                 );
             }
             else throw new UnsupportedOperationException("Unsupported element in map: " + element);
@@ -87,24 +90,27 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public NamedElement<? extends Object> serialize(CdnSettings settings, List<String> description, String key, Type genericType, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
         Map<Object, Object> map = (Map<Object, Object>) entity;
 
         if (map.isEmpty()) {
             return new Entry(description, key, "[]");
         }
 
-        Type[] collectionTypes = GenericUtils.getGenericTypes(genericType);
-        Class<?>[] collectionTypesClasses = GenericUtils.getGenericClasses(genericType);
+        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
+        AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
 
-        Serializer<?> keySerializer = CdnUtils.findComposer(settings, collectionTypesClasses[0], null);
-        Serializer<?> valueSerializer = CdnUtils.findComposer(settings, collectionTypesClasses[1], null);
+        AnnotatedType keyType = collectionTypes[0];
+        Serializer<?> keySerializer = CdnUtils.findComposer(settings, keyType, null);
+
+        AnnotatedType valueType = collectionTypes[1];
+        Serializer<?> valueSerializer = CdnUtils.findComposer(settings, valueType, null);
 
         Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, key);
 
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
-            Element<?> keyElement = keySerializer.serialize(settings, Collections.emptyList(), "", collectionTypes[0], ObjectUtils.cast(entry.getKey()));
-            Element<?> valueElement = valueSerializer.serialize(settings, Collections.emptyList(), keyElement.getValue().toString(), collectionTypes[1], ObjectUtils.cast(entry.getValue()));
+            Element<?> keyElement = keySerializer.serialize(settings, Collections.emptyList(), "", keyType, ObjectUtils.cast(entry.getKey()));
+            Element<?> valueElement = valueSerializer.serialize(settings, Collections.emptyList(), keyElement.getValue().toString(), valueType, ObjectUtils.cast(entry.getValue()));
 
             if (valueElement instanceof Section) {
                 section.append(valueElement);

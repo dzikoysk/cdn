@@ -22,15 +22,15 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer<Enum<?>> {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Enum deserialize(Type type, String source) {
-        return Enum.valueOf((Class<Enum>) type, source);
+    public Enum deserialize(AnnotatedType type, String source) {
+        return Enum.valueOf((Class<Enum>) type.getType(), source);
     }
 
     @Override
@@ -39,7 +39,7 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, Type genericType, Enum<?> entity) throws Exception {
+    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) throws Exception {
         return new Entry(description, key, entity.name());
     }
     
