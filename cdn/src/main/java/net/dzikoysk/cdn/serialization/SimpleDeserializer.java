@@ -32,17 +32,21 @@ import java.lang.reflect.Type;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) {
+    default T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) {
         if (source instanceof Unit) {
-            return deserialize(((Unit) source).getValue());
+            return deserialize(type, ((Unit) source).getValue());
         }
 
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            return deserialize(entryAsRecord ? entry.getRaw() : entry.getUnitValue());
+            return deserialize(type, entryAsRecord ? entry.getRaw() : entry.getUnitValue());
         }
 
-        throw new UnsupportedOperationException("Simple deserializer can deserialize only units (" + genericType + " from " + source.getClass() + ")");
+        throw new UnsupportedOperationException("Simple deserializer can deserialize only units (" + type + " from " + source.getClass() + ")");
+    }
+
+    default T deserialize(Type type, String source) {
+        return deserialize(source);
     }
 
     T deserialize(String source);

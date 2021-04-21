@@ -17,10 +17,9 @@
 package net.dzikoysk.cdn.composers;
 
 import net.dzikoysk.cdn.CdnConstants;
-import net.dzikoysk.cdn.CdnDeserializer;
 import net.dzikoysk.cdn.CdnFeature;
-import net.dzikoysk.cdn.CdnSerializer;
 import net.dzikoysk.cdn.CdnSettings;
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.NamedElement;
@@ -40,7 +39,7 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
@@ -53,10 +52,10 @@ public final class ListComposer<T> implements Composer<T> {
 
         Section section = (Section) source;
 
-        Type collectionType = GenericUtils.getGenericTypes(genericType)[0];
+        Type collectionType = GenericUtils.getGenericTypes(type)[0];
         Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
 
-        Deserializer<Object> deserializer = CdnDeserializer.getDeserializer(settings, collectionTypeClass, null);
+        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, collectionTypeClass, null);
         List<Object> result = new ArrayList<>();
 
         for (Element<?> element : section.getValue()) {
@@ -81,7 +80,7 @@ public final class ListComposer<T> implements Composer<T> {
 
         Type collectionType = GenericUtils.getGenericTypes(genericType)[0];
         Class<?> collectionTypeClass = GenericUtils.toClass(collectionType);
-        Serializer<Object> serializer = CdnSerializer.getSerializer(settings, collectionTypeClass, null);
+        Serializer<Object> serializer = CdnUtils.findComposer(settings, collectionTypeClass, null);
 
         Section section = new Section(description, CdnConstants.ARRAY_SEPARATOR, key);
 

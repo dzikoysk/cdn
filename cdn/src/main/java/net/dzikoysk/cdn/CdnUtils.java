@@ -16,7 +16,13 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.composers.ContextualsComposers;
+import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
+import net.dzikoysk.cdn.entity.SectionValue;
+import net.dzikoysk.cdn.serialization.Composer;
+import org.jetbrains.annotations.Nullable;
+import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +30,49 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 public final class CdnUtils {
 
     private CdnUtils() {}
+
+    @SuppressWarnings("unchecked")
+    public static Composer<Object> findComposer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
+        Composer<?> composer = null;
+
+        if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
+            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+            composer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+        }
+        else {
+            for (Entry<? extends Class<?>, ? extends Composer<?>> serializerEntry : settings.getComposers().entrySet()) {
+                if (type.isAssignableFrom(serializerEntry.getKey())) {
+                    composer = serializerEntry.getValue();
+                    break;
+                }
+            }
+
+            if (composer == null) {
+                for (Entry<? extends Predicate<Class<?>>, ? extends Composer<?>> dynamicComposer : settings.getDynamicComposers().entrySet()) {
+                    if (dynamicComposer.getKey().test(type)) {
+                        composer = dynamicComposer.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (type.isAnnotationPresent(SectionValue.class)) {
+            composer = new ContextualsComposers();
+        }
+
+        if (composer == null) {
+            throw new UnsupportedOperationException("Cannot find composer for '" + type  + "' type");
+        }
+
+        return (Composer<Object>) composer;
+    }
 
     static boolean isIgnored(Field field) {
         if (!Modifier.isPublic(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {

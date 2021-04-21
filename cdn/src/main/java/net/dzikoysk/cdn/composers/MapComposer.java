@@ -17,9 +17,8 @@
 package net.dzikoysk.cdn.composers;
 
 import net.dzikoysk.cdn.CdnConstants;
-import net.dzikoysk.cdn.CdnDeserializer;
-import net.dzikoysk.cdn.CdnSerializer;
 import net.dzikoysk.cdn.CdnSettings;
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.NamedElement;
@@ -41,7 +40,7 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, Type genericType, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, Type type, T defaultValue, boolean entryAsRecord) throws Exception {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
             // String value = entryAsRecord ? entry.get() : entry.getValue();
@@ -55,11 +54,11 @@ public final class MapComposer<T> implements Composer<T> {
         }
 
         Section section = (Section) source;
-        Type[] collectionTypes = GenericUtils.getGenericTypes(genericType);
-        Class<?>[] collectionTypesClasses = GenericUtils.getGenericClasses(genericType);
+        Type[] collectionTypes = GenericUtils.getGenericTypes(type);
+        Class<?>[] collectionTypesClasses = GenericUtils.getGenericClasses(type);
 
-        Deserializer<?> keySerializer = CdnDeserializer.getDeserializer(settings, collectionTypesClasses[0], null);
-        Deserializer<?> valueSerializer = CdnDeserializer.getDeserializer(settings, collectionTypesClasses[1], null);
+        Deserializer<?> keySerializer = CdnUtils.findComposer(settings, collectionTypesClasses[0], null);
+        Deserializer<?> valueSerializer = CdnUtils.findComposer(settings, collectionTypesClasses[1], null);
 
         Map<Object, Object> result = new LinkedHashMap<>();
 
@@ -98,8 +97,8 @@ public final class MapComposer<T> implements Composer<T> {
         Type[] collectionTypes = GenericUtils.getGenericTypes(genericType);
         Class<?>[] collectionTypesClasses = GenericUtils.getGenericClasses(genericType);
 
-        Serializer<?> keySerializer = CdnSerializer.getSerializer(settings, collectionTypesClasses[0], null);
-        Serializer<?> valueSerializer = CdnSerializer.getSerializer(settings, collectionTypesClasses[1], null);
+        Serializer<?> keySerializer = CdnUtils.findComposer(settings, collectionTypesClasses[0], null);
+        Serializer<?> valueSerializer = CdnUtils.findComposer(settings, collectionTypesClasses[1], null);
 
         Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, key);
 

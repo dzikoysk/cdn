@@ -16,22 +16,28 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.composers.EnumComposer;
 import net.dzikoysk.cdn.composers.ListComposer;
 import net.dzikoysk.cdn.composers.MapComposer;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
+import net.dzikoysk.cdn.serialization.SimpleComposer;
 import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 import net.dzikoysk.cdn.serialization.SimpleSerializer;
+import org.panda_lang.utilities.commons.ClassUtils;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 /**
  * Settings used by CDN instance. By default, the {@link net.dzikoysk.cdn.CdnSettings} register serializers&deserializers for the given types:
@@ -49,55 +55,33 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class CdnSettings {
 
-    protected final Map<Class<?>, Serializer<Object>> serializers = new HashMap<>();
-    protected final Map<Class<?>, Deserializer<Object>> deserializers = new HashMap<>();
+    @SuppressWarnings("rawtypes")
+    protected final Map<Class<?>, Composer> composers = new HashMap<>();
+    @SuppressWarnings("rawtypes")
+    protected final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
+
     protected final Map<String, String> placeholders = new HashMap<>();
     protected final Collection<CdnFeature> features = new ArrayList<>();
 
     {
-        serializer(boolean.class, Object::toString);
-        serializer(Boolean.class, Object::toString);
-        deserializer(boolean.class, Boolean::parseBoolean);
-        deserializer(Boolean.class, Boolean::parseBoolean);
+        withComposer(boolean.class, Object::toString, Boolean::parseBoolean);
+        withComposer(int.class, Object::toString, Integer::parseInt);
+        withComposer(long.class, Object::toString, Long::parseLong);
+        withComposer(float.class, Object::toString, Float::parseFloat);
+        withComposer(double.class, Object::toString, Double::parseDouble);
+        withComposer(String.class, CdnUtils::stringify, CdnUtils::destringify);
 
-        serializer(int.class, Object::toString);
-        serializer(Integer.class, Object::toString);
-        deserializer(int.class, Integer::parseInt);
-        deserializer(Integer.class, Integer::parseInt);
+        withComposer(List.class, new ListComposer<>());
+        withComposer(ArrayList.class, new ListComposer<>());
+        withComposer(LinkedList.class, new ListComposer<>());
 
-        serializer(long.class, Object::toString);
-        serializer(Long.class, Object::toString);
-        deserializer(long.class, Long::parseLong);
-        deserializer(Long.class, Long::parseLong);
+        withComposer(Map.class, new MapComposer<>());
+        withComposer(HashMap.class, new MapComposer<>());
+        withComposer(TreeMap.class, new MapComposer<>());
+        withComposer(LinkedHashMap.class, new MapComposer<>());
+        withComposer(ConcurrentHashMap.class, new MapComposer<>());
 
-        serializer(Float.class, Object::toString);
-        serializer(Float.class, Object::toString);
-        deserializer(Float.class, Float::parseFloat);
-        deserializer(Float.class, Float::parseFloat);
-        
-        serializer(double.class, Object::toString);
-        serializer(Double.class, Object::toString);
-        deserializer(double.class, Double::parseDouble);
-        deserializer(Double.class, Double::parseDouble);
-        
-        deserializer(String.class, CdnUtils::destringify);
-        serializer(String.class, value -> CdnUtils.stringify(value.toString()));
-
-        ListComposer<Object> listComposer = new ListComposer<>();
-        serializer(List.class, listComposer);
-        serializer(ArrayList.class, listComposer);
-        deserializer(List.class, listComposer);
-        deserializer(ArrayList.class, listComposer);
-
-        Composer<Object> mapComposer = new MapComposer<>();
-        serializer(Map.class, mapComposer);
-        serializer(HashMap.class, mapComposer);
-        serializer(LinkedHashMap.class, mapComposer);
-        serializer(ConcurrentHashMap.class, mapComposer);
-        deserializer(Map.class, mapComposer);
-        deserializer(HashMap.class, mapComposer);
-        deserializer(LinkedHashMap.class, mapComposer);
-        deserializer(ConcurrentHashMap.class, mapComposer);
+        withDynamicComposer(Class::isEnum, new EnumComposer());
     }
 
     /**
@@ -117,45 +101,51 @@ public final class CdnSettings {
      * @param <T> generic type of serialized type
      * @return settings instance
      */
-    public <T> CdnSettings serializer(Class<T> type, SimpleSerializer<Object> serializer) {
-        return serializer(type, (Serializer<Object>) serializer);
+    public <T> CdnSettings withComposer(Class<T> type, SimpleSerializer<T> serializer, SimpleDeserializer<T> deserializer) {
+        return withComposer(type, (Serializer<T>) serializer, deserializer);
     }
 
     /**
-     * Register serializer.
+     * Register composer using serializer and deserializer.
      *
      * @param type the type to serialize
      * @param serializer the serializer instance
+     * @param deserializer the deserializer instance
      * @param <T> generic type of serialized type
      * @return settings instance
      */
-    public <T> CdnSettings serializer(Class<T> type, Serializer<Object> serializer) {
-        serializers.put(type, ObjectUtils.cast(serializer));
+    public <T> CdnSettings withComposer(Class<T> type, Serializer<T> serializer, Deserializer<T> deserializer) {
+        return withComposer(type, new SimpleComposer<>(serializer, deserializer));
+    }
+
+    /**
+     * Register simple serializer. Simple serializer can serialize only {@link net.dzikoysk.cdn.model.Unit} and {@link net.dzikoysk.cdn.model.Entry} values.
+     *
+     * @param type the type to serialize
+     * @param composer the serializer instance
+     * @param <T> generic type of serialized type
+     * @return settings instance
+     */
+    @SuppressWarnings("unchecked")
+    public <T> CdnSettings withComposer(Class<? super T> type, Composer<T> composer) {
+        composers.put(type, composer);
+
+        if (type.isPrimitive()) {
+            withComposer((Class<T>) ClassUtils.getNonPrimitiveClass(type), composer);
+        }
+
         return this;
     }
 
     /**
-     * Register simple deserializer. Simple deserializer can deserialize only {@link net.dzikoysk.cdn.model.Unit} and {@link net.dzikoysk.cdn.model.Entry} values.
+     * Register dynamic composer that may parse range of classes.
      *
-     * @param type the type to deserialize
-     * @param deserializer the deserializer instance
-     * @param <T> generic type of deserialized type
+     * @param filter composer filter
+     * @param composer the serializer instance
      * @return settings instance
      */
-    public <T> CdnSettings deserializer(Class<T> type, SimpleDeserializer<Object> deserializer) {
-        return deserializer(type, (Deserializer<Object>) deserializer);
-    }
-
-    /**
-     * Register simple deserializer.
-     *
-     * @param type the type to deserialize
-     * @param deserializer the deserializer instance
-     * @param <T> generic type of deserialized type
-     * @return settings instance
-     */
-    public <T> CdnSettings deserializer(Class<T> type, Deserializer<Object> deserializer) {
-        deserializers.put(type, ObjectUtils.cast(deserializer));
+    public CdnSettings withDynamicComposer(Predicate<Class<?>> filter, Composer<?> composer) {
+        dynamicComposers.put(filter, composer);
         return this;
     }
 
@@ -189,12 +179,12 @@ public final class CdnSettings {
         return placeholders;
     }
 
-    public Map<? extends Class<?>, ? extends Deserializer<Object>> getDeserializers() {
-        return deserializers;
+    public Map<? extends Predicate<Class<?>>, ? extends Composer<?>> getDynamicComposers() {
+        return ObjectUtils.cast(dynamicComposers);
     }
 
-    public Map<? extends Class<?>, ? extends Serializer<Object>> getSerializers() {
-        return serializers;
+    public Map<? extends Class<?>, ? extends Composer<?>> getComposers() {
+        return ObjectUtils.cast(composers);
     }
 
 }

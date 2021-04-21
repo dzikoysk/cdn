@@ -16,14 +16,11 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.entity.SectionLink;
-import net.dzikoysk.cdn.entity.SectionValue;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
-import org.jetbrains.annotations.Nullable;
 import org.panda_lang.utilities.commons.ObjectUtils;
 import org.panda_lang.utilities.commons.function.Option;
 
@@ -33,11 +30,11 @@ public final class CdnDeserializer<T> {
 
     private final CdnSettings settings;
 
-    CdnDeserializer(CdnSettings settings) {
+    public CdnDeserializer(CdnSettings settings) {
         this.settings = settings;
     }
 
-    protected T deserialize(Class<T> scheme, Section content) throws Exception {
+    public T deserialize(Class<T> scheme, Section content) throws Exception {
         T instance = scheme.getConstructor().newInstance();
         deserialize(instance, content);
 
@@ -53,10 +50,6 @@ public final class CdnDeserializer<T> {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (CdnUtils.isIgnored(field)) {
                 continue;
-            }
-
-            if (settings.getDeserializers().get(field.getType()) == null && !field.isAnnotationPresent(SectionLink.class) && !field.isAnnotationPresent(CustomComposer.class)) {
-                throw new UnsupportedOperationException("Unsupported type, missing deserializer for '" + field.getType().getSimpleName() + " " + field.getName() + "'");
             }
 
             Option<Element<?>> elementValue = root.get(field.getName());
@@ -80,37 +73,10 @@ public final class CdnDeserializer<T> {
     }
 
     private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, Element<?> element) throws Exception {
-        Deserializer<Object> deserializer = getDeserializer(settings, field.getType(), field);
+        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, field.getType(), field);
         Object value = deserializer.deserialize(settings, element, field.getGenericType(), defaultValue, false);
         field.set(instance, value);
         return value;
-    }
-
-    public static Deserializer<Object> getDeserializer(CdnSettings settings, Class<?> type, @Nullable Field field) throws Exception {
-        Deserializer<Object> deserializer;
-
-        if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
-            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
-            deserializer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
-        }
-        else {
-            deserializer = settings.getDeserializers().get(type);
-        }
-
-        if (type.isAnnotationPresent(SectionValue.class)) {
-            CdnDeserializer<Object> sectionDeserializer = new CdnDeserializer<>(settings);
-
-            return (s, source, genericType, defaultValue, entryAsRecord) -> {
-                //noinspection unchecked
-                return sectionDeserializer.deserialize((Class<Object>) type, (Section) source);
-            };
-        }
-
-        if (deserializer == null) {
-            throw new UnsupportedOperationException("Missing deserializer for '" + type + "' type. Available deserializers: " + settings.getDeserializers().keySet().toString());
-        }
-
-        return deserializer;
     }
 
 }

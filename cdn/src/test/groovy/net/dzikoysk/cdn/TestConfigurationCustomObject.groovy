@@ -46,7 +46,7 @@ class TestConfigurationCustomObject {
     static class CustomObjectComposer implements Composer<TestConfigurationCustomObject> {
 
         @Override
-        TestConfigurationCustomObject deserialize(CdnSettings settings, Element<?> source, Type genericType, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
+        TestConfigurationCustomObject deserialize(CdnSettings settings, Element<?> source, Type type, TestConfigurationCustomObject defaultValue, boolean entryAsRecord) {
             if (!(source instanceof Section)) {
                 throw new IllegalArgumentException('Unsupported element')
             }
