@@ -35,7 +35,12 @@ class YamlLikeMapComposerTest extends CdnSpec {
         def configuration = yamlLike.load(source, MapComposerTest.ConfigurationWithMaps.class)
         assertEquals(Collections.emptyMap(), configuration.map)
 
-        assertEquals(source, yamlLike.render(configuration))
+        assertEquals(cfg("""
+        map: []
+        elements:
+          a:
+            name: default name
+        """), yamlLike.render(configuration))
     }
 
 
@@ -45,27 +50,32 @@ class YamlLikeMapComposerTest extends CdnSpec {
         map:
           1:
             1: a
-            2: b
           2:
             1: a
-            2: b
         """)
 
         def map = [
                 1: [
                         1: "a",
-                        2: "b"
                 ],
                 2: [
                         1: "a",
-                        2: "b"
                 ]
         ]
 
         def configuration = yamlLike.load(source, MapComposerTest.ConfigurationWithMaps.class)
         assertEquals(map, configuration.map)
 
-        assertEquals(source, yamlLike.render(configuration))
+        assertEquals(cfg("""
+        map:
+          1:
+            1: a
+          2:
+            1: a
+        elements:
+          a:
+            name: default name
+        """), yamlLike.render(configuration))
     }
 
 
