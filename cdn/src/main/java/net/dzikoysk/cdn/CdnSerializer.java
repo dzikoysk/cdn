@@ -71,8 +71,12 @@ public final class CdnSerializer {
                 continue;
             }
 
-            Serializer<Object> serializer = getSerializer(settings, field.getType(), field);
-            root.append(serializer.serialize(settings, description, field.getName(), field.getGenericType(), field.get(entity)));
+            Object propertyValue = field.get(entity);
+
+            if (propertyValue != null) {
+                Serializer<Object> serializer = getSerializer(settings, field.getType(), field);
+                root.append(serializer.serialize(settings, description, field.getName(), field.getGenericType(), propertyValue));
+            }
         }
 
         return root;

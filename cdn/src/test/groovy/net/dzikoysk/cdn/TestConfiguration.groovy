@@ -39,6 +39,9 @@ class TestConfiguration {
         @Description('# List description')
         public List<String> list = [ 'record', 'record : with : semicolons' ]
 
+        @Description('# Null')
+        public String nullable = null
+
         @Description('# Custom object')
         @CustomComposer(TestConfigurationCustomObject.CustomObjectComposer.class)
         public TestConfigurationCustomObject custom = new TestConfigurationCustomObject('rtx', 3070)
