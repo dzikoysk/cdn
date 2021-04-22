@@ -33,7 +33,6 @@ final class YamlLikeFeatureTest extends CdnSpec {
     void 'should convert indentation to brackets' () {
         def source = cfg("""
         key: value
-        
         section:
           subSection:
             subKey: value
@@ -43,7 +42,6 @@ final class YamlLikeFeatureTest extends CdnSpec {
 
         assertEquals("""\
         key: value
-        
         section {
           subSection {
             subKey: value

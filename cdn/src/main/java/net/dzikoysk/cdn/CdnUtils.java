@@ -69,12 +69,17 @@ public final class CdnUtils {
             }
         }
 
-        if (clazz.isAnnotationPresent(Contextual.class)) {
+        if (clazz.isAnnotationPresent(Contextual.class) || type.isAnnotationPresent(Contextual.class)) {
             composer = new ContextualComposers();
         }
 
         if (composer == null) {
-            throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type");
+            try {
+                clazz.getMethod("getMetaClass");
+                throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type. Remember that Groovy does not support @Contextual annotation in generic parameters.");
+            } catch (NoSuchMethodException noSuchMethodException) {
+                throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type");
+            }
         }
 
         return (Composer<Object>) composer;

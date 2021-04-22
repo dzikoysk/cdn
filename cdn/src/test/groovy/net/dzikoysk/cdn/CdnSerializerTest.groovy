@@ -29,7 +29,7 @@ class CdnSerializerTest extends CdnSpec {
         assertEquals cfg("""
         # Root entry description
         rootEntry: default value
-        
+
         // Section description
         section {
           # Random value

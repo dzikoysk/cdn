@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 class MapComposerTest extends CdnSpec {
 
     static class ConfigurationWithMaps {
-    
+
         public Map<Integer, Map<Integer, String>> map = Collections.emptyMap()
 
         public Map<String, Element> elements = [
@@ -41,7 +41,7 @@ class MapComposerTest extends CdnSpec {
             public String name = "default name"
 
         }
-        
+
     }
 
     static class ConfigurationWithSection {
