@@ -21,7 +21,6 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
-import net.dzikoysk.cdn.utils.GenericUtils;
 import org.jetbrains.annotations.Nullable;
 import org.panda_lang.utilities.commons.ObjectUtils;
 
@@ -30,6 +29,8 @@ import java.io.IOException;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Map.Entry;
@@ -40,7 +41,7 @@ public final class CdnUtils {
     private CdnUtils() {}
 
     public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable Field field) throws Exception {
-        return findComposer(settings, GenericUtils.toClass(type.getType()), type, field);
+        return findComposer(settings, toClass(type.getType()), type, field);
     }
 
     @SuppressWarnings("unchecked")
@@ -83,6 +84,19 @@ public final class CdnUtils {
         }
 
         return (Composer<Object>) composer;
+    }
+
+    public static Class<?> toClass(Type type) {
+        if (type instanceof ParameterizedType) {
+            return toClass(((ParameterizedType) type).getRawType());
+        }
+
+        try {
+            return Class.forName(type.getTypeName());
+        }
+        catch (ClassNotFoundException classNotFoundException) {
+            throw new IllegalArgumentException("Cannot find generic type " + type);
+        }
     }
 
     static boolean isIgnored(Field field) {

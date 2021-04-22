@@ -20,10 +20,10 @@ import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnDeserializer;
 import net.dzikoysk.cdn.CdnSerializer;
 import net.dzikoysk.cdn.CdnSettings;
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Composer;
-import net.dzikoysk.cdn.utils.GenericUtils;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
@@ -33,7 +33,7 @@ public final class ContextualComposers implements Composer<Object> {
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Object defaultValue, boolean entryAsRecord) throws Exception {
-        return new CdnDeserializer(settings).deserialize(GenericUtils.toClass(type.getType()), (Section) source);
+        return new CdnDeserializer(settings).deserialize(CdnUtils.toClass(type.getType()), (Section) source);
     }
 
     @Override
