@@ -36,9 +36,9 @@ repositories {
 
 dependencies {
     // Default
-    implementation 'net.dzikoysk:cdn:1.8.1'
+    implementation 'net.dzikoysk:cdn:1.9.0'
     // Kotlin wrapper
-    implementation 'net.dzikoysk:cdn-kt:1.8.1'
+    implementation 'net.dzikoysk:cdn-kt:1.9.0'
 }
 ```
 

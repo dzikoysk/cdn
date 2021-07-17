@@ -21,8 +21,8 @@ import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
-import org.panda_lang.utilities.commons.ObjectUtils;
-import org.panda_lang.utilities.commons.function.Option;
+import panda.std.Option;
+import panda.utilities.ObjectUtils;
 
 import java.lang.reflect.Field;
 

@@ -17,8 +17,8 @@
 package net.dzikoysk.cdn.features;
 
 import net.dzikoysk.cdn.CdnConstants;
-import org.panda_lang.utilities.commons.CharacterUtils;
-import org.panda_lang.utilities.commons.StringUtils;
+import panda.utilities.CharacterUtils;
+import panda.utilities.StringUtils;
 
 import java.util.Stack;
 

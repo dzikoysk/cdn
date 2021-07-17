@@ -18,7 +18,7 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
-import org.panda_lang.utilities.commons.FileUtils;
+import panda.utilities.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

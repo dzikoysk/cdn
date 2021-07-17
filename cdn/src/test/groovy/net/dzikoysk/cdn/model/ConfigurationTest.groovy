@@ -19,9 +19,9 @@ package net.dzikoysk.cdn.model
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import org.junit.jupiter.api.Test
-import org.panda_lang.utilities.commons.StringUtils
 
 import static org.junit.jupiter.api.Assertions.assertEquals
+import static panda.utilities.StringUtils.EMPTY
 
 @CompileStatic
 final class ConfigurationTest extends CdnSpec {
@@ -34,7 +34,7 @@ final class ConfigurationTest extends CdnSpec {
 
     @Test
     void 'should contain empty name' () {
-        assertEquals StringUtils.EMPTY, ROOT.getName()
+        assertEquals EMPTY, ROOT.getName()
     }
 
 }

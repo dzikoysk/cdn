@@ -16,9 +16,10 @@
 
 package net.dzikoysk.cdn.features;
 
-import org.panda_lang.utilities.commons.StringUtils;
+import panda.utilities.StringUtils;
 
-import static net.dzikoysk.cdn.CdnConstants.*;
+import static net.dzikoysk.cdn.CdnConstants.LINE_SEPARATOR;
+import static net.dzikoysk.cdn.CdnConstants.OPERATOR;
 
 final class YamlLikeConverter {
 

@@ -19,9 +19,9 @@ package net.dzikoysk.cdn.model;
 import net.dzikoysk.cdn.CdnConstants;
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.Contract;
-import org.panda_lang.utilities.commons.ObjectUtils;
-import org.panda_lang.utilities.commons.StringUtils;
-import org.panda_lang.utilities.commons.function.Option;
+import panda.std.Option;
+import panda.utilities.ObjectUtils;
+import panda.utilities.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

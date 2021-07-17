@@ -22,7 +22,7 @@ import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
 import org.jetbrains.annotations.Nullable;
-import org.panda_lang.utilities.commons.ObjectUtils;
+import panda.utilities.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;

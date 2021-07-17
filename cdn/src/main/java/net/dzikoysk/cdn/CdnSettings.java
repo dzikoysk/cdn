@@ -25,8 +25,8 @@ import net.dzikoysk.cdn.serialization.Serializer;
 import net.dzikoysk.cdn.serialization.SimpleComposer;
 import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 import net.dzikoysk.cdn.serialization.SimpleSerializer;
-import org.panda_lang.utilities.commons.ClassUtils;
-import org.panda_lang.utilities.commons.ObjectUtils;
+import panda.utilities.ClassUtils;
+import panda.utilities.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

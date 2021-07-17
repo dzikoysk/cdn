@@ -17,8 +17,7 @@
 package net.dzikoysk.cdn.model;
 
 import net.dzikoysk.cdn.CdnConstants;
-import org.panda_lang.utilities.commons.StringUtils;
-
+import panda.utilities.StringUtils;
 import java.util.Collections;
 import java.util.List;
 
