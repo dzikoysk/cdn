@@ -30,7 +30,17 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Enum deserialize(AnnotatedType type, String source) {
-        return Enum.valueOf((Class<Enum>) type.getType(), source);
+        return searchEnum((Class<Enum>) type.getType(), source);
+    }
+
+    public static <T extends Enum<?>> T searchEnum(Class<T> enumeration, String search) {
+        for (T each : enumeration.getEnumConstants()) {
+            if (each.name().equalsIgnoreCase(search)) {
+                return each;
+            }
+        }
+
+        throw new IllegalArgumentException("No '" + search + "' enum constant in " + enumeration);
     }
 
     @Override

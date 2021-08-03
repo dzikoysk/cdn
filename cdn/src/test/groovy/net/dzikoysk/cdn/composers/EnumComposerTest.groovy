@@ -39,7 +39,7 @@ class EnumComposerTest extends CdnSpec {
     @Test
     void 'should support enum types' () {
         def source = cfg("""
-        enumValue: VAL
+        enumValue: val
         """)
 
         def result = standard.load(source, ConfigurationWithEnum.class)
