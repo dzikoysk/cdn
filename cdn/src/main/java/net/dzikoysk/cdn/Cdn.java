@@ -19,11 +19,11 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import panda.utilities.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 /**
  * The main class of Cdn library that expose methods related to process of loading/rendering configurations.
@@ -71,6 +71,18 @@ public final class Cdn {
     }
 
     /**
+     * Load configuration located in the given file with UTF-8 charset.
+     * To load files with other charset, use {@link #load(java.io.File, java.nio.charset.Charset)}.
+     *
+     * @param file the file to load
+     * @return a loaded configuration
+     * @throws IOException in case of any IO related error
+     */
+    public Configuration load(Path file) throws IOException {
+        return load(file.toFile(), StandardCharsets.UTF_8);
+    }
+
+    /**
      * Load configuration located in the given file with the provided charset.
      *
      * @param file the file to load
@@ -80,6 +92,18 @@ public final class Cdn {
      */
     public Configuration load(File file, Charset charset) throws IOException {
         return load(CdnUtils.readFile(file, charset));
+    }
+
+    /**
+     * Load configuration located in the given file with the provided charset.
+     *
+     * @param file the file to load
+     * @param charset the charset to use
+     * @return a loaded configuration
+     * @throws IOException in case of any IO related error
+     */
+    public Configuration load(Path file, Charset charset) throws IOException {
+        return load(CdnUtils.readFile(file.toFile(), charset));
     }
 
     /**
@@ -110,6 +134,20 @@ public final class Cdn {
     }
 
     /**
+     * Load configuration located in the given file as the given class using UTF-8 charset.
+     * To load files with other charset, use {@link #load(java.io.File, java.nio.charset.Charset, Class)}
+     *
+     * @param file the file to load
+     * @param configurationClass the class to use
+     * @param <T> the expected type
+     * @return an instance of configuration class
+     * @throws Exception in case of any deserialization/IO error
+     */
+    public <T> T load(Path file, Class<T> configurationClass) throws Exception {
+        return load(file.toFile(), StandardCharsets.UTF_8, configurationClass);
+    }
+
+    /**
      * Load configuration located in the given file as the given class using the given charset
      *
      * @param file the file to load
@@ -120,6 +158,19 @@ public final class Cdn {
      */
     public <T> T load(File file, Charset charset, Class<T> configurationClass) throws Exception {
         return load(CdnUtils.readFile(file, charset), configurationClass);
+    }
+
+    /**
+     * Load configuration located in the given file as the given class using the given charset
+     *
+     * @param file the file to load
+     * @param configurationClass the class to use
+     * @param <T> the expected type
+     * @return an instance of configuration class
+     * @throws Exception in case of any deserialization/IO error
+     */
+    public <T> T load(Path file, Charset charset, Class<T> configurationClass) throws Exception {
+        return load(CdnUtils.readFile(file.toFile(), charset), configurationClass);
     }
 
     /**
@@ -143,6 +194,16 @@ public final class Cdn {
     }
 
     /**
+     * Convert the given instance using {@link #render(Object)} method and save the output in the given file using UTF-8 charset.
+     *
+     * @param entity the instance to convert
+     * @param output the output file
+     */
+    public void render(Object entity, Path output) throws IOException {
+        FileUtils.overrideFile(output.toFile(), render(entity));
+    }
+
+    /**
      * Convert the given configuration instance to the output string
      *
      * @param element the element to convert
@@ -160,6 +221,16 @@ public final class Cdn {
      */
     public void render(Element<?> element, File output) throws IOException {
         FileUtils.overrideFile(output, render(element));
+    }
+
+    /**
+     * Convert the given instance using {@link #render(net.dzikoysk.cdn.model.Element)} method and save the output in the given file using UTF-8 charset.
+     *
+     * @param element the element to convert
+     * @param output the output file
+     */
+    public void render(Element<?> element, Path output) throws IOException {
+        FileUtils.overrideFile(output.toFile(), render(element));
     }
 
     /**
