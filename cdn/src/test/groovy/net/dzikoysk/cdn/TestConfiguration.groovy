@@ -49,6 +49,9 @@ class TestConfiguration {
         @Description('# Random value')
         public Integer subEntry = -1
 
+        @Description('# Transient fields should be ignored')
+        public transient Object shouldBeIgnored = new Object()
+
     }
 
 }

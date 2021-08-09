@@ -100,7 +100,17 @@ public final class CdnUtils {
     }
 
     static boolean isIgnored(Field field) {
-        if (!Modifier.isPublic(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+        int modifiers = field.getModifiers();
+
+        if (!Modifier.isPublic(modifiers)) {
+            return true;
+        }
+
+        if (Modifier.isStatic(modifiers)) {
+            return true;
+        }
+
+        if (Modifier.isTransient(modifiers)) {
             return true;
         }
 
