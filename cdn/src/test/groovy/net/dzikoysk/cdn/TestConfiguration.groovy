@@ -30,10 +30,7 @@ class TestConfiguration {
     @Description(['', '// Section description'])
     public @Contextual SectionConfiguration section = new SectionConfiguration()
 
-    static class SectionConfiguration {
-
-        @Description('# Random value')
-        public Integer subEntry = -1
+    static class ParentSectionConfiguration {
 
         @Description('# List description')
         public List<String> list = [ 'record', 'record : with : semicolons' ]
@@ -44,6 +41,13 @@ class TestConfiguration {
         @Description('# Custom object')
         @CustomComposer(TestConfigurationCustomObject.CustomObjectComposer.class)
         public TestConfigurationCustomObject custom = new TestConfigurationCustomObject('rtx', 3070)
+
+    }
+
+    static class SectionConfiguration extends ParentSectionConfiguration {
+
+        @Description('# Random value')
+        public Integer subEntry = -1
 
     }
 

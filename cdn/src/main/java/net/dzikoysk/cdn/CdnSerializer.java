@@ -50,7 +50,7 @@ public final class CdnSerializer {
     public Section serialize(Section root, Object entity) throws Exception {
         Class<?> scheme = entity.getClass();
 
-        for (Field field : scheme.getDeclaredFields()) {
+        for (Field field : scheme.getFields()) {
             if (CdnUtils.isIgnored(field)) {
                 continue;
             }

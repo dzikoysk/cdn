@@ -47,7 +47,7 @@ public final class CdnDeserializer<T> {
     }
 
     private Object deserialize(Object instance, Section root) throws Exception {
-        for (Field field : instance.getClass().getDeclaredFields()) {
+        for (Field field : instance.getClass().getFields()) {
             if (CdnUtils.isIgnored(field)) {
                 continue;
             }
