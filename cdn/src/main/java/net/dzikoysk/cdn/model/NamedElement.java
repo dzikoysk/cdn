@@ -27,7 +27,7 @@ public interface NamedElement<T> extends Element<T> {
     /**
      * The name of element
      *
-     * @return
+     * @return element name
      */
     String getName();
 
