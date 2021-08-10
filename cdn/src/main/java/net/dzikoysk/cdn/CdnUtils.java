@@ -134,7 +134,7 @@ public final class CdnUtils {
 
     public static String stringify(String value) {
         if (!value.startsWith("\"") && !value.endsWith("\"")) {
-            if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",")) {
+            if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":")) {
                 return "\"" + value + "\"";
             }
         }

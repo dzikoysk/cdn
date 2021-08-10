@@ -27,9 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals
 class ListComposerTest extends CdnSpec {
 
     @CompileStatic
-    static class ConfigurationWithLists {
+    static class ConfigurationWithEmptyList {
 
         public List<String> list = Collections.emptyList()
+
+    }
+
+    @CompileStatic
+    static class ConfigurationWithListOfValues {
 
         public List<Element> elements = [ new Element(), new Element() ]
 
@@ -51,21 +56,13 @@ class ListComposerTest extends CdnSpec {
         ]
         """)
 
-        def configuration = standard.load(source, ConfigurationWithLists.class)
+        def configuration = standard.load(source, ConfigurationWithEmptyList.class)
         assertEquals([ "a:1", "b:2" ], configuration.list)
 
         def expectedSource = cfg("""
         list [
           a:1
           b:2
-        ]
-        elements [
-          {
-            name: default value
-          }
-          {
-            name: default value
-          }
         ]
         """)
 
@@ -74,21 +71,9 @@ class ListComposerTest extends CdnSpec {
 
     @Test
     void 'should load object based list' () {
-        def source = cfg("""
-        list {
-          a:1
-          b: 2
-        }
-        """)
-
-        def configuration = standard.load(source, ConfigurationWithLists.class)
-        assertEquals([ "a:1", "b: 2" ], configuration.list)
+        def configuration = standard.load("", ConfigurationWithListOfValues.class)
 
         def formattedSource = cfg("""
-        list [
-          a:1
-          b: 2
-        ]
         elements [
           {
             name: default value

@@ -32,16 +32,48 @@ class YamlLikeListComposerTest extends CdnSpec {
         list: []
         """)
 
-        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithLists.class)
+        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithEmptyList.class)
         assertEquals([], configuration.list)
 
         def expectedRender = cfg("""
         list: []
+        """)
+
+        assertEquals(expectedRender, yamlLike.render(configuration))
+    }
+
+    @Test
+    void 'should render objects in list' () {
+        def configuration = yamlLike.load("", ListComposerTest.ConfigurationWithListOfValues.class)
+
+        def expectedRender = cfg("""
         elements:
           - :
             name: default value
           - :
             name: default value
+        """)
+
+        assertEquals(expectedRender, yamlLike.render(configuration))
+    }
+
+    @Test
+    void 'should escape problematic characters' () {
+        def source = cfg("""
+        list:
+          - a:
+          - b {
+          - c
+        """)
+
+        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithEmptyList.class)
+        assertEquals([ 'a:', 'b {', 'c' ], configuration.list)
+
+        def expectedRender = cfg("""
+        list:
+          - "a:"
+          - "b {"
+          - c
         """)
 
         assertEquals(expectedRender, yamlLike.render(configuration))

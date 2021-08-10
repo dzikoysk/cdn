@@ -16,9 +16,12 @@
 
 package net.dzikoysk.cdn.features;
 
+import net.dzikoysk.cdn.CdnUtils;
 import panda.utilities.StringUtils;
 
+import static net.dzikoysk.cdn.CdnConstants.ARRAY;
 import static net.dzikoysk.cdn.CdnConstants.LINE_SEPARATOR;
+import static net.dzikoysk.cdn.CdnConstants.OBJECT_SEPARATOR;
 import static net.dzikoysk.cdn.CdnConstants.OPERATOR;
 
 final class YamlLikeConverter {
@@ -34,10 +37,18 @@ final class YamlLikeConverter {
     String convert() {
         for (String line : lines) {
             String indentation = StringUtils.extractParagraph(line);
-            line = line.trim();
             close(indentation.length());
 
-            if (line.endsWith(OPERATOR)) {
+            line = line.trim();
+            boolean isArray = line.startsWith(ARRAY);
+
+            if (isArray && line.endsWith(OBJECT_SEPARATOR[0])) {
+                line = line.substring(1);
+                line = line.startsWith(" ") ? line.substring(1) : line;
+                line = "- " + CdnUtils.stringify(line);
+            }
+
+            if (line.endsWith(OPERATOR) && !isArray) {
                 converted.append(indentation)
                         .append(line, 0, line.length() - 1)
                         .append(" {")
