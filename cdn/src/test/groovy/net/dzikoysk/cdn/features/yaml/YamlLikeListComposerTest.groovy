@@ -44,9 +44,7 @@ class YamlLikeListComposerTest extends CdnSpec {
 
     @Test
     void 'should render objects in list' () {
-        def configuration = yamlLike.load("", ListComposerTest.ConfigurationWithListOfValues.class)
-
-        def expectedRender = cfg("""
+        def source = cfg("""
         elements:
           - :
             name: default value
@@ -54,7 +52,9 @@ class YamlLikeListComposerTest extends CdnSpec {
             name: default value
         """)
 
-        assertEquals(expectedRender, yamlLike.render(configuration))
+        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithListOfValues.class)
+        assertEquals(new ListComposerTest.ConfigurationWithListOfValues().elements, configuration.elements)
+        assertEquals(source, yamlLike.render(configuration))
     }
 
     @Test

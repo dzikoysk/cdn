@@ -26,6 +26,8 @@ import static net.dzikoysk.cdn.CdnConstants.OPERATOR;
 
 final class YamlLikeConverter {
 
+    private static final String OBJECT_IN_LIST = "- :";
+
     private final String[] lines;
     private final StringBuilder converted = new StringBuilder();
     private int previousIndentation = 0;
@@ -48,7 +50,7 @@ final class YamlLikeConverter {
                 line = "- " + CdnUtils.stringify(line);
             }
 
-            if (line.endsWith(OPERATOR) && !isArray) {
+            if (line.endsWith(OPERATOR) && (!isArray || line.equals(OBJECT_IN_LIST))) {
                 converted.append(indentation)
                         .append(line, 0, line.length() - 1)
                         .append(" {")

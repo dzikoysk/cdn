@@ -43,6 +43,10 @@ class ListComposerTest extends CdnSpec {
 
             public String name = "default value"
 
+            @Override
+            boolean equals(Object obj) {
+                return Objects.equals(name, ((Element) obj).name)
+            }
         }
 
     }
