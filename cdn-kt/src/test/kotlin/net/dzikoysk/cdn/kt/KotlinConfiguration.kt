@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn
+package net.dzikoysk.cdn.kt
 
-import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.entity.Description
 
-@CompileStatic
-class CdnSpec {
+class KotlinConfiguration {
 
-    public Cdn standard = CdnFactory.createStandard()
-    public Cdn json = CdnFactory.createJsonLike()
-    public Cdn yamlLike = CdnFactory.createYamlLike()
-
-    static String cfg(String source) {
-        return source.stripIndent().trim()
-    }
+    @Description("Description")
+    var key = "value"
 
 }

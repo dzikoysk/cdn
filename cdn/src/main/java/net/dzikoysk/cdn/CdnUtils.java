@@ -21,9 +21,9 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
+import net.dzikoysk.cdn.shared.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedType;
@@ -40,16 +40,16 @@ public final class CdnUtils {
 
     private CdnUtils() {}
 
-    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable Field field) throws Exception {
-        return findComposer(settings, toClass(type.getType()), type, field);
+    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
+        return findComposer(settings, toClass(type.getType()), type, member);
     }
 
     @SuppressWarnings("unchecked")
-    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable Field field) throws Exception {
+    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
         Composer<?> composer = null;
 
-        if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
-            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+        if (member != null && member.isAnnotationPresent(CustomComposer.class)) {
+            CustomComposer customComposer = member.getAnnotation(CustomComposer.class);
             composer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
@@ -97,6 +97,12 @@ public final class CdnUtils {
         catch (ClassNotFoundException classNotFoundException) {
             throw new IllegalArgumentException("Cannot find generic type " + type);
         }
+    }
+
+    public static String getPropertyNameFromMethod(String methodName) {
+        methodName = methodName.substring(3);
+        methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+        return methodName;
     }
 
     static boolean isIgnored(Field field) {

@@ -33,7 +33,7 @@ public final class SimpleComposer<T> implements Composer<T> {
     }
 
     @Override
-    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
         return deserializer.deserialize(settings, source, type, defaultValue, entryAsRecord);
     }
 

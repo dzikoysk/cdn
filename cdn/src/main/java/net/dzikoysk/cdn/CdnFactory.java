@@ -43,7 +43,7 @@ public final class CdnFactory {
      * @return the json implementation
      * @see net.dzikoysk.cdn.features.JsonFeature
      */
-    public static Cdn createJson() {
+    public static Cdn createJsonLike() {
         return Cdn.configure()
                 .installFeature(new JsonFeature())
                 .build();

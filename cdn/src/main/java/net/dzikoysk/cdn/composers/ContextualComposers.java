@@ -32,7 +32,7 @@ public final class ContextualComposers implements Composer<Object> {
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Object deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Object defaultValue, boolean entryAsRecord) throws Exception {
+    public Object deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Object defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
         return new CdnDeserializer(settings).deserialize(CdnUtils.toClass(type.getType()), (Section) source);
     }
 

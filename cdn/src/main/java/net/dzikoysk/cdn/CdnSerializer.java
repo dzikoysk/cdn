@@ -21,7 +21,7 @@ import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
-
+import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -40,8 +40,9 @@ public final class CdnSerializer {
 
         try {
             serialize(root, entity);
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot access serialize member", e);
+        }
+        catch (Exception exception) {
+            throw new IllegalStateException("Cannot access serialize member", exception);
         }
 
         return root;
@@ -69,7 +70,7 @@ public final class CdnSerializer {
             Object propertyValue = field.get(entity);
 
             if (propertyValue != null) {
-                Serializer<Object> serializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), field);
+                Serializer<Object> serializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), new FieldMember(field));
                 root.append(serializer.serialize(settings, description, field.getName(), field.getAnnotatedType(), propertyValue));
             }
         }
