@@ -19,7 +19,7 @@
     <parent>
         <artifactId>cdn-parent</artifactId>
         <groupId>net.dzikoysk</groupId>
-        <version>1.9.5</version>
+        <version>1.10.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -36,12 +36,10 @@
         <dependency>
             <groupId>org.panda-lang</groupId>
             <artifactId>panda-utilities</artifactId>
-            <version>0.5.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>org.panda-lang</groupId>
             <artifactId>expressible</artifactId>
-            <version>1.0.13</version>
         </dependency>
 
         <!-- Benchmarks -->
@@ -80,19 +78,16 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>3.0.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.6.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.6.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

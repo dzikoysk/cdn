@@ -40,7 +40,7 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception {
+    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
             // String value = entryAsRecord ? entry.get() : entry.getValue();
@@ -90,7 +90,7 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
         Map<Object, Object> map = (Map<Object, Object>) entity;
 
         if (map.isEmpty()) {

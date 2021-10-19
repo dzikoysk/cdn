@@ -21,10 +21,13 @@ import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
+import net.dzikoysk.cdn.shared.AnnotatedMember;
+import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
+import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public final class CdnDeserializer<T> {
 
@@ -34,9 +37,12 @@ public final class CdnDeserializer<T> {
         this.settings = settings;
     }
 
-    public T deserialize(Class<T> scheme, Section content) throws Exception {
-        T instance = scheme.getConstructor().newInstance();
-        deserialize(instance, content);
+    public T deserialize(Section source, Class<T> template) throws ReflectiveOperationException {
+        return deserialize(source, template.getConstructor().newInstance());
+    }
+
+    public T deserialize(Section source, T instance) throws ReflectiveOperationException {
+        deserializeToSection(source, instance);
 
         if (instance instanceof DeserializationHandler) {
             DeserializationHandler<T> handler = ObjectUtils.cast(instance);
@@ -46,37 +52,61 @@ public final class CdnDeserializer<T> {
         return instance;
     }
 
-    private Object deserialize(Object instance, Section root) throws Exception {
+    private Object deserializeToSection(Section source, Object instance) throws ReflectiveOperationException {
         for (Field field : instance.getClass().getFields()) {
-            if (CdnUtils.isIgnored(field)) {
-                continue;
-            }
+            deserializeField(source, instance, field);
+        }
 
-            Option<Element<?>> elementValue = root.get(field.getName());
-
-            if (elementValue.isEmpty()) {
-                continue;
-            }
-
-            Element<?> element = elementValue.get();
-            Object defaultValue = field.get(instance);
-
-            if (field.isAnnotationPresent(Contextual.class)) {
-                deserialize(defaultValue, (Section) element);
-                continue;
-            }
-
-            deserialize(settings, instance, field, defaultValue, element);
+        for (Method method : instance.getClass().getMethods()) {
+            deserializeMethod(source, instance, method);
         }
 
         return instance;
     }
 
-    private Object deserialize(CdnSettings settings, Object instance, Field field, Object defaultValue, Element<?> element) throws Exception {
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), field);
-        Object value = deserializer.deserialize(settings, element, field.getAnnotatedType(), defaultValue, false);
-        field.set(instance, value);
-        return value;
+    private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
+        if (!CdnUtils.isIgnored(field)) {
+            deserializeMember(source, new FieldMember(instance, field));
+        }
+    }
+
+    private void deserializeMethod(Section source, Object instance, Method setter) throws ReflectiveOperationException {
+        try {
+            if (!setter.getName().startsWith("set")) {
+                return;
+            }
+
+            Method getter = instance.getClass().getMethod("get" + setter.getName().substring(3));
+
+            if (CdnUtils.isIgnored(getter)) {
+                return;
+            }
+
+            deserializeMember(source, new MethodMember(instance, setter, getter));
+        }
+        catch (NoSuchMethodException ignored) {
+            // cannot set this property, ignore
+        }
+    }
+
+    private void deserializeMember(Section source, AnnotatedMember member) throws ReflectiveOperationException {
+        Option<Element<?>> elementValue = source.get(member.getName());
+
+        if (elementValue.isEmpty()) {
+            return;
+        }
+
+        Element<?> element = elementValue.get();
+        Object defaultValue = member.getValue();
+
+        if (member.isAnnotationPresent(Contextual.class)) {
+            deserializeToSection((Section) element, defaultValue);
+            return;
+        }
+
+        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
+        Object value = deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false);
+        member.setValue(value);
     }
 
 }

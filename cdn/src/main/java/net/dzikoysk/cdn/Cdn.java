@@ -116,7 +116,20 @@ public final class Cdn {
      * @throws Exception in case of any deserialization error
      */
     public <T> T load(String source, Class<T> configurationClass) throws Exception {
-        return new CdnDeserializer<T>(settings).deserialize(configurationClass, load(source));
+        return new CdnDeserializer<T>(settings).deserialize(load(source), configurationClass);
+    }
+
+    /**
+     * Load configuration from the given source and map default {@link net.dzikoysk.cdn.model.Configuration} structure into the given configuration class.
+     *
+     * @param source the source to load
+     * @param instance the instance to use
+     * @param <T> the expected type
+     * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
+     * @throws Exception in case of any deserialization error
+     */
+    public <T> T load(String source, T instance) throws Exception {
+        return new CdnDeserializer<T>(settings).deserialize(load(source), instance);
     }
 
     /**

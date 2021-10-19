@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.utils;
+package net.dzikoysk.cdn.kt
 
-public final class GenericUtils {
+import net.dzikoysk.cdn.CdnFactory
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
-    private GenericUtils() {}
+class KotlinReaderTest {
+
+    @Test
+    fun `should load configuration in kotlin`() {
+        val configuration = CdnFactory.createStandard().load("key: custom", KotlinConfiguration::class.java)
+        assertEquals("custom", configuration.key)
+
+        assertEquals("""
+        # Description
+        key: custom
+        """.trimIndent(), CdnFactory.createStandard().render(configuration))
+    }
 
 }

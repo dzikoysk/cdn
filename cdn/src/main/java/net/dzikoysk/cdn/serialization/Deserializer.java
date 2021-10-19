@@ -31,6 +31,6 @@ import java.lang.reflect.AnnotatedType;
 @FunctionalInterface
 public interface Deserializer<T> {
 
-    T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws Exception;
+    T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException;
 
 }

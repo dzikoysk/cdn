@@ -21,13 +21,14 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
+import net.dzikoysk.cdn.shared.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -40,16 +41,16 @@ public final class CdnUtils {
 
     private CdnUtils() {}
 
-    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable Field field) throws Exception {
-        return findComposer(settings, toClass(type.getType()), type, field);
+    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
+        return findComposer(settings, toClass(type.getType()), type, member);
     }
 
     @SuppressWarnings("unchecked")
-    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable Field field) throws Exception {
+    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
         Composer<?> composer = null;
 
-        if (field != null && field.isAnnotationPresent(CustomComposer.class)) {
-            CustomComposer customComposer = field.getAnnotation(CustomComposer.class);
+        if (member != null && member.isAnnotationPresent(CustomComposer.class)) {
+            CustomComposer customComposer = member.getAnnotation(CustomComposer.class);
             composer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
         }
         else {
@@ -99,6 +100,12 @@ public final class CdnUtils {
         }
     }
 
+    public static String getPropertyNameFromMethod(String methodName) {
+        methodName = methodName.substring(3);
+        methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+        return methodName;
+    }
+
     static boolean isIgnored(Field field) {
         int modifiers = field.getModifiers();
 
@@ -120,6 +127,20 @@ public final class CdnUtils {
         }
 
         return field.isAnnotationPresent(Exclude.class);
+    }
+
+    static boolean isIgnored(Method method) {
+        int modifiers = method.getModifiers();
+
+        if (Modifier.isNative(modifiers)) {
+            return true;
+        }
+
+        if (method.getReturnType().getName().equals("groovy.lang.MetaClass")) {
+            return true;
+        }
+
+        return method.isAnnotationPresent(Exclude.class);
     }
 
     public static String destringify(String value) {

@@ -49,7 +49,7 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) throws Exception {
+    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) throws ReflectiveOperationException {
         return new Entry(description, key, entity.name());
     }
     
