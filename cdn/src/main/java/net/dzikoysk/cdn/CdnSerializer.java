@@ -68,6 +68,10 @@ public final class CdnSerializer {
     }
 
     private void serializeMethod(Object entity, Method getter, Section output) throws ReflectiveOperationException {
+        if (CdnUtils.isIgnored(getter)) {
+            return;
+        }
+
         try {
             if (!getter.getName().startsWith("get")) {
                 return;

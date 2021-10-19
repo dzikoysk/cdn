@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -126,6 +127,20 @@ public final class CdnUtils {
         }
 
         return field.isAnnotationPresent(Exclude.class);
+    }
+
+    static boolean isIgnored(Method method) {
+        int modifiers = method.getModifiers();
+
+        if (Modifier.isNative(modifiers)) {
+            return true;
+        }
+
+        if (method.getReturnType().getName().equals("groovy.lang.MetaClass")) {
+            return true;
+        }
+
+        return method.isAnnotationPresent(Exclude.class);
     }
 
     public static String destringify(String value) {

@@ -77,6 +77,11 @@ public final class CdnDeserializer<T> {
             }
 
             Method getter = instance.getClass().getMethod("get" + setter.getName().substring(3));
+
+            if (CdnUtils.isIgnored(getter)) {
+                return;
+            }
+
             deserializeMember(source, new MethodMember(instance, setter, getter));
         }
         catch (NoSuchMethodException ignored) {
