@@ -26,6 +26,11 @@ class KotlinReaderTest {
     fun `should load configuration in kotlin`() {
         val configuration = CdnFactory.createStandard().load("key: custom", KotlinConfiguration::class.java)
         assertEquals("custom", configuration.key)
+
+        assertEquals("""
+        # Description
+        key: custom
+        """.trimIndent(), CdnFactory.createStandard().render(configuration))
     }
 
 }

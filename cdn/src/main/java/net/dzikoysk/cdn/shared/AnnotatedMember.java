@@ -25,11 +25,13 @@ import java.lang.reflect.Method;
 
 public interface AnnotatedMember {
 
-    void setValue(Object instance, Object value) throws IllegalAccessException, InvocationTargetException;
+    void setValue(Object value) throws IllegalAccessException, InvocationTargetException;
 
-    Object getValue(Object instance) throws IllegalAccessException, InvocationTargetException;
+    Object getValue() throws IllegalAccessException, InvocationTargetException;
 
     boolean isAnnotationPresent(Class<? extends Annotation> annotation);
+
+    <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation);
 
     <A extends Annotation> A getAnnotation(Class<A> annotation);
 
@@ -39,27 +41,36 @@ public interface AnnotatedMember {
 
     String getName();
 
+    Object getInstance();
+
     class FieldMember implements AnnotatedMember {
 
+        private final Object instance;
         private final Field field;
 
-        public FieldMember(Field field) {
+        public FieldMember(Object instance, Field field) {
+            this.instance = instance;
             this.field = field;
         }
 
         @Override
-        public void setValue(Object instance, Object value) throws IllegalAccessException {
+        public void setValue(Object value) throws IllegalAccessException {
             field.set(instance, value);
         }
 
         @Override
-        public Object getValue(Object instance) throws IllegalAccessException {
+        public Object getValue() throws IllegalAccessException {
             return field.get(instance);
         }
 
         @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
             return field.isAnnotationPresent(annotation);
+        }
+
+        @Override
+        public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation) {
+            return field.getAnnotationsByType(annotation);
         }
 
         @Override
@@ -82,31 +93,43 @@ public interface AnnotatedMember {
             return field.getName();
         }
 
+        @Override
+        public Object getInstance() {
+            return instance;
+        }
+
     }
 
     class MethodMember implements AnnotatedMember {
 
+        private final Object instance;
         private final Method setter;
         private final Method getter;
 
-        public MethodMember(Method setter, Method getter) {
+        public MethodMember(Object instance, Method setter, Method getter) {
+            this.instance  = instance;
             this.setter = setter;
             this.getter = getter;
         }
 
         @Override
-        public void setValue(Object instance, Object value) throws IllegalAccessException, InvocationTargetException {
+        public void setValue(Object value) throws IllegalAccessException, InvocationTargetException {
             setter.invoke(instance, value);
         }
 
         @Override
-        public Object getValue(Object instance) throws IllegalAccessException, InvocationTargetException {
+        public Object getValue() throws IllegalAccessException, InvocationTargetException {
             return getter.invoke(instance);
         }
 
         @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
             return getter.isAnnotationPresent(annotation);
+        }
+
+        @Override
+        public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation) {
+            return getter.getAnnotationsByType(annotation);
         }
 
         @Override
@@ -127,6 +150,11 @@ public interface AnnotatedMember {
         @Override
         public String getName() {
             return CdnUtils.getPropertyNameFromMethod(getter.getName());
+        }
+
+        @Override
+        public Object getInstance() {
+            return instance;
         }
 
     }

@@ -70,7 +70,7 @@ public final class ListComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
         Collection<Object> collection = (Collection<Object>) entity;
 
         if (collection.isEmpty()) {

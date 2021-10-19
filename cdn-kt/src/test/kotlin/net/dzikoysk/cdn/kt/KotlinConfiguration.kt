@@ -20,7 +20,7 @@ import net.dzikoysk.cdn.entity.Description
 
 class KotlinConfiguration {
 
-    @Description("Description")
+    @get:Description("# Description")
     var key = "value"
 
 }

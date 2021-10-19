@@ -37,12 +37,12 @@ public final class CdnDeserializer<T> {
         this.settings = settings;
     }
 
-    public T deserialize(Class<T> scheme, Section content) throws ReflectiveOperationException {
-        return deserialize(scheme.getConstructor().newInstance(), content);
+    public T deserialize(Section source, Class<T> template) throws ReflectiveOperationException {
+        return deserialize(source, template.getConstructor().newInstance());
     }
 
-    public T deserialize(T instance, Section content) throws ReflectiveOperationException {
-        deserializeToSection(instance, content);
+    public T deserialize(Section source, T instance) throws ReflectiveOperationException {
+        deserializeToSection(source, instance);
 
         if (instance instanceof DeserializationHandler) {
             DeserializationHandler<T> handler = ObjectUtils.cast(instance);
@@ -52,56 +52,56 @@ public final class CdnDeserializer<T> {
         return instance;
     }
 
-    private Object deserializeToSection(Object instance, Section root) throws ReflectiveOperationException {
+    private Object deserializeToSection(Section source, Object instance) throws ReflectiveOperationException {
         for (Field field : instance.getClass().getFields()) {
-            deserializeField(instance, field, root);
+            deserializeField(source, instance, field);
         }
 
         for (Method method : instance.getClass().getMethods()) {
-            deserializeMethod(instance, method, root);
+            deserializeMethod(source, instance, method);
         }
 
         return instance;
     }
 
-    private void deserializeField(Object instance, Field field, Section root) throws ReflectiveOperationException {
+    private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
-            deserializeMember(instance, new FieldMember(field), root);
+            deserializeMember(source, new FieldMember(instance, field));
         }
     }
 
-    private void deserializeMethod(Object instance, Method setter, Section root) throws ReflectiveOperationException {
+    private void deserializeMethod(Section source, Object instance, Method setter) throws ReflectiveOperationException {
         try {
             if (!setter.getName().startsWith("set")) {
                 return;
             }
 
             Method getter = instance.getClass().getMethod("get" + setter.getName().substring(3));
-            deserializeMember(instance, new MethodMember(setter, getter), root);
+            deserializeMember(source, new MethodMember(instance, setter, getter));
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore
         }
     }
 
-    private void deserializeMember(Object instance, AnnotatedMember member, Section root) throws ReflectiveOperationException {
-        Option<Element<?>> elementValue = root.get(member.getName());
+    private void deserializeMember(Section source, AnnotatedMember member) throws ReflectiveOperationException {
+        Option<Element<?>> elementValue = source.get(member.getName());
 
         if (elementValue.isEmpty()) {
             return;
         }
 
         Element<?> element = elementValue.get();
-        Object defaultValue = member.getValue(instance);
+        Object defaultValue = member.getValue();
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            deserializeToSection(defaultValue, (Section) element);
+            deserializeToSection((Section) element, defaultValue);
             return;
         }
 
         Deserializer<Object> deserializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
         Object value = deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false);
-        member.setValue(instance, value);
+        member.setValue(value);
     }
 
 }

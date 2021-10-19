@@ -38,7 +38,7 @@ public final class SimpleComposer<T> implements Composer<T> {
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
+    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
         return serializer.serialize(settings, description, key, type, entity);
     }
 

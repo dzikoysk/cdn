@@ -90,7 +90,7 @@ public final class MapComposer<T> implements Composer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception {
+    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
         Map<Object, Object> map = (Map<Object, Object>) entity;
 
         if (map.isEmpty()) {

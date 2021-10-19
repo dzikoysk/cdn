@@ -21,8 +21,11 @@ import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
+import net.dzikoysk.cdn.shared.AnnotatedMember;
 import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
+import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,46 +39,65 @@ public final class CdnSerializer {
     }
 
     public Configuration serialize(Object entity) {
-        Configuration root = new Configuration();
-
         try {
-            serialize(root, entity);
+            return serialize(entity, new Configuration());
         }
         catch (Exception exception) {
             throw new IllegalStateException("Cannot access serialize member", exception);
         }
-
-        return root;
     }
 
-    public Section serialize(Section root, Object entity) throws Exception {
-        Class<?> scheme = entity.getClass();
+    public <S extends Section> S serialize(Object entity, S output) throws ReflectiveOperationException {
+        Class<?> template = entity.getClass();
 
-        for (Field field : scheme.getFields()) {
-            if (CdnUtils.isIgnored(field)) {
-                continue;
-            }
-
-            List<String> description = Arrays.stream(field.getAnnotationsByType(Description.class))
-                    .flatMap(annotation -> Arrays.stream(annotation.value()))
-                    .collect(Collectors.toList());
-
-            if (field.isAnnotationPresent(Contextual.class)) {
-                Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, field.getName());
-                root.append(section);
-                serialize(section, field.get(entity));
-                continue;
-            }
-
-            Object propertyValue = field.get(entity);
-
-            if (propertyValue != null) {
-                Serializer<Object> serializer = CdnUtils.findComposer(settings, field.getType(), field.getAnnotatedType(), new FieldMember(field));
-                root.append(serializer.serialize(settings, description, field.getName(), field.getAnnotatedType(), propertyValue));
-            }
+        for (Field field : template.getFields()) {
+            serializeField(entity, field, output);
         }
 
-        return root;
+        for (Method method : template.getMethods()) {
+            serializeMethod(entity, method, output);
+        }
+
+        return output;
+    }
+
+    private void serializeField(Object entity, Field field, Section output) throws ReflectiveOperationException {
+        if (!CdnUtils.isIgnored(field)) {
+            serializeMember(new FieldMember(entity, field), output);
+        }
+    }
+
+    private void serializeMethod(Object entity, Method getter, Section output) throws ReflectiveOperationException {
+        try {
+            if (!getter.getName().startsWith("get")) {
+                return;
+            }
+
+            Method setter = entity.getClass().getMethod("set" + getter.getName().substring(3), getter.getReturnType());
+            serializeMember(new MethodMember(entity, setter, getter), output);
+        }
+        catch (NoSuchMethodException ignored) {
+            // cannot set this property, ignore
+        }
+    }
+
+    private void serializeMember(AnnotatedMember member, Section output) throws ReflectiveOperationException {
+        Object propertyValue = member.getValue();
+        List<String> description = Arrays.stream(member.getAnnotationsByType(Description.class))
+                .flatMap(annotation -> Arrays.stream(annotation.value()))
+                .collect(Collectors.toList());
+
+        if (member.isAnnotationPresent(Contextual.class)) {
+            Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, member.getName());
+            output.append(section);
+            serialize(propertyValue, section);
+            return;
+        }
+
+        if (propertyValue != null) {
+            Serializer<Object> serializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
+            output.append(serializer.serialize(settings, description, member.getName(), member.getAnnotatedType(), propertyValue));
+        }
     }
 
 }

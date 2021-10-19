@@ -30,6 +30,6 @@ import java.util.List;
 @FunctionalInterface
 public interface Serializer<T> {
 
-    Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws Exception;
+    Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException;
 
 }
