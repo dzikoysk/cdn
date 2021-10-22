@@ -19,6 +19,10 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.composers.EnumComposer;
 import net.dzikoysk.cdn.composers.ListComposer;
 import net.dzikoysk.cdn.composers.MapComposer;
+import net.dzikoysk.cdn.composers.ReferenceComposer;
+import net.dzikoysk.cdn.model.MutableReference;
+import net.dzikoysk.cdn.model.MutableReferenceImpl;
+import net.dzikoysk.cdn.model.Reference;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
@@ -27,7 +31,6 @@ import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 import net.dzikoysk.cdn.serialization.SimpleSerializer;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,12 +59,11 @@ import java.util.function.Predicate;
 public final class CdnSettings {
 
     @SuppressWarnings("rawtypes")
-    protected final Map<Class<?>, Composer> composers = new HashMap<>();
+    private final Map<Class<?>, Composer> composers = new HashMap<>();
     @SuppressWarnings("rawtypes")
-    protected final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
-
-    protected final Map<String, String> placeholders = new HashMap<>();
-    protected final Collection<CdnFeature> features = new ArrayList<>();
+    private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
+    private final Map<String, String> placeholders = new HashMap<>();
+    private final Collection<CdnFeature> features = new ArrayList<>();
 
     {
         withComposer(boolean.class, Object::toString, Boolean::parseBoolean);
@@ -80,6 +82,10 @@ public final class CdnSettings {
         withComposer(TreeMap.class, new MapComposer<>());
         withComposer(LinkedHashMap.class, new MapComposer<>());
         withComposer(ConcurrentHashMap.class, new MapComposer<>());
+
+        withComposer(Reference.class, new ReferenceComposer<>());
+        withComposer(MutableReference.class, new ReferenceComposer<>());
+        withComposer(MutableReferenceImpl.class, new ReferenceComposer<>());
 
         withDynamicComposer(Class::isEnum, new EnumComposer());
     }
