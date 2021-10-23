@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.features.yaml
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.composers.MapComposerTest
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -32,7 +33,7 @@ class YamlLikeMapComposerTest extends CdnSpec {
         map: []
         """)
 
-        def configuration = yamlLike.load(source, MapComposerTest.ConfigurationWithMaps.class)
+        def configuration = yamlLike.load(Source.of(source), MapComposerTest.ConfigurationWithMaps.class)
         assertEquals(Collections.emptyMap(), configuration.map)
 
         assertEquals(cfg("""
@@ -63,7 +64,7 @@ class YamlLikeMapComposerTest extends CdnSpec {
                 ]
         ]
 
-        def configuration = yamlLike.load(source, MapComposerTest.ConfigurationWithMaps.class)
+        def configuration = yamlLike.load(Source.of(source), MapComposerTest.ConfigurationWithMaps.class)
         assertEquals(map, configuration.map)
 
         assertEquals(cfg("""

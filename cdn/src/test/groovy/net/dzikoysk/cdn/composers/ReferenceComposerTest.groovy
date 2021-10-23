@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.model.MutableReference
 import net.dzikoysk.cdn.model.Reference
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static net.dzikoysk.cdn.model.MutableReference.mutable
@@ -46,10 +47,10 @@ class ReferenceComposerTest extends CdnSpec {
         configuration.mutableReference.subscribe({ updatedValue -> subscriberCalled = true })
 
         standard.load(
-                """
+                Source.of("""
                 reference: value
                 mutableReference: mutable-value
-                """,
+                """),
                 configuration
         )
 

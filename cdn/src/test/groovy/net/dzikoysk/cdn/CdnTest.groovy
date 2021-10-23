@@ -19,6 +19,7 @@ package net.dzikoysk.cdn
 import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
+import static net.dzikoysk.cdn.shared.source.Source.of
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
@@ -40,7 +41,7 @@ class CdnTest extends CdnSpec {
         }
         """)
 
-        def result = standard.load(source)
+        def result = standard.load(of(source))
         assertEquals source, standard.render(result)
     }
 

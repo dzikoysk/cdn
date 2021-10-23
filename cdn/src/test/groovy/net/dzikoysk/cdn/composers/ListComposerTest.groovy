@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.composers
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Contextual
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -60,7 +61,7 @@ class ListComposerTest extends CdnSpec {
         ]
         """)
 
-        def configuration = standard.load(source, ConfigurationWithEmptyList.class)
+        def configuration = standard.load(Source.of(source), ConfigurationWithEmptyList.class)
         assertEquals([ "a:1", "b:2" ], configuration.list)
 
         def expectedSource = cfg("""
@@ -75,7 +76,7 @@ class ListComposerTest extends CdnSpec {
 
     @Test
     void 'should load object based list' () {
-        def configuration = standard.load("", ConfigurationWithListOfValues.class)
+        def configuration = standard.load(Source.empty(), ConfigurationWithListOfValues.class)
 
         def formattedSource = cfg("""
         elements [

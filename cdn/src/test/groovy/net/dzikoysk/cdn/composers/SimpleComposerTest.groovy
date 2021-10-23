@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.composers
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 @CompileStatic
@@ -42,7 +43,7 @@ class SimpleComposerTest extends CdnSpec {
 
         1.upto(3) {
             println(currentSource)
-            def configuration = yamlLike.load(currentSource, Configuration.class)
+            def configuration = yamlLike.load(Source.of(currentSource), Configuration.class)
             currentSource = yamlLike.render(configuration)
         }
     }

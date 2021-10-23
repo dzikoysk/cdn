@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.features.yaml
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.composers.ListComposerTest
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -32,7 +33,7 @@ class YamlLikeListComposerTest extends CdnSpec {
         list: []
         """)
 
-        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithEmptyList.class)
+        def configuration = yamlLike.load(Source.of(source), ListComposerTest.ConfigurationWithEmptyList.class)
         assertEquals([], configuration.list)
 
         def expectedRender = cfg("""
@@ -52,7 +53,7 @@ class YamlLikeListComposerTest extends CdnSpec {
             name: default value
         """)
 
-        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithListOfValues.class)
+        def configuration = yamlLike.load(Source.of(source), ListComposerTest.ConfigurationWithListOfValues.class)
         assertEquals(new ListComposerTest.ConfigurationWithListOfValues().elements, configuration.elements)
         assertEquals(source, yamlLike.render(configuration))
     }
@@ -66,7 +67,7 @@ class YamlLikeListComposerTest extends CdnSpec {
           - c
         """)
 
-        def configuration = yamlLike.load(source, ListComposerTest.ConfigurationWithEmptyList.class)
+        def configuration = yamlLike.load(Source.of(source), ListComposerTest.ConfigurationWithEmptyList.class)
         assertEquals([ 'a:', 'b {', 'c' ], configuration.list)
 
         def expectedRender = cfg("""

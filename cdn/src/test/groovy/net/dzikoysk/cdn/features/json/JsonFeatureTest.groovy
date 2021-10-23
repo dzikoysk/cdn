@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.features.json
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.features.JsonFeature
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -45,7 +46,7 @@ final class JsonFeatureTest extends CdnSpec {
         }
         """), source)
 
-        def configuration = json.load(source)
+        def configuration = json.load(Source.of(source))
         def list = configuration.getSection('list').get()
         assertEquals 2, list.size()
     }
@@ -53,7 +54,7 @@ final class JsonFeatureTest extends CdnSpec {
     @Test
     void 'should convert json like list' () {
         def source = converter.convertToCdn('{ "list": [ "a", "b", "c" ] }')
-        assertEquals([ 'a', 'b', 'c' ], standard.load(source).getList('list', ['default' ]))
+        assertEquals([ 'a', 'b', 'c' ], standard.load(Source.of(source)).getList('list', ['default' ]))
     }
 
     @Test
@@ -81,8 +82,8 @@ final class JsonFeatureTest extends CdnSpec {
         ]
         """)
 
-        def jsonResult = json.load(source)
-        def standardResult = standard.load(cdn)
+        def jsonResult = json.load(Source.of(source))
+        def standardResult = standard.load(Source.of(cdn))
 
         assertEquals standardResult.getString('object.key', 'defaultCDN'), jsonResult.getString('object.key', 'defaultJSON')
         assertEquals standardResult.getList('array', [ 'defaultCDN' ]), jsonResult.getList('array', [ 'defaultJSON' ])

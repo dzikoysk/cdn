@@ -18,6 +18,7 @@ package net.dzikoysk.cdn.composers
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -42,7 +43,7 @@ class EnumComposerTest extends CdnSpec {
         enumValue: val
         """)
 
-        def result = standard.load(source, ConfigurationWithEnum.class)
+        def result = standard.load(Source.of(source), ConfigurationWithEnum.class)
         assertEquals SomeEnum.VAL, result.enumValue
 
         result.enumValue = SomeEnum.VAR

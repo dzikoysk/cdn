@@ -24,7 +24,6 @@ import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.shared.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -34,6 +33,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
@@ -161,14 +161,6 @@ public final class CdnUtils {
         }
 
         return value;
-    }
-
-    public static String readFile(File file, Charset charset) throws IOException {
-        if (!file.exists()) {
-            return "";
-        }
-
-        return new String(Files.readAllBytes(file.toPath()), charset);
     }
 
 }

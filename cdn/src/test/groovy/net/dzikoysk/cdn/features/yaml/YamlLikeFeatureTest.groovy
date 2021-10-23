@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.features.YamlLikeFeature
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -61,7 +62,7 @@ final class YamlLikeFeatureTest extends CdnSpec {
           - b
         """)
 
-        def configuration = yamlLike.load(source)
+        def configuration = yamlLike.load(Source.of(source))
 
         assertEquals([ "a", "b" ], configuration.getArray('list').get().getList())
         assertEquals(source, yamlLike.render(configuration))
@@ -69,20 +70,20 @@ final class YamlLikeFeatureTest extends CdnSpec {
 
     @Test
     void 'should read lines with brackets' () {
-        def result = yamlLike.load('''
+        def result = yamlLike.load(Source.of('''
         section:
             key: {value}
-        ''')
+        '''))
 
         assertEquals '{value}', result.getString('section.key', '')
     }
 
     @Test
     void 'should use prettier' () {
-        def configuration = yamlLike.load("""
+        def configuration = yamlLike.load(Source.of("""
         section :
           key : value
-        """.stripIndent())
+        """.stripIndent()))
 
         assertEquals "value", configuration.getString("section.key", 'default')
     }

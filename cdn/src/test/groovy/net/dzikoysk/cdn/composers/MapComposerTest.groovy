@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Contextual
+import net.dzikoysk.cdn.shared.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -85,7 +86,7 @@ class MapComposerTest extends CdnSpec {
             ]
         ]
 
-        def configuration = standard.load(source, ConfigurationWithMaps.class)
+        def configuration = standard.load(Source.of(source), ConfigurationWithMaps.class)
         assertEquals(map, configuration.map)
         assertEquals(source, standard.render(configuration))
     }
@@ -114,7 +115,7 @@ class MapComposerTest extends CdnSpec {
                 "second": second
         ]
 
-        def configuration = standard.load(source, ConfigurationWithSection.class)
+        def configuration = standard.load(Source.of(source), ConfigurationWithSection.class)
         assertEquals(map, configuration.groups)
         assertEquals(source, standard.render(configuration))
     }

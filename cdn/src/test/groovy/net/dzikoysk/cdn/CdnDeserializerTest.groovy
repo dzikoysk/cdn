@@ -19,6 +19,7 @@ package net.dzikoysk.cdn
 import groovy.transform.CompileStatic
 import org.junit.jupiter.api.Test
 
+import static net.dzikoysk.cdn.shared.source.Source.of
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
@@ -26,7 +27,7 @@ class CdnDeserializerTest extends CdnSpec {
 
     @Test
     void 'should deserialize source into scheme' () {
-        def configuration = standard.load("""
+        def configuration = standard.load(of("""
         rootEntry: custom value
         section {
           subEntry: 7
@@ -38,7 +39,7 @@ class CdnDeserializerTest extends CdnSpec {
             count: 3080
           }
         }
-        """, TestConfiguration.class)
+        """), TestConfiguration.class)
 
         assertEquals 'custom value', configuration.rootEntry
         assertEquals 7, configuration.section.subEntry

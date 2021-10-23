@@ -21,9 +21,9 @@ import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.shared.source.Source;
 import panda.std.Option;
 import panda.utilities.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +41,9 @@ final class CdnReader {
         this.settings = settings;
     }
 
-    public Configuration read(String source) {
+    public Configuration read(Source sourceProvider) {
+        String source = sourceProvider.getSource();
+
         for (CdnFeature feature : settings.getFeatures()) {
             source = feature.convertToCdn(source);
         }
