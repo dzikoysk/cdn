@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.CdnFactory
+import net.dzikoysk.cdn.registerKotlinModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -24,13 +25,16 @@ class KotlinReaderTest {
 
     @Test
     fun `should load configuration in kotlin`() {
-        val configuration = CdnFactory.createStandard().load("key: custom", KotlinConfiguration::class.java)
-        assertEquals("custom", configuration.key)
+        val configuration = CdnFactory.createStandard().settings
+            .registerKotlinModule()
+            .build()
+            .load( { "key: custom" }, KotlinConfiguration::class.java)
 
+        assertEquals("custom", configuration.key)
         assertEquals("""
         # Description
         key: custom
-        """.trimIndent(), CdnFactory.createStandard().render(configuration))
+        """.trimIndent(), CdnFactory.createStandard().settings.registerKotlinModule().build().render(configuration))
     }
 
 }

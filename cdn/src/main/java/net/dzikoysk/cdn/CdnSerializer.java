@@ -21,14 +21,14 @@ import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
-import net.dzikoysk.cdn.shared.AnnotatedMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
+import panda.std.stream.PandaStream;
+import panda.utilities.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class CdnSerializer {
 
@@ -54,8 +54,8 @@ public final class CdnSerializer {
             serializeField(entity, field, output);
         }
 
-        for (Method method : template.getMethods()) {
-            serializeMethod(entity, method, output);
+        for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(entity)) {
+            serializeMember(annotatedMember, output);
         }
 
         return output;
@@ -63,33 +63,15 @@ public final class CdnSerializer {
 
     private void serializeField(Object entity, Field field, Section output) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
-            serializeMember(new FieldMember(entity, field), output);
-        }
-    }
-
-    private void serializeMethod(Object entity, Method getter, Section output) throws ReflectiveOperationException {
-        if (CdnUtils.isIgnored(getter)) {
-            return;
-        }
-
-        try {
-            if (!getter.getName().startsWith("get")) {
-                return;
-            }
-
-            Method setter = entity.getClass().getMethod("set" + getter.getName().substring(3), getter.getReturnType());
-            serializeMember(new MethodMember(entity, setter, getter), output);
-        }
-        catch (NoSuchMethodException ignored) {
-            // cannot set this property, ignore
+            serializeMember(settings.getAnnotationResolver().fromField(entity, field), output);
         }
     }
 
     private void serializeMember(AnnotatedMember member, Section output) throws ReflectiveOperationException {
         Object propertyValue = member.getValue();
-        List<String> description = Arrays.stream(member.getAnnotationsByType(Description.class))
-                .flatMap(annotation -> Arrays.stream(annotation.value()))
-                .collect(Collectors.toList());
+        List<String> description = PandaStream.of(member.getAnnotationsByType(Description.class))
+                .flatMap(annotation -> Arrays.asList(annotation.value()))
+                .toList();
 
         if (member.isAnnotationPresent(Contextual.class)) {
             Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, member.getName());

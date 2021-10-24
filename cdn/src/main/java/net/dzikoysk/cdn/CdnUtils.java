@@ -21,19 +21,16 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
-import net.dzikoysk.cdn.shared.AnnotatedMember;
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
-import java.io.IOException;
+
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
@@ -106,7 +103,7 @@ public final class CdnUtils {
         return methodName;
     }
 
-    static boolean isIgnored(Field field) {
+    public static boolean isIgnored(Field field) {
         int modifiers = field.getModifiers();
 
         if (!Modifier.isPublic(modifiers)) {
@@ -129,7 +126,7 @@ public final class CdnUtils {
         return field.isAnnotationPresent(Exclude.class);
     }
 
-    static boolean isIgnored(Method method) {
+    public static boolean isIgnored(Method method) {
         int modifiers = method.getModifiers();
 
         if (Modifier.isNative(modifiers)) {

@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.kt
+package net.dzikoysk.cdn.annotation;
 
-import net.dzikoysk.cdn.entity.Description
+import java.lang.reflect.Field;
+import java.util.List;
 
-class KotlinConfiguration {
+public interface MemberResolver {
 
-    @Description("# Description")
-    var key = "value"
+    AnnotatedMember fromField(Object instance, Field field);
+
+    AnnotatedMember fromProperty(Object instance, String propertyName) throws NoSuchMethodException;
+
+    List<AnnotatedMember> getProperties(Object instance);
 
 }

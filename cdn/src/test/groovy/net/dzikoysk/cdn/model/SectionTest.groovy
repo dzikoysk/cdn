@@ -73,10 +73,12 @@ final class SectionTest extends CdnSpec {
     @Test
     void 'should append sub element' () {
         Section section = new Section([], 'section')
-        assertTrue section.getValue().isEmpty()
+        def elements = section.getValue() as List<Element>
+        assertTrue elements.isEmpty()
 
+        elements = section.getValue() as List<Element>
         section.append(new Entry([], 'entry', 'value'))
-        assertEquals 1, section.getValue().size()
+        assertEquals 1, elements.size()
     }
 
 }

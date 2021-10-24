@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.model.Element
 import org.junit.jupiter.api.Test
 
 import static net.dzikoysk.cdn.shared.source.Source.empty
@@ -70,7 +71,8 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should skip empty lines' () {
-        assertTrue standard.load(empty()).getValue().isEmpty()
+        def elements = standard.load(empty()).getValue() as List<Element>
+        assertTrue elements.isEmpty()
     }
 
     @Test
