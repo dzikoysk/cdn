@@ -16,8 +16,12 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import panda.std.stream.PandaStream;
+import panda.utilities.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class DefaultAnnotationResolver implements AnnotationResolver {
 
@@ -27,8 +31,21 @@ public class DefaultAnnotationResolver implements AnnotationResolver {
     }
 
     @Override
-    public AnnotatedMember fromProperty(Object instance, Method getter, Method setter) {
+    public AnnotatedMember fromProperty(Object instance, String propertyName) throws NoSuchMethodException {
+        Method getter = instance.getClass().getMethod("get" + propertyName);
+        Method setter = instance.getClass().getMethod("set" + propertyName, getter.getReturnType());
+
         return new MethodMember(instance, setter, getter);
+    }
+
+    @Override
+    public List<String> getProperties(Class<?> classInfo) {
+        return PandaStream.of(classInfo.getMethods())
+                .map(Method::getName)
+                .filter(name -> name.startsWith("get"))
+                .map(StringUtils::capitalize)
+                .map(name -> name.substring(3))
+                .toList();
     }
 
 }

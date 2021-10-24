@@ -24,6 +24,8 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
+import panda.utilities.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -55,8 +57,8 @@ public final class CdnDeserializer<T> {
             deserializeField(source, instance, field);
         }
 
-        for (Method method : instance.getClass().getMethods()) {
-            deserializeMethod(source, instance, method);
+        for (String propertyName : settings.getAnnotationResolver().getProperties(instance.getClass())) {
+            deserializeProperty(source, instance, propertyName);
         }
 
         return instance;
@@ -68,19 +70,15 @@ public final class CdnDeserializer<T> {
         }
     }
 
-    private void deserializeMethod(Section source, Object instance, Method setter) throws ReflectiveOperationException {
+    private void deserializeProperty(Section source, Object instance, String propertyName) throws ReflectiveOperationException {
         try {
-            if (!setter.getName().startsWith("set")) {
-                return;
-            }
-
-            Method getter = instance.getClass().getMethod("get" + setter.getName().substring(3));
+            Method getter = instance.getClass().getMethod("get" + StringUtils.capitalize(propertyName));
 
             if (CdnUtils.isIgnored(getter)) {
                 return;
             }
 
-            deserializeMember(source, settings.getAnnotationResolver().fromProperty(instance, getter, setter));
+            deserializeMember(source, settings.getAnnotationResolver().fromProperty(instance, propertyName));
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore

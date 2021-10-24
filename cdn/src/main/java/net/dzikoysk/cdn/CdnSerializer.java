@@ -23,6 +23,7 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
 import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import panda.std.stream.PandaStream;
+import panda.utilities.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -53,8 +54,8 @@ public final class CdnSerializer {
             serializeField(entity, field, output);
         }
 
-        for (Method method : template.getMethods()) {
-            serializeMethod(entity, method, output);
+        for (String propertyName : settings.getAnnotationResolver().getProperties(entity.getClass())) {
+            serializeProperty(entity, propertyName, output);
         }
 
         return output;
@@ -66,18 +67,15 @@ public final class CdnSerializer {
         }
     }
 
-    private void serializeMethod(Object entity, Method getter, Section output) throws ReflectiveOperationException {
-        if (CdnUtils.isIgnored(getter)) {
-            return;
-        }
-
+    private void serializeProperty(Object entity, String propertyName, Section output) throws ReflectiveOperationException {
         try {
-            if (!getter.getName().startsWith("get")) {
+            Method getter = entity.getClass().getMethod("get" + StringUtils.capitalize(propertyName));
+
+            if (CdnUtils.isIgnored(getter)) {
                 return;
             }
 
-            Method setter = entity.getClass().getMethod("set" + getter.getName().substring(3), getter.getReturnType());
-            serializeMember(settings.getAnnotationResolver().fromProperty(entity, setter, getter), output);
+            serializeMember(settings.getAnnotationResolver().fromProperty(entity, propertyName), output);
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore

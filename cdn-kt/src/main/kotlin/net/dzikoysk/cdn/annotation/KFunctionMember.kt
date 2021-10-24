@@ -1,23 +1,18 @@
 package net.dzikoysk.cdn.annotation
 
-import net.dzikoysk.cdn.CdnUtils
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.*
 
-class KFunctionMember(private val instance : Any, getter: Method, setter: Method) : AnnotatedMember {
-
-    private val getter: KFunction<*> = getter.kotlinFunction as KFunction<*>
-    private val setter: KFunction<*> = setter.kotlinFunction as KFunction<*>
+class KFunctionMember(private val instance: Any, private val getter: KFunction<*>, private val setter: KFunction<*>, private val propertyName: String) : AnnotatedMember {
 
     override fun setValue(value: Any?) {
-        getter.call(instance, value)
+        setter.call(instance, value)
     }
 
     override fun getValue(): Any? {
-        return setter.call(instance)
+        return getter.call(instance)
     }
 
     override fun isAnnotationPresent(annotation: Class<out Annotation>?): Boolean {
@@ -43,7 +38,7 @@ class KFunctionMember(private val instance : Any, getter: Method, setter: Method
 
     override fun getType(): Class<*>? = getter.javaMethod?.returnType
 
-    override fun getName(): String = CdnUtils.getPropertyNameFromMethod(getter.name)
+    override fun getName(): String = propertyName
 
     override fun getInstance(): Any = instance
 

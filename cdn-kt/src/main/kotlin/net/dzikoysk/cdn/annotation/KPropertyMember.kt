@@ -2,15 +2,11 @@ package net.dzikoysk.cdn.annotation
 
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Field
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
-import kotlin.reflect.jvm.kotlinProperty
 
-class KPropertyMember(private val instance : Any, field: Field) : AnnotatedMember {
-
-    private val property: KMutableProperty<*> = field.kotlinProperty as KMutableProperty<*>
+class KPropertyMember(private val instance: Any, private val  property: KMutableProperty<*>) : AnnotatedMember {
 
     override fun setValue(value: Any?) {
         property.setter.call(instance, value)
@@ -27,13 +23,15 @@ class KPropertyMember(private val instance : Any, field: Field) : AnnotatedMembe
     }
 
     override fun <A : Annotation?> getAnnotationsByType(annotation: Class<A>?): MutableList<A>? {
-        return PandaStream.of(property.annotations)
+        return PandaStream.of(property.javaField?.annotations)
+            .flatMap { it.toList() }
             .`is`(annotation)
             .toList()
     }
 
     override fun <A : Annotation?> getAnnotation(annotation: Class<A>?): A? {
-        return PandaStream.of(property.annotations)
+        return PandaStream.of(property.javaField?.annotations)
+            .flatMap { it.toList() }
             .`is`(annotation)
             .head()
             .orNull
