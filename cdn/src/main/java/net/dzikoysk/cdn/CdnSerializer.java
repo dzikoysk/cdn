@@ -24,11 +24,12 @@ import net.dzikoysk.cdn.serialization.Serializer;
 import net.dzikoysk.cdn.shared.AnnotatedMember;
 import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
 import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
+import panda.std.stream.PandaStream;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class CdnSerializer {
 
@@ -87,9 +88,9 @@ public final class CdnSerializer {
 
     private void serializeMember(AnnotatedMember member, Section output) throws ReflectiveOperationException {
         Object propertyValue = member.getValue();
-        List<String> description = Arrays.stream(member.getAnnotationsByType(Description.class))
-                .flatMap(annotation -> Arrays.stream(annotation.value()))
-                .collect(Collectors.toList());
+        List<String> description = PandaStream.of(member.getAnnotationsByType(Description.class))
+                .flatMap(annotation -> Arrays.asList(annotation.value()))
+                .toList();
 
         if (member.isAnnotationPresent(Contextual.class)) {
             Section section = new Section(description, CdnConstants.OBJECT_SEPARATOR, member.getName());

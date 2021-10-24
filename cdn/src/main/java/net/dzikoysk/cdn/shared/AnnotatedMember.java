@@ -17,11 +17,14 @@
 package net.dzikoysk.cdn.shared;
 
 import net.dzikoysk.cdn.CdnUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 public interface AnnotatedMember {
 
@@ -31,7 +34,7 @@ public interface AnnotatedMember {
 
     boolean isAnnotationPresent(Class<? extends Annotation> annotation);
 
-    <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation);
+    <A extends Annotation> List<A> getAnnotationsByType(Class<A> annotation);
 
     <A extends Annotation> A getAnnotation(Class<A> annotation);
 
@@ -69,8 +72,8 @@ public interface AnnotatedMember {
         }
 
         @Override
-        public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation) {
-            return field.getAnnotationsByType(annotation);
+        public <A extends Annotation> List<A> getAnnotationsByType(Class<A> annotation) {
+            return Arrays.asList(field.getAnnotationsByType(annotation));
         }
 
         @Override
@@ -128,8 +131,8 @@ public interface AnnotatedMember {
         }
 
         @Override
-        public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotation) {
-            return getter.getAnnotationsByType(annotation);
+        public <A extends Annotation> List<A> getAnnotationsByType(Class<A> annotation) {
+            return Arrays.asList(getter.getAnnotationsByType(annotation));
         }
 
         @Override
