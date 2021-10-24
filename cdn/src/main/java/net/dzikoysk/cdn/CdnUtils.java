@@ -21,19 +21,16 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.serialization.Composer;
-import net.dzikoysk.cdn.shared.AnnotatedMember;
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
-import java.io.IOException;
+
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 

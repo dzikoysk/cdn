@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.kt
+package net.dzikoysk.cdn.annotation;
 
-import net.dzikoysk.cdn.entity.Description
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
-class KotlinConfiguration {
+public interface AnnotationResolver {
 
-    @Description("# Description")
-    var key = "value"
+    AnnotatedMember createMember(Object instance, Field field);
+
+    AnnotatedMember createFunction(Object instance, Method getter, Method setter);
 
 }

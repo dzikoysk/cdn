@@ -1,4 +1,4 @@
-package net.dzikoysk.cdn.shared
+package net.dzikoysk.cdn.annotation
 
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
@@ -8,7 +8,8 @@ import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinProperty
 
-class KPropertyMember(private val instance : Any, field: Field) : AnnotatedMember {
+class KPropertyMember(private val instance : Any, field: Field) :
+    AnnotatedMember {
 
     private val property :KMutableProperty<*> = field.kotlinProperty as KMutableProperty<*>
 

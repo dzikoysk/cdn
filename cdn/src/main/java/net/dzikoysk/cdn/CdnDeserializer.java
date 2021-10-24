@@ -16,14 +16,12 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Deserializer;
-import net.dzikoysk.cdn.shared.AnnotatedMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
 import java.lang.reflect.Field;
@@ -66,7 +64,7 @@ public final class CdnDeserializer<T> {
 
     private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
-            deserializeMember(source, new FieldMember(instance, field));
+            deserializeMember(source, settings.getAnnotationResolver().createMember(instance, field));
         }
     }
 
@@ -82,7 +80,7 @@ public final class CdnDeserializer<T> {
                 return;
             }
 
-            deserializeMember(source, new MethodMember(instance, setter, getter));
+            deserializeMember(source, settings.getAnnotationResolver().createFunction(instance, getter, setter));
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore

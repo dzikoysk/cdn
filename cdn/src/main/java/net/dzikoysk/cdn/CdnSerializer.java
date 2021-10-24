@@ -21,9 +21,7 @@ import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serialization.Serializer;
-import net.dzikoysk.cdn.shared.AnnotatedMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.FieldMember;
-import net.dzikoysk.cdn.shared.AnnotatedMember.MethodMember;
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import panda.std.stream.PandaStream;
 
 import java.lang.reflect.Field;
@@ -64,7 +62,7 @@ public final class CdnSerializer {
 
     private void serializeField(Object entity, Field field, Section output) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
-            serializeMember(new FieldMember(entity, field), output);
+            serializeMember(settings.getAnnotationResolver().createMember(entity, field), output);
         }
     }
 
@@ -79,7 +77,7 @@ public final class CdnSerializer {
             }
 
             Method setter = entity.getClass().getMethod("set" + getter.getName().substring(3), getter.getReturnType());
-            serializeMember(new MethodMember(entity, setter, getter), output);
+            serializeMember(settings.getAnnotationResolver().createFunction(entity, setter, getter), output);
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore
