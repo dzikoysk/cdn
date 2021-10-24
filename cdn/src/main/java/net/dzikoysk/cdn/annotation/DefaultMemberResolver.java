@@ -43,7 +43,7 @@ public class DefaultMemberResolver implements MemberResolver {
     @Override
     public List<AnnotatedMember> getProperties(Object instance) {
         return PandaStream.of(instance.getClass().getMethods())
-                .filter(CdnUtils::isIgnored)
+                .filterNot(CdnUtils::isIgnored)
                 .map(Method::getName)
                 .filter(name -> name.startsWith("get"))
                 .map(StringUtils::capitalize)
