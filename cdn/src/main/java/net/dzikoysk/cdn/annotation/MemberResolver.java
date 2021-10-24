@@ -19,12 +19,12 @@ package net.dzikoysk.cdn.annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public interface AnnotationResolver {
+public interface MemberResolver {
 
     AnnotatedMember fromField(Object instance, Field field);
 
     AnnotatedMember fromProperty(Object instance, String propertyName) throws NoSuchMethodException;
 
-    List<String> getProperties(Class<?> classInfo);
+    List<AnnotatedMember> getProperties(Object instance);
 
 }

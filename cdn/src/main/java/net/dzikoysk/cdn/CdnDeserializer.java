@@ -57,8 +57,8 @@ public final class CdnDeserializer<T> {
             deserializeField(source, instance, field);
         }
 
-        for (String propertyName : settings.getAnnotationResolver().getProperties(instance.getClass())) {
-            deserializeProperty(source, instance, propertyName);
+        for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(instance)) {
+            deserializeMember(source, annotatedMember);
         }
 
         return instance;
@@ -67,21 +67,6 @@ public final class CdnDeserializer<T> {
     private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
             deserializeMember(source, settings.getAnnotationResolver().fromField(instance, field));
-        }
-    }
-
-    private void deserializeProperty(Section source, Object instance, String propertyName) throws ReflectiveOperationException {
-        try {
-            Method getter = instance.getClass().getMethod("get" + StringUtils.capitalize(propertyName));
-
-            if (CdnUtils.isIgnored(getter)) {
-                return;
-            }
-
-            deserializeMember(source, settings.getAnnotationResolver().fromProperty(instance, propertyName));
-        }
-        catch (NoSuchMethodException ignored) {
-            // cannot set this property, ignore
         }
     }
 

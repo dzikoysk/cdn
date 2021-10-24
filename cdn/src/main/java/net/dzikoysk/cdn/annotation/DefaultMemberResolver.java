@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import net.dzikoysk.cdn.CdnUtils;
+import panda.std.Option;
 import panda.std.stream.PandaStream;
 import panda.utilities.StringUtils;
 
@@ -23,7 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class DefaultAnnotationResolver implements AnnotationResolver {
+public class DefaultMemberResolver implements MemberResolver {
 
     @Override
     public AnnotatedMember fromField(Object instance, Field field) {
@@ -39,12 +41,14 @@ public class DefaultAnnotationResolver implements AnnotationResolver {
     }
 
     @Override
-    public List<String> getProperties(Class<?> classInfo) {
-        return PandaStream.of(classInfo.getMethods())
+    public List<AnnotatedMember> getProperties(Object instance) {
+        return PandaStream.of(instance.getClass().getMethods())
+                .filter(CdnUtils::isIgnored)
                 .map(Method::getName)
                 .filter(name -> name.startsWith("get"))
                 .map(StringUtils::capitalize)
                 .map(name -> name.substring(3))
+                .flatMap(name -> Option.attempt(NoSuchMethodException.class, () -> fromProperty(instance, name)))
                 .toList();
     }
 

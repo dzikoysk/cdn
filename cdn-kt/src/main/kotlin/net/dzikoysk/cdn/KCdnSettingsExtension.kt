@@ -1,8 +1,8 @@
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.annotation.KotlinAnnotationResolver
+import net.dzikoysk.cdn.annotation.KotlinMemberResolver
 
 fun CdnSettings.registerKotlinModule() : CdnSettings {
-    this.withAnnotationResolver(KotlinAnnotationResolver())
+    this.withAnnotationResolver(KotlinMemberResolver())
     return this
 }

@@ -54,8 +54,8 @@ public final class CdnSerializer {
             serializeField(entity, field, output);
         }
 
-        for (String propertyName : settings.getAnnotationResolver().getProperties(entity.getClass())) {
-            serializeProperty(entity, propertyName, output);
+        for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(entity)) {
+            serializeMember(annotatedMember, output);
         }
 
         return output;
@@ -64,21 +64,6 @@ public final class CdnSerializer {
     private void serializeField(Object entity, Field field, Section output) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
             serializeMember(settings.getAnnotationResolver().fromField(entity, field), output);
-        }
-    }
-
-    private void serializeProperty(Object entity, String propertyName, Section output) throws ReflectiveOperationException {
-        try {
-            Method getter = entity.getClass().getMethod("get" + StringUtils.capitalize(propertyName));
-
-            if (CdnUtils.isIgnored(getter)) {
-                return;
-            }
-
-            serializeMember(settings.getAnnotationResolver().fromProperty(entity, propertyName), output);
-        }
-        catch (NoSuchMethodException ignored) {
-            // cannot set this property, ignore
         }
     }
 

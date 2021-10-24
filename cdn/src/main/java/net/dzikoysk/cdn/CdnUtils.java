@@ -103,7 +103,7 @@ public final class CdnUtils {
         return methodName;
     }
 
-    static boolean isIgnored(Field field) {
+    public static boolean isIgnored(Field field) {
         int modifiers = field.getModifiers();
 
         if (!Modifier.isPublic(modifiers)) {
@@ -126,7 +126,7 @@ public final class CdnUtils {
         return field.isAnnotationPresent(Exclude.class);
     }
 
-    static boolean isIgnored(Method method) {
+    public static boolean isIgnored(Method method) {
         int modifiers = method.getModifiers();
 
         if (Modifier.isNative(modifiers)) {

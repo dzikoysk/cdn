@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.annotation.AnnotationResolver;
-import net.dzikoysk.cdn.annotation.DefaultAnnotationResolver;
+import net.dzikoysk.cdn.annotation.MemberResolver;
+import net.dzikoysk.cdn.annotation.DefaultMemberResolver;
 import net.dzikoysk.cdn.composers.EnumComposer;
 import net.dzikoysk.cdn.composers.ListComposer;
 import net.dzikoysk.cdn.composers.MapComposer;
@@ -66,7 +66,7 @@ public final class CdnSettings {
     private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
     private final Collection<CdnFeature> features = new ArrayList<>();
-    private AnnotationResolver annotationResolver = new DefaultAnnotationResolver();
+    private MemberResolver memberResolver = new DefaultMemberResolver();
 
     {
         withComposer(boolean.class, Object::toString, Boolean::parseBoolean);
@@ -180,8 +180,8 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings withAnnotationResolver(AnnotationResolver resolver) {
-        this.annotationResolver = resolver;
+    public CdnSettings withAnnotationResolver(MemberResolver resolver) {
+        this.memberResolver = resolver;
         return this;
     }
 
@@ -201,7 +201,7 @@ public final class CdnSettings {
         return ObjectUtils.cast(composers);
     }
 
-    public AnnotationResolver getAnnotationResolver() {
-        return annotationResolver;
+    public MemberResolver getAnnotationResolver() {
+        return memberResolver;
     }
 }

@@ -6,7 +6,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 
-class KotlinAnnotationResolver : AnnotationResolver {
+class KotlinMemberResolver : MemberResolver {
 
     override fun fromField(instance: Any, field: Field): AnnotatedMember {
         return FieldMember(instance, field)
@@ -29,8 +29,10 @@ class KotlinAnnotationResolver : AnnotationResolver {
         return KPropertyMember(instance, find)
     }
 
-    override fun getProperties(classInfo: Class<*>): List<String> {
-        return classInfo.kotlin.memberProperties.map { it.name }.toList()
+    override fun getProperties(instance: Any): List<AnnotatedMember> {
+        return instance::class.memberProperties
+            .filterIsInstance<KMutableProperty<*>>()
+            .map { KPropertyMember(instance, it) }
     }
 
 }
