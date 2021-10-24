@@ -8,8 +8,7 @@ import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinProperty
 
-class KPropertyMember(private val instance : Any, field: Field) :
-    AnnotatedMember {
+class KPropertyMember(private val instance : Any, field: Field) : AnnotatedMember {
 
     private val property :KMutableProperty<*> = field.kotlinProperty as KMutableProperty<*>
 
