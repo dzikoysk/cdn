@@ -180,7 +180,7 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings changeAnnotationResolver(AnnotationResolver resolver) {
+    public CdnSettings withAnnotationResolver(AnnotationResolver resolver) {
         this.annotationResolver = resolver;
         return this;
     }

@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.kotlinProperty
 
 class KPropertyMember(private val instance : Any, field: Field) : AnnotatedMember {
 
-    private val property :KMutableProperty<*> = field.kotlinProperty as KMutableProperty<*>
+    private val property: KMutableProperty<*> = field.kotlinProperty as KMutableProperty<*>
 
     override fun setValue(value: Any?) {
         property.setter.call(instance, value)

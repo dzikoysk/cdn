@@ -22,12 +22,12 @@ import java.lang.reflect.Method;
 public class DefaultAnnotationResolver implements AnnotationResolver {
 
     @Override
-    public AnnotatedMember createMember(Object instance, Field field) {
+    public AnnotatedMember fromField(Object instance, Field field) {
         return new FieldMember(instance, field);
     }
 
     @Override
-    public AnnotatedMember createFunction(Object instance, Method getter, Method setter) {
+    public AnnotatedMember fromProperty(Object instance, Method getter, Method setter) {
         return new MethodMember(instance, setter, getter);
     }
 

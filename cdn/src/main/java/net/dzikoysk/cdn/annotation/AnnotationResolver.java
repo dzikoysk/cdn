@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 
 public interface AnnotationResolver {
 
-    AnnotatedMember createMember(Object instance, Field field);
+    AnnotatedMember fromField(Object instance, Field field);
 
-    AnnotatedMember createFunction(Object instance, Method getter, Method setter);
+    AnnotatedMember fromProperty(Object instance, Method getter, Method setter);
 
 }

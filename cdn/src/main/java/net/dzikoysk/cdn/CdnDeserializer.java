@@ -64,7 +64,7 @@ public final class CdnDeserializer<T> {
 
     private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
         if (!CdnUtils.isIgnored(field)) {
-            deserializeMember(source, settings.getAnnotationResolver().createMember(instance, field));
+            deserializeMember(source, settings.getAnnotationResolver().fromField(instance, field));
         }
     }
 
@@ -80,7 +80,7 @@ public final class CdnDeserializer<T> {
                 return;
             }
 
-            deserializeMember(source, settings.getAnnotationResolver().createFunction(instance, getter, setter));
+            deserializeMember(source, settings.getAnnotationResolver().fromProperty(instance, getter, setter));
         }
         catch (NoSuchMethodException ignored) {
             // cannot set this property, ignore
