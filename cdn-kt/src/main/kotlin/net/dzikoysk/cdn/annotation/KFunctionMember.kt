@@ -5,7 +5,12 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.*
 
-class KFunctionMember(private val instance: Any, private val getter: KFunction<*>, private val setter: KFunction<*>, private val propertyName: String) : AnnotatedMember {
+class KFunctionMember(
+    private val instance: Any,
+    private val getter: KFunction<*>,
+    private val setter: KFunction<*>,
+    private val propertyName: String
+) : AnnotatedMember {
 
     override fun setValue(value: Any?) {
         setter.call(instance, value)
