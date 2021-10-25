@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.composers
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
-import net.dzikoysk.cdn.shared.source.Source
+import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
 @CompileStatic

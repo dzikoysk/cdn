@@ -18,10 +18,9 @@ package net.dzikoysk.cdn
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.model.Element
+import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
-import static net.dzikoysk.cdn.shared.source.Source.empty
-import static net.dzikoysk.cdn.shared.source.Source.of
 import static org.junit.jupiter.api.Assertions.*
 
 @CompileStatic
@@ -29,7 +28,7 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should return entry' () {
-        def result = standard.load(of('key: value'))
+        def result = standard.load(Source.of('key: value'))
         def entry = result.getEntry('key').get()
         assertEquals 'key', entry.getName()
         assertEquals 'value', entry.getUnitValue()
@@ -37,7 +36,7 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should return section with comments and entry' () {
-        def result = standard.load(of("""
+        def result = standard.load(Source.of("""
         # comment1
         // comment2
         section {
@@ -56,7 +55,7 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should return nested section' () {
-        def result = standard.load(of('''
+        def result = standard.load(Source.of('''
         # c1
         s1 {
             # c2
@@ -71,13 +70,13 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should skip empty lines' () {
-        def elements = standard.load(empty()).getValue() as List<Element>
+        def elements = standard.load(Source.empty()).getValue() as List<Element>
         assertTrue elements.isEmpty()
     }
 
     @Test
     void 'should read quoted key and value' () {
-        def result = standard.load(of('''
+        def result = standard.load(Source.of('''
         " key ": " value "
         '''))
 
@@ -87,7 +86,7 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should remove semicolons' () {
-        def result = standard.load(of("""
+        def result = standard.load(Source.of("""
         a: b,
         c: d
         """))
@@ -97,7 +96,7 @@ final class CdnReaderTest extends CdnSpec {
 
     @Test
     void 'should ignore empty root section' () {
-        def result = standard.load(of("""
+        def result = standard.load(Source.of("""
         {
           "a": "b",
           "c": "d"

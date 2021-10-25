@@ -14,31 +14,40 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.shared.source;
+package net.dzikoysk.cdn.source;
 
-import panda.utilities.IOUtils;
-import java.io.InputStream;
+import panda.utilities.StringUtils;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-final class InputStreamSource implements Source {
+final class PathSource implements Source {
 
-    private final InputStream inputStream;
+    private final Path path;
     private final Charset encoding;
 
-    InputStreamSource(InputStream inputStream, Charset encoding) {
-        this.inputStream = inputStream;
+    PathSource(Path path, Charset encoding) {
+        this.path = path;
         this.encoding = encoding;
+    }
+
+    PathSource(Path path) {
+        this(path, StandardCharsets.UTF_8);
     }
 
     @Override
     public String getSource() {
-        try {
-            return IOUtils.convertStreamToString(inputStream, encoding).orElseThrow(failure -> {
-                throw new IllegalStateException("Cannot read input stream", failure);
-            });
+        if (!Files.exists(path)) {
+            return StringUtils.EMPTY;
         }
-        finally {
-            IOUtils.close(inputStream);
+
+        try {
+            return new String(Files.readAllBytes(path), encoding);
+        } catch (IOException ioException) {
+            throw new IllegalStateException("Cannot read file", ioException);
         }
     }
+
 }

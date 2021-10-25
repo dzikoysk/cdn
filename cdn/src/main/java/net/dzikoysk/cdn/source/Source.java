@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.shared.source;
+package net.dzikoysk.cdn.source;
 
 import java.io.File;
 import java.io.InputStream;

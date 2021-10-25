@@ -16,15 +16,18 @@
 
 package net.dzikoysk.cdn.model;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import panda.std.Publisher;
 
 public interface Reference<V> extends Publisher<Reference<V>, V> {
 
-    V get();
+    @NotNull V get();
 
     Class<V> getType();
 
-    static <T> Reference<T> reference(T value) {
+    @Contract(value = "_ -> new", pure = true)
+    static <T> Reference<@NotNull T> reference(@NotNull T value) {
         return new MutableReferenceImpl<>(value);
     }
 

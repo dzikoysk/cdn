@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
+import org.jetbrains.annotations.NotNull;
 import panda.std.Subscriber;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,13 +52,13 @@ public class MutableReferenceImpl<V> implements MutableReference<V> {
     }
 
     @Override
-    public V get() {
+    public @NotNull V get() {
         return value;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Class<V> getType() {
+    public @NotNull Class<V> getType() {
         return (Class<V>) value.getClass();
     }
 

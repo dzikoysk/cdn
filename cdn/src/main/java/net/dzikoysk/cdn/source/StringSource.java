@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.model;
+package net.dzikoysk.cdn.source;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+final class StringSource implements Source {
 
-public interface MutableReference<V> extends Reference<V> {
+    private final String source;
 
-    MutableReference<V> update(V value);
+    StringSource(String source) {
+        this.source = source;
+    }
 
-    @Contract(value = "_ -> new", pure = true)
-    static <T> MutableReference<@NotNull T> mutableReference(@NotNull T value) {
-        return new MutableReferenceImpl<>(value);
+    @Override
+    public String getSource() {
+        return source;
     }
 
 }

@@ -20,10 +20,10 @@ import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.model.MutableReference
 import net.dzikoysk.cdn.model.Reference
-import net.dzikoysk.cdn.shared.source.Source
+import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
-import static net.dzikoysk.cdn.model.MutableReference.mutable
+import static net.dzikoysk.cdn.model.MutableReference.mutableReference
 import static net.dzikoysk.cdn.model.Reference.reference
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
@@ -35,7 +35,7 @@ class ReferenceComposerTest extends CdnSpec {
 
         public Reference<String> reference = reference("default-value")
 
-        public MutableReference<String> mutableReference = mutable("mutable-default-value")
+        public MutableReference<String> mutableReference = mutableReference("mutable-default-value")
 
     }
 

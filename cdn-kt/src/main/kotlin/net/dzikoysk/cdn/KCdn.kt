@@ -18,24 +18,29 @@ package net.dzikoysk.cdn
 
 import net.dzikoysk.cdn.model.KConfiguration
 import net.dzikoysk.cdn.model.KNamedElement
+import net.dzikoysk.cdn.source.Source
 import kotlin.reflect.KClass
 
-class KCdn(private val cdn: Cdn) {
+class KCdn(val cdn: Cdn) {
 
-    fun parse(source: String): KConfiguration = KConfiguration(cdn.load { source } )
+    companion object
 
-    fun <T : Any> parse(scheme: KClass<T>, source: String): T = cdn.load( { source } , scheme.java)
+    fun parse(source: Source): KConfiguration = KConfiguration(cdn.load(source))
 
-    inline fun <reified T : Any> parseAs(source: String): T = this.parse(T::class, source)
+    fun <T : Any> parse(source: Source, template: KClass<T>): T = cdn.load(source, template.java)
+
+    fun <T : Any> parse(source: Source, instance: T): T = cdn.load(source, instance)
+
+    inline fun <reified T : Any> parseAs(source: Source): T = this.parse(source, T::class)
 
     fun render(element: KNamedElement<*>): String = cdn.render(element.namedElement)
 
     fun render(entity: Any): String = cdn.render(entity)
 
-    companion object {
-
-        fun configure(): CdnSettings = CdnSettings()
-
-    }
-
 }
+
+fun Cdn.toKotlinWrapper(): KCdn =
+    KCdn(this)
+
+fun KCdn.Companion.configure(): CdnSettings =
+    CdnSettings()

@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.features.json
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.features.JsonFeature
-import net.dzikoysk.cdn.shared.source.Source
+import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals

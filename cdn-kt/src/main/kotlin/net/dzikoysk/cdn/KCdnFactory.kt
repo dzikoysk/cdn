@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.shared.source;
+package net.dzikoysk.cdn
 
-final class StringSource implements Source {
+object KCdnFactory {
 
-    private final String source;
-
-    StringSource(String source) {
-        this.source = source;
-    }
-
-    @Override
-    public String getSource() {
-        return source;
-    }
+    fun createStandard(): KCdn =
+        Cdn.configure()
+            .registerKotlinModule()
+            .build()
+            .toKotlinWrapper()
 
 }

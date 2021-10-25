@@ -21,7 +21,7 @@ import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
-import net.dzikoysk.cdn.shared.source.Source;
+import net.dzikoysk.cdn.source.Source;
 import panda.std.Option;
 import panda.utilities.StringUtils;
 import java.util.ArrayList;

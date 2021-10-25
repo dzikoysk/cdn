@@ -18,7 +18,7 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
-import net.dzikoysk.cdn.shared.source.Source;
+import net.dzikoysk.cdn.source.Source;
 import panda.utilities.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public final class Cdn {
      *
      * @param source the source to load
      * @return the parsed configuration
-     * @see net.dzikoysk.cdn.shared.source.Source
+     * @see net.dzikoysk.cdn.source.Source
      */
     public Configuration load(Source source) {
         return new CdnReader(settings).read(source);

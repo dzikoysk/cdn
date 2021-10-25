@@ -18,7 +18,7 @@ package net.dzikoysk.cdn.composers
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
-import net.dzikoysk.cdn.shared.source.Source
+import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
@@ -47,10 +47,7 @@ class EnumComposerTest extends CdnSpec {
         assertEquals SomeEnum.VAL, result.enumValue
 
         result.enumValue = SomeEnum.VAR
-
-        assertEquals(cfg("""
-        enumValue: VAR
-        """), standard.render(result))
+        assertEquals(cfg("enumValue: VAR"), standard.render(result))
     }
 
 }
