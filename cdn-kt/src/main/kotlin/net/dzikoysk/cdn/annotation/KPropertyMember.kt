@@ -6,7 +6,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 
-class KPropertyMember(private val instance: Any, private val  property: KMutableProperty<*>) : AnnotatedMember {
+internal class KPropertyMember(private val instance: Any, private val  property: KMutableProperty<*>) : AnnotatedMember {
 
     override fun setValue(value: Any?) {
         property.setter.call(instance, value)

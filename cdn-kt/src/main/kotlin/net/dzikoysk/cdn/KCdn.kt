@@ -23,7 +23,9 @@ import kotlin.reflect.KClass
 
 class KCdn(val cdn: Cdn) {
 
-    companion object
+    companion object {
+        fun configure(): CdnSettings = CdnSettings()
+    }
 
     fun parse(source: Source): KConfiguration = KConfiguration(cdn.load(source))
 
@@ -39,8 +41,4 @@ class KCdn(val cdn: Cdn) {
 
 }
 
-fun Cdn.toKotlinWrapper(): KCdn =
-    KCdn(this)
-
-fun KCdn.Companion.configure(): CdnSettings =
-    CdnSettings()
+fun Cdn.toKotlinWrapper(): KCdn = KCdn(this)

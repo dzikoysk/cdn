@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn
+package net.dzikoysk.cdn.model
 
-object KCdnFactory {
+fun <T : Any> reference(value: T): Reference<T> =
+    Reference.reference(value)
 
-    @JvmStatic
-    fun createStandard(): KCdn =
-        Cdn.configure()
-            .registerKotlinModule()
-            .build()
-            .toKotlinWrapper()
-
-}
+fun <T : Any> mutableReference(value: T): MutableReference<T> =
+    MutableReference.mutableReference(value)

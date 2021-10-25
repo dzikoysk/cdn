@@ -5,7 +5,7 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.*
 
-class KFunctionMember(
+internal class KFunctionMember(
     private val instance: Any,
     private val getter: KFunction<*>,
     private val setter: KFunction<*>,
