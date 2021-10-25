@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.serialization;
+package net.dzikoysk.cdn.model;
 
-/**
- * The composer represents implementation of both: serializer and deserializer interfaces.
- *
- * @param <T> type of value to serialize/deserialize
- */
-public interface Composer<T> extends Serializer<T>, Deserializer<T> {
+public final class ReferenceUtils {
 
-    Object MEMBER_ALREADY_PROCESSED = new Object(); // kinda dirty, but I don't want to modify this API yet
+    private ReferenceUtils() {}
+
+    public static <T> void setValue(Reference<T> reference, T value) {
+        reference.set(value);
+    }
 
 }

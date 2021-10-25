@@ -21,13 +21,11 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.DeserializationHandler;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
-import panda.utilities.StringUtils;
-
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public final class CdnDeserializer<T> {
 
@@ -87,7 +85,10 @@ public final class CdnDeserializer<T> {
 
         Deserializer<Object> deserializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
         Object value = deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false);
-        member.setValue(value);
+
+        if (value != Composer.MEMBER_ALREADY_PROCESSED) {
+            member.setValue(value);
+        }
     }
 
 }

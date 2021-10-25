@@ -23,7 +23,6 @@ import net.dzikoysk.cdn.composers.ListComposer;
 import net.dzikoysk.cdn.composers.MapComposer;
 import net.dzikoysk.cdn.composers.ReferenceComposer;
 import net.dzikoysk.cdn.model.MutableReference;
-import net.dzikoysk.cdn.model.MutableReferenceImpl;
 import net.dzikoysk.cdn.model.Reference;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
@@ -88,7 +87,6 @@ public final class CdnSettings {
 
         withComposer(Reference.class, new ReferenceComposer<>());
         withComposer(MutableReference.class, new ReferenceComposer<>());
-        withComposer(MutableReferenceImpl.class, new ReferenceComposer<>());
 
         withDynamicComposer(Class::isEnum, new EnumComposer());
     }

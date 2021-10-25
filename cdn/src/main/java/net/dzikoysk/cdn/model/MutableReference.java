@@ -19,13 +19,20 @@ package net.dzikoysk.cdn.model;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public interface MutableReference<V> extends Reference<V> {
+public class MutableReference<V> extends Reference<V> {
 
-    MutableReference<V> update(V value);
+    public MutableReference(V value) {
+        super(value);
+    }
+
+    public MutableReference<V> update(V value) {
+        set(value);
+        return this;
+    }
 
     @Contract(value = "_ -> new", pure = true)
-    static <T> MutableReference<@NotNull T> mutableReference(@NotNull T value) {
-        return new MutableReferenceImpl<>(value);
+    public static <T> MutableReference<@NotNull T> mutableReference(@NotNull T value) {
+        return new MutableReference<>(value);
     }
 
 }

@@ -1,9 +1,13 @@
 package net.dzikoysk.cdn.annotation
 
+import net.dzikoysk.cdn.model.Reference
 import panda.utilities.StringUtils
 import java.lang.reflect.Field
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.functions
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
 class KotlinMemberResolver : MemberResolver {
@@ -30,9 +34,13 @@ class KotlinMemberResolver : MemberResolver {
     }
 
     override fun getProperties(instance: Any): List<AnnotatedMember> {
-        return instance::class.memberProperties
-            .filterIsInstance<KMutableProperty<*>>()
-            .map { KPropertyMember(instance, it) }
+        return instance::class.memberProperties.mapNotNull {
+            when {
+                it is KMutableProperty<*> -> KPropertyMember(instance, it)
+                it.returnType.isSubtypeOf(Reference::class.createType(listOf(KTypeProjection.STAR))) -> KPropertyMember(instance, it)
+                else -> null
+            }
+        }
     }
 
 }

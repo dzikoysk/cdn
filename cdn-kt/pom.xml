@@ -19,7 +19,7 @@
     <parent>
         <artifactId>cdn-parent</artifactId>
         <groupId>net.dzikoysk</groupId>
-        <version>1.11.2</version>
+        <version>1.11.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -76,6 +76,11 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
@@ -83,6 +88,11 @@
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>

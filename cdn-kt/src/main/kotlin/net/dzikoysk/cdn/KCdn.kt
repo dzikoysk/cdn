@@ -27,13 +27,13 @@ class KCdn(val cdn: Cdn) {
         fun configure(): CdnSettings = CdnSettings()
     }
 
-    fun parse(source: Source): KConfiguration = KConfiguration(cdn.load(source))
+    fun load(source: Source): KConfiguration = KConfiguration(cdn.load(source))
 
-    fun <T : Any> parse(source: Source, template: KClass<T>): T = cdn.load(source, template.java)
+    inline fun <reified T : Any> load(source: Source): T = this.load(source, T::class)
 
-    fun <T : Any> parse(source: Source, instance: T): T = cdn.load(source, instance)
+    fun <T : Any> load(source: Source, template: KClass<T>): T = cdn.load(source, template.java)
 
-    inline fun <reified T : Any> parseAs(source: Source): T = this.parse(source, T::class)
+    fun <T : Any> load(source: Source, instance: T): T = cdn.load(source, instance)
 
     fun render(element: KNamedElement<*>): String = cdn.render(element.namedElement)
 

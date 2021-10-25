@@ -17,10 +17,15 @@
 package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.entity.Description
+import net.dzikoysk.cdn.model.reference
+import java.io.Serializable
 
-class KotlinConfiguration {
+class KotlinConfiguration : Serializable {
 
     @Description("# Description")
     var key = "value"
+
+    @Description("# Description")
+    val reference = reference("ref")
 
 }

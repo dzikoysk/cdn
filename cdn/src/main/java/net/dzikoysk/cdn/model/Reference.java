@@ -19,16 +19,46 @@ package net.dzikoysk.cdn.model;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import panda.std.Publisher;
+import panda.std.Subscriber;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public interface Reference<V> extends Publisher<Reference<V>, V> {
+public class Reference<V> implements Publisher<Reference<V>, V> {
 
-    @NotNull V get();
+    protected V value;
+    protected final Collection<Subscriber<? super V>> subscribers = new ArrayList<>();
 
-    Class<V> getType();
+    public Reference(V value) {
+        set(value);
+    }
+
+    @Override
+    public Reference<V> subscribe(Subscriber<? super V> subscriber) {
+        subscribers.add(subscriber);
+        return this;
+    }
+
+    void set(V value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Reference does not support null values");
+        }
+
+        subscribers.forEach(subscriber -> subscriber.onComplete(value));
+        this.value = value;
+    }
+
+    public @NotNull V get() {
+        return value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public @NotNull Class<V> getType() {
+        return (Class<V>) value.getClass();
+    }
 
     @Contract(value = "_ -> new", pure = true)
-    static <T> Reference<@NotNull T> reference(@NotNull T value) {
-        return new MutableReferenceImpl<>(value);
+    public static <T> Reference<@NotNull T> reference(@NotNull T value) {
+        return new Reference<>(value);
     }
 
 }

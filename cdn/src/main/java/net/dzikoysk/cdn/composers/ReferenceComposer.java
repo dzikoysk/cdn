@@ -19,9 +19,8 @@ package net.dzikoysk.cdn.composers;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
-import net.dzikoysk.cdn.model.MutableReference;
-import net.dzikoysk.cdn.model.MutableReferenceImpl;
 import net.dzikoysk.cdn.model.Reference;
+import net.dzikoysk.cdn.model.ReferenceUtils;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
@@ -38,13 +37,9 @@ public final class ReferenceComposer<T> implements Composer<T> {
         AnnotatedType referenceType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
         Deserializer<Object> deserializer = CdnUtils.findComposer(settings, referenceType, null);
         Object value = deserializer.deserialize(settings, source, referenceType, defaultValue, entryAsRecord);
-
-        if (defaultValue instanceof MutableReference) {
-            ((MutableReference<T>) defaultValue).update((T) value);
-            return defaultValue;
-        }
-
-        return (T) new MutableReferenceImpl<>(value);
+        Reference<Object> reference = (Reference<Object>) defaultValue;
+        ReferenceUtils.setValue(reference, value);
+        return (T) MEMBER_ALREADY_PROCESSED;
     }
 
     @Override
