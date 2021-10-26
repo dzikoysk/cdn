@@ -18,15 +18,15 @@ package net.dzikoysk.cdn.composers
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
-import net.dzikoysk.cdn.model.MutableReference
-import net.dzikoysk.cdn.model.Reference
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
+import panda.std.reactive.MutableReference
+import panda.std.reactive.Reference
 
-import static net.dzikoysk.cdn.model.MutableReference.mutableReference
-import static net.dzikoysk.cdn.model.Reference.reference
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
+import static panda.std.reactive.MutableReference.mutableReference
+import static panda.std.reactive.Reference.reference
 
 @CompileStatic
 class ReferenceComposerTest extends CdnSpec {
@@ -44,7 +44,7 @@ class ReferenceComposerTest extends CdnSpec {
         def configuration = new ReferenceConfiguration()
 
         def subscriberCalled = false
-        configuration.mutableReference.subscribe({ updatedValue -> subscriberCalled = true })
+        configuration.mutableReference.subscribe({ subscriberCalled = true })
 
         standard.load(
                 Source.of("""

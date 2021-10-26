@@ -16,20 +16,20 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.annotation.MemberResolver;
 import net.dzikoysk.cdn.annotation.DefaultMemberResolver;
+import net.dzikoysk.cdn.annotation.MemberResolver;
 import net.dzikoysk.cdn.composers.EnumComposer;
 import net.dzikoysk.cdn.composers.ListComposer;
 import net.dzikoysk.cdn.composers.MapComposer;
 import net.dzikoysk.cdn.composers.ReferenceComposer;
-import net.dzikoysk.cdn.model.MutableReference;
-import net.dzikoysk.cdn.model.Reference;
 import net.dzikoysk.cdn.serialization.Composer;
 import net.dzikoysk.cdn.serialization.Deserializer;
 import net.dzikoysk.cdn.serialization.Serializer;
 import net.dzikoysk.cdn.serialization.SimpleComposer;
 import net.dzikoysk.cdn.serialization.SimpleDeserializer;
 import net.dzikoysk.cdn.serialization.SimpleSerializer;
+import panda.std.reactive.MutableReference;
+import panda.std.reactive.Reference;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;

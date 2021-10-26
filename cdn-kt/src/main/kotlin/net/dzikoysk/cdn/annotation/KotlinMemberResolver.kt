@@ -1,6 +1,6 @@
 package net.dzikoysk.cdn.annotation
 
-import net.dzikoysk.cdn.model.Reference
+import panda.std.reactive.Reference
 import panda.utilities.StringUtils
 import java.lang.reflect.Field
 import kotlin.reflect.KMutableProperty

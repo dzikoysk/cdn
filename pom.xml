@@ -23,7 +23,7 @@
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.11.4</version>
+    <version>1.11.5</version>
 
     <scm>
         <connection>scm:git:https://github.com/dzikoysk/cdn.git</connection>
@@ -58,12 +58,16 @@
         </repository>
     </distributionManagement>
 
+    <properties>
+        <expressible.version>1.1.1</expressible.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>net.dzikoysk</groupId>
                 <artifactId>cdn</artifactId>
-                <version>1.11.4</version>
+                <version>1.11.5</version>
             </dependency>
 
             <!-- General -->
@@ -75,7 +79,12 @@
             <dependency>
                 <groupId>org.panda-lang</groupId>
                 <artifactId>expressible</artifactId>
-                <version>1.0.18</version>
+                <version>${expressible.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.panda-lang</groupId>
+                <artifactId>expressible-kt</artifactId>
+                <version>${expressible.version}</version>
             </dependency>
 
             <!-- Tests -->

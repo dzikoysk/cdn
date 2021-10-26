@@ -17,7 +17,7 @@
 package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.entity.Description
-import net.dzikoysk.cdn.model.reference
+import panda.std.reactive.reference
 import java.io.Serializable
 
 class KotlinConfiguration : Serializable {
