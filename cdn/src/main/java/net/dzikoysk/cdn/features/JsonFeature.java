@@ -40,6 +40,11 @@ public final class JsonFeature extends DefaultFeature {
         return enforceNewlines(standardized);
     }
 
+    @Override
+    public void visitDescription(StringBuilder output, String indentation, String description) {
+        // drop comments
+    }
+
     private String enforceNewlines(String source) {
         StringBuilder result = new StringBuilder();
         Stack<Character> operators = new Stack<>();

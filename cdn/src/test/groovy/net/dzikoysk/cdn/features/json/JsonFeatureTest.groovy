@@ -18,6 +18,7 @@ package net.dzikoysk.cdn.features.json
 
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.features.JsonFeature
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
@@ -87,6 +88,16 @@ final class JsonFeatureTest extends CdnSpec {
 
         assertEquals standardResult.getString('object.key', 'defaultCDN'), jsonResult.getString('object.key', 'defaultJSON')
         assertEquals standardResult.getList('array', [ 'defaultCDN' ]), jsonResult.getList('array', [ 'defaultJSON' ])
+    }
+
+    static class ConfigurationWithDescription {
+        @Description("# Description")
+        public String key = "value"
+    }
+
+    @Test
+    void 'should ignore description as it is not supported by json '() {
+        assertEquals("key: value", json.render(new ConfigurationWithDescription()))
     }
 
 }

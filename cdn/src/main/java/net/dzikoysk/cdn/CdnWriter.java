@@ -49,10 +49,10 @@ final class CdnWriter {
         String indentation = StringUtils.buildSpace(level * 2);
 
         // render multiline description
-        for (String comment : element.getDescription()) {
-            output.append(indentation)
-                    .append(comment)
-                    .append(CdnConstants.LINE_SEPARATOR);
+        for (String description : element.getDescription()) {
+            for (CdnFeature feature : settings.getFeatures()) {
+                feature.visitDescription(output, indentation, description);
+            }
         }
 
         // render simple entry

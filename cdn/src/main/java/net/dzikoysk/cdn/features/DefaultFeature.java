@@ -30,6 +30,13 @@ import java.util.Stack;
 public class DefaultFeature implements CdnFeature {
 
     @Override
+    public void visitDescription(StringBuilder output, String indentation, String description) {
+        output.append(indentation)
+                .append(description)
+                .append(CdnConstants.LINE_SEPARATOR);
+    }
+
+    @Override
     public void visitSectionOpening(StringBuilder output, String indentation, Section section) {
         // Don't add space to unnamed sections
         // ~ https://github.com/dzikoysk/cdn/issues/29
