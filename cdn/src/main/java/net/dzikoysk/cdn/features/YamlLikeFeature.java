@@ -22,8 +22,10 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
+import panda.utilities.StringUtils;
 
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import static net.dzikoysk.cdn.CdnConstants.ARRAY;
 
@@ -37,10 +39,25 @@ import static net.dzikoysk.cdn.CdnConstants.ARRAY;
  */
 public final class YamlLikeFeature implements CdnFeature {
 
+    private static final Pattern DEFAULT_COMMENT_OPENING = Pattern.compile("//");
+
     @Override
     public String convertToCdn(String source) {
         YamlLikeConverter converter = new YamlLikeConverter(source);
         return converter.convert();
+    }
+
+    @Override
+    public void visitDescription(StringBuilder output, String indentation, String description) {
+        description = StringUtils.trimStart(description);
+
+        if (description.startsWith("//")) {
+            description = DEFAULT_COMMENT_OPENING.matcher(description).replaceFirst("#");
+        }
+
+        output.append(indentation)
+                .append(description)
+                .append(CdnConstants.LINE_SEPARATOR);
     }
 
     @Override

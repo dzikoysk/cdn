@@ -25,7 +25,7 @@ import java.util.Stack;
 /**
  * Implementation of JSON file format based on default implementation of CDN format.
  */
-public final class JsonFeature extends DefaultFeature {
+public final class JsonLikeFeature extends DefaultStandardFeature {
 
     private static final char[] SEQUENCES = { '"', '\''};
     private static final char[] OPENING_OPERATORS = { '{', '[' };

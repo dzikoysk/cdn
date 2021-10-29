@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn
 
 import groovy.transform.CompileStatic
+import net.dzikoysk.cdn.features.DefaultStandardFeature
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import org.junit.jupiter.api.Test
@@ -71,6 +72,7 @@ class CdnWriterTest extends CdnSpec{
         def entry = new Entry([ '# ${{placeholder}}' ], 'key', 'value')
 
         def cdn = Cdn.configure()
+            .installFeature(new DefaultStandardFeature())
             .registerPlaceholders([ 'placeholder': 'dance with me' ])
             .build()
 

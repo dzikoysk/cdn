@@ -26,7 +26,7 @@ public interface CdnFeature {
 
     default String convertToCdn(String source) { return source; }
 
-    default void visitDescription(StringBuilder output, String indentation, String description) { }
+    void visitDescription(StringBuilder output, String indentation, String description);
 
     default void visitSectionOpening(StringBuilder output, String indentation, Section section) { }
 

@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.features.DefaultFeature;
-import net.dzikoysk.cdn.features.JsonFeature;
+import net.dzikoysk.cdn.features.DefaultStandardFeature;
+import net.dzikoysk.cdn.features.JsonLikeFeature;
 import net.dzikoysk.cdn.features.YamlLikeFeature;
 
 /**
@@ -29,11 +29,11 @@ public final class CdnFactory {
      * Create standard CDN instance with CDN format
      *
      * @return the standard implementation
-     * @see net.dzikoysk.cdn.features.DefaultFeature
+     * @see net.dzikoysk.cdn.features.DefaultStandardFeature
      */
     public static Cdn createStandard() {
         return Cdn.configure()
-                .installFeature(new DefaultFeature())
+                .installFeature(new DefaultStandardFeature())
                 .build();
     }
 
@@ -41,11 +41,11 @@ public final class CdnFactory {
      * Create CDN with JSON feature
      *
      * @return the json implementation
-     * @see net.dzikoysk.cdn.features.JsonFeature
+     * @see net.dzikoysk.cdn.features.JsonLikeFeature
      */
     public static Cdn createJsonLike() {
         return Cdn.configure()
-                .installFeature(new JsonFeature())
+                .installFeature(new JsonLikeFeature())
                 .build();
     }
 

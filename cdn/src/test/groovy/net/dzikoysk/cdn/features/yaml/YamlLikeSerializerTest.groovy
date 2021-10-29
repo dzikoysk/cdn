@@ -32,7 +32,7 @@ class YamlLikeSerializerTest extends CdnSpec {
         # Root entry description
         rootEntry: default value
 
-        // Section description
+        # Section description
         section:
           # Random value
           subEntry: -1

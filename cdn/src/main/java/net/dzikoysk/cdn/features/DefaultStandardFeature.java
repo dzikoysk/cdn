@@ -27,7 +27,7 @@ import java.util.Stack;
 /**
  * Default implementation of CDN file format
  */
-public class DefaultFeature implements CdnFeature {
+public class DefaultStandardFeature implements CdnFeature {
 
     @Override
     public void visitDescription(StringBuilder output, String indentation, String description) {

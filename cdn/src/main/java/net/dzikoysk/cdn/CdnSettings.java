@@ -97,6 +97,10 @@ public final class CdnSettings {
      * @return a new CDN instance
      */
     public Cdn build() {
+        if (features.isEmpty()) {
+            throw new IllegalStateException("CDN requires at least one registered feature. Use DefaultStandardFeature for standard CDN format");
+        }
+
         return new Cdn(this);
     }
 

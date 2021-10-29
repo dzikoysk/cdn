@@ -19,16 +19,16 @@ package net.dzikoysk.cdn.features.json
 import groovy.transform.CompileStatic
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
-import net.dzikoysk.cdn.features.JsonFeature
+import net.dzikoysk.cdn.features.JsonLikeFeature
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 @CompileStatic
-final class JsonFeatureTest extends CdnSpec {
+final class JsonLikeFeatureTest extends CdnSpec {
 
-    private final JsonFeature converter = new JsonFeature()
+    private final JsonLikeFeature converter = new JsonLikeFeature()
 
     @Test
     void 'should convert json like format to cdn' () {
