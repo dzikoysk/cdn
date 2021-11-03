@@ -46,7 +46,7 @@ dependencies {
 
 You can find all available versions in the repository:
 
-* [Repository - Artifact net.dzikoysk:cdn](https://repo.panda-lang.org/net/dzikoysk/cdn)
+* [Repository - Artifact net.dzikoysk:cdn](https://repo.panda-lang.org/#/releases/net/dzikoysk/cdn)
 
 ### Using the library
 
