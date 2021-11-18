@@ -16,7 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import panda.utilities.StringUtils;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public final class Configuration extends Section {
     }
 
     public Configuration(List<? extends Element<?>> elements) {
-        super(Collections.emptyList(), CdnConstants.OBJECT_SEPARATOR, StringUtils.EMPTY, elements);
+        super(Collections.emptyList(), StandardOperators.OBJECT_SEPARATOR, StringUtils.EMPTY, elements);
     }
 
 }

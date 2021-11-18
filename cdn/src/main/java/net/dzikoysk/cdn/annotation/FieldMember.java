@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import net.dzikoysk.cdn.CdnUtils;
+import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -33,6 +35,11 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
+    public boolean isIgnored() {
+        return CdnUtils.isIgnored(field, true);
+    }
+
+    @Override
     public void setValue(Object value) throws IllegalAccessException {
         field.set(instance, value);
     }
@@ -43,17 +50,17 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+    public boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotation) {
         return field.isAnnotationPresent(annotation);
     }
 
     @Override
-    public <A extends Annotation> List<A> getAnnotationsByType(Class<A> annotation) {
+    public <A extends Annotation> List<A> getAnnotationsByType(@NotNull Class<A> annotation) {
         return Arrays.asList(field.getAnnotationsByType(annotation));
     }
 
     @Override
-    public <A extends Annotation> A getAnnotation(Class<A> annotation) {
+    public <A extends Annotation> A getAnnotation(@NotNull Class<A> annotation) {
         return field.getAnnotation(annotation);
     }
 

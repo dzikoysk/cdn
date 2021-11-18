@@ -16,13 +16,31 @@
 
 package net.dzikoysk.cdn
 
+import net.dzikoysk.cdn.module.json.JsonLikeModule
+import net.dzikoysk.cdn.module.standard.StandardModule
+import net.dzikoysk.cdn.module.yaml.YamlLikeModule
+
 object KCdnFactory {
 
     @JvmStatic
-    fun createStandard(): KCdn =
+    fun createStandard(): Cdn =
         Cdn.configure()
             .registerKotlinModule()
+            .registerModule(StandardModule())
             .build()
-            .toKotlinWrapper()
+
+    @JvmStatic
+    fun createJsonLike(): Cdn =
+        Cdn.configure()
+            .registerKotlinModule()
+            .registerModule(JsonLikeModule())
+            .build()
+
+    @JvmStatic
+    fun createYamlLike(): Cdn =
+        Cdn.configure()
+            .registerKotlinModule()
+            .registerModule(YamlLikeModule())
+            .build()
 
 }

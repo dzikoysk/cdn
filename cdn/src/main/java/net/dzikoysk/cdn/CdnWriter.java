@@ -21,8 +21,8 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import panda.utilities.StringUtils;
-
 import java.util.Map;
 
 final class CdnWriter {
@@ -50,19 +50,14 @@ final class CdnWriter {
 
         // render multiline description
         for (String description : element.getDescription()) {
-            for (CdnFeature feature : settings.getFeatures()) {
-                feature.visitDescription(output, indentation, description);
-            }
+            settings.getModules().visitDescription(output, indentation, description);
         }
 
         // render simple entry
         if (element instanceof Entry) {
-            Entry entry = (Entry) element;
-
             output.append(indentation)
-                    .append(entry.getRecord())
-                    .append(CdnConstants.LINE_SEPARATOR);
-
+                    .append(((Entry) element).getRecord())
+                    .append(StandardOperators.LINE_SEPARATOR);
             return;
         }
 
@@ -72,9 +67,7 @@ final class CdnWriter {
             boolean isRoot = section instanceof Configuration;
 
             if (!isRoot) {
-                for (CdnFeature feature : settings.getFeatures()) {
-                    feature.visitSectionOpening(output, indentation, section);
-                }
+                settings.getModules().visitSectionOpening(output, indentation, section);
             }
 
             // do not indent root sections
@@ -89,9 +82,7 @@ final class CdnWriter {
 
             // append opening operator for cdn format
             if (!isRoot) {
-                for (CdnFeature feature : settings.getFeatures()) {
-                    feature.visitSectionEnding(output, indentation, section);
-                }
+                settings.getModules().visitSectionEnding(output, indentation, section);
             }
 
             return;
@@ -100,8 +91,7 @@ final class CdnWriter {
         if (element instanceof Unit) {
             output.append(indentation)
                     .append(((Unit) element).getValue())
-                    .append(CdnConstants.LINE_SEPARATOR);
-
+                    .append(StandardOperators.LINE_SEPARATOR);
             return;
         }
 

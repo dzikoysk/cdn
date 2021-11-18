@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.KCdnFactory
+import net.dzikoysk.cdn.loadAs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,7 @@ class KotlinReaderTest {
 
     @Test
     fun `should load configuration in kotlin`() {
-        val configuration = KCdnFactory.createStandard().load<KotlinConfiguration> { "key: custom" }
+        val configuration = KCdnFactory.createStandard().loadAs<KotlinConfiguration> { "key: custom" }
 
         assertEquals("custom", configuration.key)
         assertEquals("ref", configuration.reference.get())

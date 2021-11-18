@@ -16,7 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.Contract;
 import panda.std.Option;
@@ -35,7 +35,7 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
     private final String[] operators;
 
     public Section(List<? extends String> description, String name) {
-        this(description, CdnConstants.OBJECT_SEPARATOR, name);
+        this(description, StandardOperators.OBJECT_SEPARATOR, name);
     }
 
     public Section(List<? extends String> description, String[] operators, String name) {
@@ -43,7 +43,7 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
     }
 
     public Section(List<? extends String> description, String name, List<? extends Element<?>> value) {
-        this(description, CdnConstants.OBJECT_SEPARATOR, name, value);
+        this(description, StandardOperators.OBJECT_SEPARATOR, name, value);
     }
 
     public Section(List<? extends String> description, String[] operators, String name, List<? extends Element<?>> value) {

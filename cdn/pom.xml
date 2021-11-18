@@ -19,7 +19,7 @@
     <parent>
         <artifactId>cdn-parent</artifactId>
         <groupId>net.dzikoysk</groupId>
-        <version>1.11.6</version>
+        <version>1.12.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,9 +27,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
     </properties>
 
     <dependencies>
@@ -76,11 +74,6 @@
 
         <!-- Tests -->
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
@@ -103,8 +96,8 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

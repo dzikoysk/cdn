@@ -16,7 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 
 import java.util.List;
 
@@ -37,11 +37,11 @@ public class Entry extends AbstractNamedElement<Unit> {
     }
 
     public Entry(List<? extends String> description, String name, Unit value) {
-        this(description, name + CdnConstants.OPERATOR + value, name, value);
+        this(description, name + StandardOperators.OPERATOR + value, name, value);
     }
 
     public Entry(List<? extends String> description, String name, String value) {
-        this(description, name + CdnConstants.OPERATOR + value, name, value);
+        this(description, name + StandardOperators.OPERATOR + value, name, value);
     }
 
     /**

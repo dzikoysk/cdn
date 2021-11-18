@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.source.Source;
 import panda.std.Option;
 import panda.utilities.StringUtils;
@@ -43,15 +44,12 @@ final class CdnReader {
 
     public Configuration read(Source sourceProvider) {
         String source = sourceProvider.getSource();
-
-        for (CdnFeature feature : settings.getFeatures()) {
-            source = feature.convertToCdn(source);
-        }
+        source = settings.getModules().convertToCdn(source);
 
         // replace system-dependent line separators with unified one
-        String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), CdnConstants.LINE_SEPARATOR);
+        String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), StandardOperators.LINE_SEPARATOR);
 
-        List<String> lines = Arrays.stream(normalizedSource.split(CdnConstants.LINE_SEPARATOR))
+        List<String> lines = Arrays.stream(normalizedSource.split(StandardOperators.LINE_SEPARATOR))
                 .map(String::trim)
                 .collect(Collectors.toList());
 
@@ -60,24 +58,24 @@ final class CdnReader {
             String originalLine = line;
 
             // handle description
-            if (line.isEmpty() || line.startsWith(CdnConstants.COMMENT_OPERATORS[0]) || line.startsWith(CdnConstants.COMMENT_OPERATORS[1])) {
+            if (line.isEmpty() || line.startsWith(StandardOperators.COMMENT_OPERATORS[0]) || line.startsWith(StandardOperators.COMMENT_OPERATORS[1])) {
                 description.add(line);
                 continue;
             }
 
             // remove operator at the end of line
-            if (line.endsWith(CdnConstants.SEPARATOR)) {
-                line = line.substring(0, line.length() - CdnConstants.SEPARATOR.length()).trim();
+            if (line.endsWith(StandardOperators.SEPARATOR)) {
+                line = line.substring(0, line.length() - StandardOperators.SEPARATOR.length()).trim();
             }
 
-            boolean isArray = line.endsWith(CdnConstants.ARRAY_SEPARATOR[0]);
+            boolean isArray = line.endsWith(StandardOperators.ARRAY_SEPARATOR[0]);
 
             // initialize section
-            if ((isArray || line.endsWith(CdnConstants.OBJECT_SEPARATOR[0]))) {
+            if ((isArray || line.endsWith(StandardOperators.OBJECT_SEPARATOR[0]))) {
                 String sectionName = trimSeparator(line);
 
-                if (sectionName.endsWith(CdnConstants.OPERATOR)) {
-                    sectionName = sectionName.substring(0, sectionName.length() - CdnConstants.OPERATOR.length()).trim();
+                if (sectionName.endsWith(StandardOperators.OPERATOR)) {
+                    sectionName = sectionName.substring(0, sectionName.length() - StandardOperators.OPERATOR.length()).trim();
                 }
 
                 Section section = isArray
@@ -103,14 +101,7 @@ final class CdnReader {
 
             // add standard entry
             Unit unit = new Unit(originalLine);
-            boolean isInArray = false;
-
-            for (CdnFeature feature : settings.getFeatures()) {
-                if (isInArray = feature.resolveArray(sections, unit)) {
-                    break;
-                }
-            }
-
+            boolean isInArray = settings.getModules().resolveArray(sections, unit);
             appendElement(isInArray ? unit : unit.toEntry(description));
             description = new ArrayList<>();
         }

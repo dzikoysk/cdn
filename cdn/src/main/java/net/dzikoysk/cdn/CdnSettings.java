@@ -18,22 +18,23 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.annotation.DefaultMemberResolver;
 import net.dzikoysk.cdn.annotation.MemberResolver;
-import net.dzikoysk.cdn.composers.EnumComposer;
-import net.dzikoysk.cdn.composers.ListComposer;
-import net.dzikoysk.cdn.composers.MapComposer;
-import net.dzikoysk.cdn.composers.ReferenceComposer;
-import net.dzikoysk.cdn.serialization.Composer;
-import net.dzikoysk.cdn.serialization.Deserializer;
-import net.dzikoysk.cdn.serialization.Serializer;
-import net.dzikoysk.cdn.serialization.SimpleComposer;
-import net.dzikoysk.cdn.serialization.SimpleDeserializer;
-import net.dzikoysk.cdn.serialization.SimpleSerializer;
+import net.dzikoysk.cdn.module.CdnModule;
+import net.dzikoysk.cdn.module.Modules;
+import net.dzikoysk.cdn.serdes.Composer;
+import net.dzikoysk.cdn.serdes.Deserializer;
+import net.dzikoysk.cdn.serdes.Serializer;
+import net.dzikoysk.cdn.serdes.SimpleComposer;
+import net.dzikoysk.cdn.serdes.SimpleDeserializer;
+import net.dzikoysk.cdn.serdes.SimpleSerializer;
+import net.dzikoysk.cdn.serdes.composers.EnumComposer;
+import net.dzikoysk.cdn.serdes.composers.ListComposer;
+import net.dzikoysk.cdn.serdes.composers.MapComposer;
+import net.dzikoysk.cdn.serdes.composers.ReferenceComposer;
 import panda.std.reactive.MutableReference;
 import panda.std.reactive.Reference;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -64,7 +65,7 @@ public final class CdnSettings {
     @SuppressWarnings("rawtypes")
     private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
-    private final Collection<CdnFeature> features = new ArrayList<>();
+    private final Modules modules = new Modules();
     private MemberResolver memberResolver = new DefaultMemberResolver();
 
     {
@@ -97,7 +98,7 @@ public final class CdnSettings {
      * @return a new CDN instance
      */
     public Cdn build() {
-        if (features.isEmpty()) {
+        if (modules.isEmpty()) {
             throw new IllegalStateException("CDN requires at least one registered feature. Use DefaultStandardFeature for standard CDN format");
         }
 
@@ -172,13 +173,13 @@ public final class CdnSettings {
     }
 
     /**
-     * Install {@link net.dzikoysk.cdn.CdnFeature} instance.
+     * Install {@link CdnModule} instance.
      *
-     * @param feature the extension to install
+     * @param module the extension to install
      * @return settings instance
      */
-    public CdnSettings installFeature(CdnFeature feature) {
-        features.add(feature);
+    public CdnSettings registerModule(CdnModule module) {
+        modules.addModule(module);
         return this;
     }
 
@@ -187,8 +188,8 @@ public final class CdnSettings {
         return this;
     }
 
-    public Collection<? extends CdnFeature> getFeatures() {
-        return features;
+    public CdnModule getModules() {
+        return modules;
     }
 
     public Map<? extends String, ? extends String> getPlaceholders() {

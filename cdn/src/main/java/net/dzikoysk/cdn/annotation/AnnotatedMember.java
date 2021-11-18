@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.InvocationTargetException;
@@ -23,15 +25,17 @@ import java.util.List;
 
 public interface AnnotatedMember {
 
-    void setValue(Object value) throws IllegalAccessException, InvocationTargetException;
+    boolean isIgnored();
+
+    void setValue(@Nullable Object value) throws IllegalAccessException, InvocationTargetException;
 
     Object getValue() throws IllegalAccessException, InvocationTargetException;
 
-    boolean isAnnotationPresent(Class<? extends Annotation> annotation);
+    boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotation);
 
-    <A extends Annotation> List<A> getAnnotationsByType(Class<A> annotation);
+    <A extends Annotation> List<A> getAnnotationsByType(@NotNull Class<A> annotation);
 
-    <A extends Annotation> A getAnnotation(Class<A> annotation);
+    <A extends Annotation> A getAnnotation(@NotNull Class<A> annotation);
 
     AnnotatedType getAnnotatedType();
 

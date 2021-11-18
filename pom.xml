@@ -23,7 +23,7 @@
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.11.6</version>
+    <version>1.12.0</version>
 
     <scm>
         <connection>scm:git:https://github.com/dzikoysk/cdn.git</connection>
@@ -34,6 +34,7 @@
     <modules>
         <module>cdn</module>
         <module>cdn-kt</module>
+        <module>cdn-tests</module>
     </modules>
 
     <licenses>
@@ -59,7 +60,14 @@
     </distributionManagement>
 
     <properties>
+        <cdn.version>1.12.0</cdn.version>
         <expressible.version>1.1.1</expressible.version>
+        <kotlin.version>1.6.0</kotlin.version>
+        <java.version>1.8</java.version>
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
@@ -67,7 +75,12 @@
             <dependency>
                 <groupId>net.dzikoysk</groupId>
                 <artifactId>cdn</artifactId>
-                <version>1.11.6</version>
+                <version>${cdn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.dzikoysk</groupId>
+                <artifactId>cdn-kt</artifactId>
+                <version>${cdn.version}</version>
             </dependency>
 
             <!-- General -->
@@ -87,13 +100,19 @@
                 <version>${expressible.version}</version>
             </dependency>
 
-            <!-- Tests -->
+            <!-- Kotlin -->
             <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy</artifactId>
-                <version>3.0.9</version>
-                <scope>test</scope>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+
+            <!-- Tests -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -123,6 +142,33 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <jvmTarget>${java.version}</jvmTarget>
+                        <args>
+                            <arg>-Xjvm-default=enable</arg>
+                        </args>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.7</version>
@@ -150,18 +196,6 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>4.3.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.gmavenplus</groupId>
-                    <artifactId>gmavenplus-plugin</artifactId>
-                    <version>1.13.0</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>compileTests</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

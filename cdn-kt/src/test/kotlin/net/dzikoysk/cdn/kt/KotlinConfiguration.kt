@@ -18,9 +18,8 @@ package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.entity.Description
 import panda.std.reactive.reference
-import java.io.Serializable
 
-class KotlinConfiguration : Serializable {
+class KotlinConfiguration {
 
     @Description("# Description")
     var key = "value"

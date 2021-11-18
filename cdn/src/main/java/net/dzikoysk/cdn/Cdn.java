@@ -18,6 +18,8 @@ package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
+import net.dzikoysk.cdn.serdes.CdnDeserializer;
+import net.dzikoysk.cdn.serdes.CdnSerializer;
 import net.dzikoysk.cdn.source.Source;
 import panda.utilities.FileUtils;
 import java.io.File;

@@ -2,7 +2,7 @@
 Simple and fast configuration library for JVM based apps, powered by CDN *(Configuration Data Notation)* format, based on enhanced JSON for Humans standard. Handles [CDN](https://github.com/dzikoysk/cdn), [JSON](https://www.json.org) and [YAML](https://yaml.org)-like configurations with built-in support for comments and automatic scheme updates.
 
 ## Overview
-- [x] Supports Java, Kotlin _(dedicated wrapper)_ and Groovy
+- [x] Supports Java, Kotlin _(dedicated extension)_ and Groovy
 - [x] Automatically updates configuration structure and migrates user's values
 - [x] Lightweight ~ 50kB (no extra dependencies) 
 - [x] Respects properties order and comment entries
@@ -36,9 +36,9 @@ repositories {
 
 dependencies {
     // Default
-    implementation 'net.dzikoysk:cdn:1.11.6'
+    implementation 'net.dzikoysk:cdn:1.12.0'
     // Kotlin wrapper
-    implementation 'net.dzikoysk:cdn-kt:1.11.6'
+    implementation 'net.dzikoysk:cdn-kt:1.12.0'
 }
 ```
 

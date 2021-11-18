@@ -16,7 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.CdnUtils;
 
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ import java.util.List;
 public class Array extends Section {
 
     public Array(List<? extends String> description, String name) {
-        super(description, CdnConstants.ARRAY_SEPARATOR, name);
+        super(description, StandardOperators.ARRAY_SEPARATOR, name);
     }
 
     public Array(List<? extends String> description, String name, List<? extends Element<?>> values) {
-        super(description, CdnConstants.ARRAY_SEPARATOR, name, values);
+        super(description, StandardOperators.ARRAY_SEPARATOR, name, values);
     }
 
     public List<String> getList() {
@@ -44,12 +44,12 @@ public class Array extends Section {
                 Unit unit = (Unit) element;
                 String record = unit.getValue();
 
-                if (record.startsWith(CdnConstants.ARRAY)) {
+                if (record.startsWith(StandardOperators.ARRAY)) {
                     listOperators++;
                 }
 
-                if (record.endsWith(CdnConstants.SEPARATOR)) {
-                    record = record.substring(0, record.length() - CdnConstants.SEPARATOR.length());
+                if (record.endsWith(StandardOperators.SEPARATOR)) {
+                    record = record.substring(0, record.length() - StandardOperators.SEPARATOR.length());
                 }
 
                 values.add(record);

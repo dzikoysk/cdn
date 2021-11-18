@@ -16,9 +16,10 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.features.DefaultStandardFeature;
-import net.dzikoysk.cdn.features.JsonLikeFeature;
-import net.dzikoysk.cdn.features.YamlLikeFeature;
+import net.dzikoysk.cdn.module.standard.StandardModule;
+import net.dzikoysk.cdn.module.json.JsonLikeModule;
+import net.dzikoysk.cdn.module.yaml.YamlLikeModule;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Factory creates some predefined CDN instances
@@ -29,11 +30,11 @@ public final class CdnFactory {
      * Create standard CDN instance with CDN format
      *
      * @return the standard implementation
-     * @see net.dzikoysk.cdn.features.DefaultStandardFeature
+     * @see net.dzikoysk.cdn.module.standard.StandardModule
      */
-    public static Cdn createStandard() {
+    public static @NotNull Cdn createStandard() {
         return Cdn.configure()
-                .installFeature(new DefaultStandardFeature())
+                .registerModule(new StandardModule())
                 .build();
     }
 
@@ -41,11 +42,11 @@ public final class CdnFactory {
      * Create CDN with JSON feature
      *
      * @return the json implementation
-     * @see net.dzikoysk.cdn.features.JsonLikeFeature
+     * @see net.dzikoysk.cdn.module.json.JsonLikeModule
      */
-    public static Cdn createJsonLike() {
+    public static @NotNull Cdn createJsonLike() {
         return Cdn.configure()
-                .installFeature(new JsonLikeFeature())
+                .registerModule(new JsonLikeModule())
                 .build();
     }
 
@@ -59,11 +60,11 @@ public final class CdnFactory {
      * </ul>
      *
      * @return the yaml-like implementation
-     * @see net.dzikoysk.cdn.features.YamlLikeFeature
+     * @see net.dzikoysk.cdn.module.yaml.YamlLikeModule
      */
-    public static Cdn createYamlLike() {
+    public static @NotNull Cdn createYamlLike() {
         return Cdn.configure()
-                .installFeature(new YamlLikeFeature())
+                .registerModule(new YamlLikeModule())
                 .build();
     }
 

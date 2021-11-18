@@ -16,11 +16,12 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.composers.ContextualComposers;
+import net.dzikoysk.cdn.serdes.composers.ContextualComposers;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
-import net.dzikoysk.cdn.serialization.Composer;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import org.jetbrains.annotations.Nullable;
 import panda.utilities.ObjectUtils;
@@ -31,7 +32,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public final class CdnUtils {
@@ -68,7 +71,7 @@ public final class CdnUtils {
             }
         }
 
-        if (clazz.isAnnotationPresent(Contextual.class) || type.isAnnotationPresent(Contextual.class)) {
+        if (clazz.isAnnotationPresent(Contextual.class) || type.isAnnotationPresent(Contextual.class) || (member != null && member.isAnnotationPresent(Contextual.class))) {
             composer = new ContextualComposers();
         }
 
@@ -103,10 +106,14 @@ public final class CdnUtils {
         return methodName;
     }
 
-    public static boolean isIgnored(Field field) {
+    public static boolean isIgnored(@Nullable Field field, boolean excludeHiddenProperties) {
+        if (field == null) {
+            return false;
+        }
+
         int modifiers = field.getModifiers();
 
-        if (!Modifier.isPublic(modifiers)) {
+        if (excludeHiddenProperties && !Modifier.isPublic(modifiers)) {
             return true;
         }
 
@@ -126,7 +133,11 @@ public final class CdnUtils {
         return field.isAnnotationPresent(Exclude.class);
     }
 
-    public static boolean isIgnored(Method method) {
+    public static boolean isIgnored(@Nullable Method method) {
+        if (method == null) {
+            return false;
+        }
+
         int modifiers = method.getModifiers();
 
         if (Modifier.isNative(modifiers)) {
@@ -141,7 +152,7 @@ public final class CdnUtils {
     }
 
     public static String destringify(String value) {
-        for (String operator : CdnConstants.STRING_OPERATORS) {
+        for (String operator : StandardOperators.STRING_OPERATORS) {
             if (value.startsWith(operator) && value.endsWith(operator)) {
                 return value.substring(1, value.length() - 1);
             }
@@ -155,6 +166,14 @@ public final class CdnUtils {
             if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":")) {
                 return "\"" + value + "\"";
             }
+        }
+
+        return value;
+    }
+
+    public static <T, R> R process(Collection<T> processors, R value, BiFunction<T, R, R> handler) {
+        for (T processor : processors) {
+            value = handler.apply(processor, value);
         }
 
         return value;

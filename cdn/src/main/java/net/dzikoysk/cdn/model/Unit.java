@@ -16,7 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.CdnConstants;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import panda.utilities.StringUtils;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public final class Unit implements Element<String> {
     }
 
     public Entry toEntry(List<? extends String> description) {
-        String[] elements = StringUtils.splitFirst(value, CdnConstants.OPERATOR);
+        String[] elements = StringUtils.splitFirst(value, StandardOperators.OPERATOR);
 
         String entryKey = elements.length > 0
                 ? elements[0].trim()
@@ -43,7 +43,7 @@ public final class Unit implements Element<String> {
                 ? elements[1].trim()
                 : entryKey;
 
-        if (entryValue.endsWith(CdnConstants.SEPARATOR)) {
+        if (entryValue.endsWith(StandardOperators.SEPARATOR)) {
             entryValue = entryValue.substring(0, entryValue.length() - 1);
         }
 
