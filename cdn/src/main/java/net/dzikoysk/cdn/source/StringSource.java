@@ -21,6 +21,10 @@ final class StringSource implements Source {
     private final String source;
 
     StringSource(String source) {
+        if (source == null) {
+            throw new IllegalStateException("Source cannot be null");
+        }
+
         this.source = source;
     }
 

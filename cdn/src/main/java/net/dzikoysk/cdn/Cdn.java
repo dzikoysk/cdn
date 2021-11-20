@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.serdes.CdnDeserializer;
 import net.dzikoysk.cdn.serdes.CdnSerializer;
 import net.dzikoysk.cdn.source.Source;
+import org.jetbrains.annotations.NotNull;
 import panda.utilities.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.nio.file.Path;
 
 /**
  * The main class of Cdn library that expose methods related to process of loading/rendering configurations.
- * You can built an instance using {@link #configure()} method or you can take a look at predefined instances in {@link net.dzikoysk.cdn.CdnFactory}.
+ * You can build an instance using {@link #configure()} method or you can take a look at predefined instances in {@link net.dzikoysk.cdn.CdnFactory}.
  */
 public final class Cdn {
 
@@ -56,7 +57,7 @@ public final class Cdn {
      * @return the parsed configuration
      * @see net.dzikoysk.cdn.source.Source
      */
-    public Configuration load(Source source) {
+    public Configuration load(@NotNull Source source) {
         return new CdnReader(settings).read(source);
     }
 
@@ -69,7 +70,7 @@ public final class Cdn {
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
      * @throws Exception in case of any deserialization error
      */
-    public <T> T load(Source source, Class<T> configurationClass) throws Exception {
+    public <T> T load(@NotNull Source source, @NotNull Class<T> configurationClass) throws Exception {
         return new CdnDeserializer<T>(settings).deserialize(load(source), configurationClass);
     }
 
@@ -82,7 +83,7 @@ public final class Cdn {
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
      * @throws Exception in case of any deserialization error
      */
-    public <T> T load(Source source, T instance) throws Exception {
+    public <T> T load(@NotNull Source source, @NotNull T instance) throws Exception {
         return new CdnDeserializer<T>(settings).deserialize(load(source), instance);
     }
 
@@ -92,7 +93,7 @@ public final class Cdn {
      * @param entity the instance to convert
      * @return the rendered output
      */
-    public String render(Object entity) {
+    public String render(@NotNull Object entity) {
         return render(new CdnSerializer(settings).serialize(entity));
     }
 
@@ -102,7 +103,7 @@ public final class Cdn {
      * @param entity the instance to convert
      * @param output the output file
      */
-    public void render(Object entity, File output) throws IOException {
+    public void render(@NotNull Object entity, @NotNull File output) throws IOException {
         FileUtils.overrideFile(output, render(entity));
     }
 
@@ -112,7 +113,7 @@ public final class Cdn {
      * @param entity the instance to convert
      * @param output the output file
      */
-    public void render(Object entity, Path output) throws IOException {
+    public void render(@NotNull Object entity, @NotNull Path output) throws IOException {
         FileUtils.overrideFile(output.toFile(), render(entity));
     }
 
@@ -122,7 +123,7 @@ public final class Cdn {
      * @param element the element to convert
      * @return the rendered output
      */
-    public String render(Element<?> element) {
+    public String render(@NotNull Element<?> element) {
         return new CdnWriter(settings).render(element);
     }
 
@@ -132,7 +133,7 @@ public final class Cdn {
      * @param element the element to convert
      * @param output the output file
      */
-    public void render(Element<?> element, File output) throws IOException {
+    public void render(@NotNull Element<?> element, @NotNull File output) throws IOException {
         FileUtils.overrideFile(output, render(element));
     }
 
@@ -142,7 +143,7 @@ public final class Cdn {
      * @param element the element to convert
      * @param output the output file
      */
-    public void render(Element<?> element, Path output) throws IOException {
+    public void render(@NotNull Element<?> element, @NotNull Path output) throws IOException {
         FileUtils.overrideFile(output.toFile(), render(element));
     }
 

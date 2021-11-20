@@ -29,6 +29,14 @@ final class PathSource implements Source {
     private final Charset encoding;
 
     PathSource(Path path, Charset encoding) {
+        if (path == null) {
+            throw new IllegalStateException("Path cannot be null");
+        }
+
+        if (encoding == null) {
+            throw new IllegalStateException("Encoding cannot be null");
+        }
+
         this.path = path;
         this.encoding = encoding;
     }

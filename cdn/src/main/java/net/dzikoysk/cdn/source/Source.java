@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.source;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -30,31 +32,35 @@ public interface Source {
         return of("");
     }
 
-    static Source of(String source) {
+    static Source of(@NotNull String source) {
         return new StringSource(source);
     }
 
-    static Source of(File file) {
+    static Source ofNullable(@Nullable String source) {
+        return new StringSource(source != null ? source : "");
+    }
+
+    static Source of(@NotNull File file) {
         return of(file, StandardCharsets.UTF_8);
     }
 
-    static Source of(File file, Charset encoding) {
+    static Source of(@NotNull File file, @NotNull Charset encoding) {
         return new PathSource(file.getAbsoluteFile().toPath(), encoding);
     }
 
-    static Source of(Path path) {
+    static Source of(@NotNull Path path) {
         return new PathSource(path);
     }
 
-    static Source of(Path path, Charset encoding) {
+    static Source of(@NotNull Path path, @NotNull Charset encoding) {
         return new PathSource(path, encoding);
     }
 
-    static Source of(InputStream inputStream) {
+    static Source of(@NotNull InputStream inputStream) {
         return of(inputStream, StandardCharsets.UTF_8);
     }
 
-    static Source of(InputStream inputStream, Charset encoding) {
+    static Source of(@NotNull InputStream inputStream, @NotNull Charset encoding) {
         return new InputStreamSource(inputStream, encoding);
     }
 

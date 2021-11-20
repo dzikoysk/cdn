@@ -26,6 +26,14 @@ final class InputStreamSource implements Source {
     private final Charset encoding;
 
     InputStreamSource(InputStream inputStream, Charset encoding) {
+        if (inputStream == null) {
+            throw new IllegalStateException("InputStream cannot be null");
+        }
+
+        if (encoding == null) {
+            throw new IllegalStateException("Encoding cannot be null");
+        }
+
         this.inputStream = inputStream;
         this.encoding = encoding;
     }
