@@ -14,7 +14,7 @@ internal class KPropertyMember(private val instance: Any, private val property: 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(property.javaField, false) || CdnUtils.isIgnored(property.getter.javaMethod)
 
-    override fun setValue(value: Any?) {
+    override fun setValue(value: Any) {
         (property as KMutableProperty).setter.call(instance, value)
     }
 
@@ -39,12 +39,16 @@ internal class KPropertyMember(private val instance: Any, private val property: 
             .head()
             .orNull
 
-    override fun getAnnotatedType(): AnnotatedType? = property.javaGetter?.annotatedReturnType
+    override fun getAnnotatedType(): AnnotatedType =
+        property.javaGetter?.annotatedReturnType!!
 
-    override fun getType(): Class<*>? = property.javaField?.type
+    override fun getType(): Class<*> =
+        property.javaGetter?.returnType!!
 
-    override fun getName(): String = property.name
+    override fun getName(): String =
+        property.name
 
-    override fun getInstance(): Any = instance
+    override fun getInstance(): Any =
+        instance
 
 }

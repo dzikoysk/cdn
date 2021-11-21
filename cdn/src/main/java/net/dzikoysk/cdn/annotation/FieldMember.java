@@ -40,7 +40,7 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public void setValue(Object value) throws IllegalAccessException {
+    public void setValue(@NotNull Object value) throws IllegalAccessException {
         field.set(instance, value);
     }
 
@@ -55,7 +55,7 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public <A extends Annotation> List<A> getAnnotationsByType(@NotNull Class<A> annotation) {
+    public <A extends Annotation> @NotNull List<A> getAnnotationsByType(@NotNull Class<A> annotation) {
         return Arrays.asList(field.getAnnotationsByType(annotation));
     }
 
@@ -65,22 +65,22 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public AnnotatedType getAnnotatedType() {
+    public @NotNull AnnotatedType getAnnotatedType() {
         return field.getAnnotatedType();
     }
 
     @Override
-    public Class<?> getType() {
+    public @NotNull Class<?> getType() {
         return field.getType();
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return field.getName();
     }
 
     @Override
-    public Object getInstance() {
+    public @NotNull Object getInstance() {
         return instance;
     }
 

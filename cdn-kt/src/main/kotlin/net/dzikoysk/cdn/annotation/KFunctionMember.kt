@@ -16,7 +16,7 @@ internal class KFunctionMember(
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(setter.javaMethod) || CdnUtils.isIgnored(getter.javaMethod)
 
-    override fun setValue(value: Any?) {
+    override fun setValue(value: Any) {
         setter.call(instance, value)
     }
 
@@ -28,23 +28,27 @@ internal class KFunctionMember(
             .map { it.javaClass }
             .contains(annotation)
 
-    override fun <A : Annotation?> getAnnotationsByType(annotation: Class<A>): MutableList<A>? =
+    override fun <A : Annotation> getAnnotationsByType(annotation: Class<A>): List<A> =
         PandaStream.of(getter.annotations)
             .`is`(annotation)
             .toList()
 
-    override fun <A : Annotation?> getAnnotation(annotation: Class<A>): A? =
+    override fun <A : Annotation> getAnnotation(annotation: Class<A>): A? =
         PandaStream.of(getter.annotations)
             .`is`(annotation)
             .head()
             .orNull
 
-    override fun getAnnotatedType(): AnnotatedType? = getter.javaMethod?.annotatedReturnType
+    override fun getAnnotatedType(): AnnotatedType =
+        getter.javaMethod!!.annotatedReturnType
 
-    override fun getType(): Class<*>? = getter.javaMethod?.returnType
+    override fun getType(): Class<*> =
+        getter.javaMethod!!.returnType
 
-    override fun getName(): String = propertyName
+    override fun getName(): String =
+        propertyName
 
-    override fun getInstance(): Any = instance
+    override fun getInstance(): Any =
+        instance
 
 }

@@ -43,7 +43,7 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public void setValue(Object value) throws IllegalAccessException, InvocationTargetException {
+    public void setValue(@NotNull Object value) throws IllegalAccessException, InvocationTargetException {
         setter.invoke(instance, value);
     }
 
@@ -58,7 +58,7 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public <A extends Annotation> List<A> getAnnotationsByType(@NotNull Class<A> annotation) {
+    public <A extends Annotation> @NotNull List<A> getAnnotationsByType(@NotNull Class<A> annotation) {
         return Arrays.asList(getter.getAnnotationsByType(annotation));
     }
 
@@ -68,22 +68,22 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public AnnotatedType getAnnotatedType() {
+    public @NotNull AnnotatedType getAnnotatedType() {
         return getter.getAnnotatedReturnType();
     }
 
     @Override
-    public Class<?> getType() {
+    public @NotNull Class<?> getType() {
         return getter.getReturnType();
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return CdnUtils.getPropertyNameFromMethod(getter.getName());
     }
 
     @Override
-    public Object getInstance() {
+    public @NotNull Object getInstance() {
         return instance;
     }
 

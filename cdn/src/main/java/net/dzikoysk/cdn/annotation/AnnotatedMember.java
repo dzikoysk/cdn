@@ -27,22 +27,22 @@ public interface AnnotatedMember {
 
     boolean isIgnored();
 
-    void setValue(@Nullable Object value) throws IllegalAccessException, InvocationTargetException;
+    void setValue(@NotNull Object value) throws IllegalAccessException, InvocationTargetException;
 
     Object getValue() throws IllegalAccessException, InvocationTargetException;
 
     boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotation);
 
-    <A extends Annotation> List<A> getAnnotationsByType(@NotNull Class<A> annotation);
+    <A extends Annotation> @NotNull List<A> getAnnotationsByType(@NotNull Class<A> annotation);
 
-    <A extends Annotation> A getAnnotation(@NotNull Class<A> annotation);
+    <A extends Annotation> @Nullable A getAnnotation(@NotNull Class<A> annotation);
 
-    AnnotatedType getAnnotatedType();
+    @NotNull AnnotatedType getAnnotatedType();
 
-    Class<?> getType();
+    @NotNull Class<?> getType();
 
-    String getName();
+    @NotNull String getName();
 
-    Object getInstance();
+    @NotNull Object getInstance();
 
 }
