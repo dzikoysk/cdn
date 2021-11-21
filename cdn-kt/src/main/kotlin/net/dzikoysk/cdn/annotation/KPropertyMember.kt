@@ -3,6 +3,7 @@ package net.dzikoysk.cdn.annotation
 import net.dzikoysk.cdn.CdnUtils
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
+import java.util.Arrays
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
@@ -27,23 +28,23 @@ internal class KPropertyMember(private val instance: Any, private val property: 
                 ?: false
 
     override fun <A : Annotation?> getAnnotationsByType(annotation: Class<A>): MutableList<A> =
-        PandaStream.of(property.javaField?.annotations)
-            .flatMap { it.toList() }
+        PandaStream.of(property.javaGetter?.annotations, property.javaField?.annotations)
+            .flatMapStream { Arrays.stream(it ?: emptyArray()) }
             .`is`(annotation)
             .toList()
 
     override fun <A : Annotation?> getAnnotation(annotation: Class<A>): A? =
-        PandaStream.of(property.javaField?.annotations)
-            .flatMap { it.toList() }
+        PandaStream.of(property.javaGetter?.annotations, property.javaField?.annotations)
+            .flatMapStream { Arrays.stream(it ?: emptyArray()) }
             .`is`(annotation)
             .head()
             .orNull
 
     override fun getAnnotatedType(): AnnotatedType =
-        property.javaGetter?.annotatedReturnType!!
+        property.javaGetter?.annotatedReturnType ?: property.javaField!!.annotatedType
 
     override fun getType(): Class<*> =
-        property.javaGetter?.returnType!!
+        property.javaGetter?.returnType ?: property.javaField!!.type
 
     override fun getName(): String =
         property.name

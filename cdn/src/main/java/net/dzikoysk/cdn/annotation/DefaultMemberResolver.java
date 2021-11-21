@@ -17,10 +17,10 @@
 package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
+import org.jetbrains.annotations.NotNull;
 import panda.std.Option;
 import panda.std.stream.PandaStream;
 import panda.utilities.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,12 +28,12 @@ import java.util.List;
 public class DefaultMemberResolver implements MemberResolver {
 
     @Override
-    public AnnotatedMember fromField(Object instance, Field field) {
+    public AnnotatedMember fromField(@NotNull Object instance, @NotNull Field field) {
         return new FieldMember(instance, field);
     }
 
     @Override
-    public AnnotatedMember fromProperty(Object instance, String propertyName) throws NoSuchMethodException {
+    public AnnotatedMember fromProperty(@NotNull Object instance, @NotNull String propertyName) throws NoSuchMethodException {
         Method getter = instance.getClass().getMethod("get" + propertyName);
         Method setter = instance.getClass().getMethod("set" + propertyName, getter.getReturnType());
 
@@ -41,7 +41,14 @@ public class DefaultMemberResolver implements MemberResolver {
     }
 
     @Override
-    public List<AnnotatedMember> getProperties(Object instance) {
+    public List<AnnotatedMember> getFields(@NotNull Object instance) {
+        return PandaStream.of(instance.getClass().getFields())
+                .map(field -> fromField(instance,field))
+                .toList();
+    }
+
+    @Override
+    public List<AnnotatedMember> getProperties(@NotNull Object instance) {
         return PandaStream.of(instance.getClass().getMethods())
                 .filterNot(CdnUtils::isIgnored)
                 .map(Method::getName)

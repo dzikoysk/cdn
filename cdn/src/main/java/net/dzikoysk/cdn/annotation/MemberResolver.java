@@ -16,15 +16,18 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 
 public interface MemberResolver {
 
-    AnnotatedMember fromField(Object instance, Field field);
+    AnnotatedMember fromField(@NotNull Object instance, @NotNull Field field);
 
-    AnnotatedMember fromProperty(Object instance, String propertyName) throws NoSuchMethodException;
+    AnnotatedMember fromProperty(@NotNull Object instance, @NotNull String propertyName) throws NoSuchMethodException;
 
-    List<AnnotatedMember> getProperties(Object instance);
+    List<AnnotatedMember> getFields(@NotNull Object instance);
+
+    List<AnnotatedMember> getProperties(@NotNull Object instance);
 
 }

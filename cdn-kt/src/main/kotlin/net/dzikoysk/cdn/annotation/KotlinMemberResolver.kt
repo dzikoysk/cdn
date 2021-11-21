@@ -34,6 +34,9 @@ class KotlinMemberResolver : MemberResolver {
         return KPropertyMember(instance, find)
     }
 
+    override fun getFields(instance: Any): List<AnnotatedMember> =
+        emptyList() // properties already contain fields, so we don't want to duplicate these references
+
     override fun getProperties(instance: Any): List<AnnotatedMember> =
         instance::class.memberProperties
             .map { Pair(it, findIndex(instance::class.java, it)) }

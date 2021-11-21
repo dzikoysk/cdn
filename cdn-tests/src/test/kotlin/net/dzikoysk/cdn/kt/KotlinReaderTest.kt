@@ -17,11 +17,39 @@
 package net.dzikoysk.cdn.kt
 
 import net.dzikoysk.cdn.KCdnFactory
+import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.loadAs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.reactive.reference
 
-class KotlinReaderTest {
+internal class KotlinReaderTest {
+
+    class KotlinConfiguration {
+
+        // Fields
+
+        @Description("# Field")
+        @Description("# Extra")
+        @JvmField
+        var field = "value"
+
+        @Description("# Field reference")
+        @JvmField
+        val fieldReference = reference("value")
+
+        @Description("# Field with generic signature")
+        var genericSignatureReference = reference(emptyMap<String, String>())
+
+        // Standard properties
+
+        @Description("# Description")
+        var key = "value"
+
+        @Description("# Description")
+        val reference = reference("ref")
+
+    }
 
     @Test
     fun `should load configuration in kotlin`() {
@@ -30,6 +58,13 @@ class KotlinReaderTest {
         assertEquals("custom", configuration.key)
         assertEquals("ref", configuration.reference.get())
         assertEquals("""
+        # Field
+        # Extra
+        field: value
+        # Field reference
+        fieldReference: value
+        # Field with generic signature
+        genericSignatureReference: []
         # Description
         key: custom
         # Description

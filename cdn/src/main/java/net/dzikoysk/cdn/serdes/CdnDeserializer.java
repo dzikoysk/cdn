@@ -24,7 +24,6 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
-import java.lang.reflect.Field;
 
 public final class CdnDeserializer<T> {
 
@@ -50,8 +49,8 @@ public final class CdnDeserializer<T> {
     }
 
     private Object deserializeToSection(Section source, Object instance) throws ReflectiveOperationException {
-        for (Field field : instance.getClass().getFields()) {
-            deserializeField(source, instance, field);
+        for (AnnotatedMember field : settings.getAnnotationResolver().getFields(instance)) {
+            deserializeMember(source, field);
         }
 
         for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(instance)) {
@@ -59,10 +58,6 @@ public final class CdnDeserializer<T> {
         }
 
         return instance;
-    }
-
-    private void deserializeField(Section source, Object instance, Field field) throws ReflectiveOperationException {
-        deserializeMember(source, settings.getAnnotationResolver().fromField(instance, field));
     }
 
     private void deserializeMember(Section source, AnnotatedMember member) throws ReflectiveOperationException {

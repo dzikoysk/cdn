@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.Description;
+import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
@@ -47,10 +48,8 @@ public final class CdnSerializer {
     }
 
     public <S extends Section> S serialize(Object entity, S output) throws ReflectiveOperationException {
-        Class<?> template = entity.getClass();
-
-        for (Field field : template.getFields()) {
-            serializeField(entity, field, output);
+        for (AnnotatedMember field : settings.getAnnotationResolver().getFields(entity)) {
+            serializeMember(field, output);
         }
 
         for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(entity)) {
@@ -74,6 +73,12 @@ public final class CdnSerializer {
                 .flatMap(annotation -> Arrays.asList(annotation.value()))
                 .toList();
 
+        if (description.isEmpty()) {
+            description = PandaStream.of(member.getAnnotationsByType(Descriptions.class))
+                    .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
+                    .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
+                    .toList();
+        }
         if (member.isAnnotationPresent(Contextual.class)) {
             Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, member.getName());
             output.append(section);
