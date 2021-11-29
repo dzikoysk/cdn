@@ -16,19 +16,21 @@
 
 package net.dzikoysk.cdn.serdes.composers;
 
-import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
-import net.dzikoysk.cdn.model.NamedElement;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.Deserializer;
-import net.dzikoysk.cdn.serdes.Serializer;
+import panda.std.Option;
+import panda.std.Pair;
+import panda.std.Result;
+import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
-
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
@@ -36,92 +38,106 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class MapComposer<T> implements Composer<T> {
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
+
+public final class MapComposer implements Composer<Map<Object, Object>> {
 
     @Override
-    @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
-        if (source instanceof Entry) {
-            Entry entry = (Entry) source;
-            // String value = entryAsRecord ? entry.get() : entry.getValue();
-            String value = entry.getUnitValue();
-
-            if (value.equals("[]") /* || entry.getRecord().equals(value) ?what the f is this even doing here? */) {
-                return (T) Collections.emptyMap();
-            }
-
-            throw new UnsupportedOperationException("Cannot deserialize list of " + value);
+    public Result<Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Map<Object, Object> entity) {
+        if (entity.isEmpty()) {
+            return ok(new Entry(description, key, "[]"));
         }
 
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-
         AnnotatedType keyType = collectionTypes[0];
-        Deserializer<?> keySerializer = CdnUtils.findComposer(settings, keyType, null);
-
         AnnotatedType valueType = collectionTypes[1];
-        Deserializer<?> valueSerializer = CdnUtils.findComposer(settings, valueType, null);
 
-        Map<Object, Object> result = new LinkedHashMap<>();
-        Section section = (Section) source;
-
-        for (Element<?> element : section.getValue()) {
-            if (element instanceof Entry) {
-                Entry entry = (Entry) element;
-
-                result.put(
-                        keySerializer.deserialize(settings, new Unit(entry.getName()), keyType, null, entryAsRecord),
-                        valueSerializer.deserialize(settings, entry.getValue(), valueType, null, entryAsRecord)
-                );
-            }
-            else if (element instanceof Section) {
-                Section subSection = (Section) element;
-
-                result.put(
-                        keySerializer.deserialize(settings, new Unit(subSection.getName()), keyType, null, entryAsRecord),
-                        valueSerializer.deserialize(settings, subSection, valueType, null, entryAsRecord)
-                );
-            }
-            else throw new UnsupportedOperationException("Unsupported element in map: " + element);
-        }
-
-        return (T) result;
+        // umm... I know
+        return CdnUtils.findComposer(settings, keyType, null)
+                .<Exception> mapErr(exception -> new CdnException("Cannot find serializer for key of Map<Key, Value>", exception))
+                .merge(
+                        CdnUtils.findComposer(settings, valueType, null)
+                                .mapErr(exception -> new CdnException("Cannot find serializer for value of Map<Key, Value>", exception)),
+                        Pair::of)
+                .flatMap(serializers -> PandaStream.of(entity.entrySet())
+                        .map(entry -> serializers.getFirst()
+                                .serialize(settings, Collections.emptyList(), "", keyType, ObjectUtils.cast(entry.getKey()))
+                                .<Exception>mapErr(exception -> new CdnException("Cannot serialize key of map", exception))
+                                .flatMap(keyElement -> serializers.getSecond()
+                                        .serialize(settings, Collections.emptyList(), keyElement.getValue().toString(), valueType, ObjectUtils.cast(entry.getValue()))
+                                        .mapErr(exception -> new CdnException("Cannot serialize value of map", exception))))
+                        .filterToResult(Result::errorToOption)
+                        .flatMap(allElementsStream -> allElementsStream
+                                .map(Result::get)
+                                .filterToResult(element -> Option.when(!(element instanceof Entry || element instanceof Section), new CdnException("Unsupported element in map: " + element)))
+                                .map(filteredStream -> filteredStream.collect(Section.collector(() -> new Section(description, StandardOperators.OBJECT_SEPARATOR, key))))));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
-        Map<Object, Object> map = (Map<Object, Object>) entity;
+    public Result<Map<Object, Object>, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Map<Object, Object> defaultValue, boolean entryAsRecord) {
+        if (source instanceof Entry) {
+            Entry entry = (Entry) source;
+            // String value = entryAsRecord ? entry.get() : entry.getValue();
+            String value = entry.getPieceValue();
 
-        if (map.isEmpty()) {
-            return new Entry(description, key, "[]");
+            if (value.equals("[]") /* || entry.getRecord().equals(value) ?what the f is this even doing here? */) {
+                return ok(Collections.emptyMap());
+            }
+
+            return error(new CdnException("Cannot deserialize map of " + value));
         }
 
+        Section section = (Section) source;
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-
         AnnotatedType keyType = collectionTypes[0];
-        Serializer<?> keySerializer = CdnUtils.findComposer(settings, keyType, null);
-
         AnnotatedType valueType = collectionTypes[1];
-        Serializer<?> valueSerializer = CdnUtils.findComposer(settings, valueType, null);
 
-        Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, key);
+        return CdnUtils.findComposer(settings, keyType, null)
+                .merge(CdnUtils.findComposer(settings, valueType, null), Pair::of)
+                .flatMap(serializers -> PandaStream.of(section.getValue())
+                        .map(element -> deserializeElement(settings, serializers.getFirst(), keyType, serializers.getSecond(), valueType, element, entryAsRecord))
+                        .filterToResult(Result::errorToOption)
+                        .map(stream -> stream
+                                .map(Result::get)
+                                .toMapByPair(LinkedHashMap::new, pair -> pair)));
+    }
 
-        for (Map.Entry<Object, Object> entry : map.entrySet()) {
-            Element<?> keyElement = keySerializer.serialize(settings, Collections.emptyList(), "", keyType, ObjectUtils.cast(entry.getKey()));
-            Element<?> valueElement = valueSerializer.serialize(settings, Collections.emptyList(), keyElement.getValue().toString(), valueType, ObjectUtils.cast(entry.getValue()));
-
-            if (valueElement instanceof Section) {
-                section.append(valueElement);
-            }
-            else if (valueElement instanceof Entry) {
-                section.append(valueElement);
-            }
-            else throw new UnsupportedOperationException("Unsupported value element in map: " + valueElement);
+    private Result<Pair<Object, Object>, Exception> deserializeElement(
+            CdnSettings settings,
+            Deserializer<?> keyDeserializer,
+            AnnotatedType keyType,
+            Deserializer<?> valueDeserializer,
+            AnnotatedType valueType,
+            Element<?> element,
+            boolean entryAsRecord
+    ) {
+        if (element instanceof Entry) {
+            Entry entry = (Entry) element;
+            return deserialize(settings, entry.getName(), keyDeserializer, keyType, valueDeserializer, valueType, entry.getValue(), entryAsRecord);
         }
+        else if (element instanceof Section) {
+            return deserialize(settings, ((Section) element).getName(), keyDeserializer, keyType, valueDeserializer, valueType, element, entryAsRecord);
+        }
+        else {
+            return Result.error(new UnsupportedOperationException("Unsupported element in map: " + element));
+        }
+    }
 
-        return section;
+    private Result<Pair<Object, Object>, Exception> deserialize(
+            CdnSettings settings,
+            String name,
+            Deserializer<?> keyDeserializer,
+            AnnotatedType keyType,
+            Deserializer<?> valueDeserializer,
+            AnnotatedType valueType,
+            Element<?> source,
+            boolean entryAsRecord
+    ) {
+        return keyDeserializer.deserialize(settings, new Piece(name), keyType, null, entryAsRecord)
+                .merge(valueDeserializer.deserialize(settings, source, valueType, null, entryAsRecord), Pair::of);
     }
 
 }

@@ -16,33 +16,32 @@
 
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.model.Element
 import net.dzikoysk.cdn.source.Source
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class CdnReaderTest : CdnSpec() {
 
     @Test
     fun `should return entry`() {
-        val result = standard.load(Source.of("key: value"))
+        val result = assertOk(standard.load(Source.of("key: value")))
         val entry = result.getEntry("key").get()
         assertEquals("key", entry.name)
-        assertEquals("value", entry.unitValue)
+        assertEquals("value", entry.pieceValue)
     }
 
     @Test
     fun `should return section with comments and entry`() {
-        val result = standard.load(Source.of("""
+        val result = assertOk(standard.load(Source.of("""
         # comment1
         // comment2
         section {
             entry: value
         }
-        """))
+        """)))
 
         val section = result.getSection("section").orNull
         assertNotNull(section)
@@ -50,12 +49,12 @@ class CdnReaderTest : CdnSpec() {
 
         val entry = section.getEntry("entry").orNull
         assertNotNull(entry)
-        assertEquals("value", entry!!.unitValue)
+        assertEquals("value", entry!!.pieceValue)
     }
 
     @Test
     fun `should return nested section`() {
-        val result = standard.load(Source.of("""
+        val result = assertOk(standard.load(Source.of("""
         # c1
         s1 {
             # c2
@@ -63,21 +62,21 @@ class CdnReaderTest : CdnSpec() {
             s2 {
             }
         }
-        """))
+        """)))
 
         assertTrue(result.has("s1.s2"))
     }
 
     @Test
     fun `should skip empty lines`() {
-        assertTrue(standard.load(Source.empty()).value.isEmpty())
+        assertTrue(assertOk(standard.load(Source.empty())).value.isEmpty())
     }
 
     @Test
     fun `should read quoted key and value`() {
-        val result = standard.load(Source.of("""
+        val result = assertOk(standard.load(Source.of("""
         " key ": " value "
-        """))
+        """)))
 
         assertEquals(" key ", result.getEntry(" key ").get().name)
         assertEquals(" value ", result.getString(" key ", "value"))
@@ -85,22 +84,22 @@ class CdnReaderTest : CdnSpec() {
 
     @Test
     fun `should remove semicolons`() {
-        val result = standard.load(Source.of("""
+        val result = assertOk(standard.load(Source.of("""
         a: b,
         c: d
-        """))
+        """)))
 
         assertEquals("b", result.getString("a", "value"))
     }
 
     @Test
     fun `should ignore empty root section`() {
-        val result = standard.load(Source.of("""
+        val result = assertOk(standard.load(Source.of("""
         {
           "a": "b",
           "c": "d"
         }
-        """))
+        """)))
 
         assertEquals("b", result.getString("a", "value"))
         assertEquals("d", result.getString("c", "value"))

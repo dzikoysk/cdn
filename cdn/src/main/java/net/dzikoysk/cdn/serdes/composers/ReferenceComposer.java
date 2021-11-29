@@ -20,8 +20,7 @@ import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.Deserializer;
-import net.dzikoysk.cdn.serdes.Serializer;
+import panda.std.Result;
 import panda.std.reactive.Reference;
 import panda.std.reactive.ReferenceUtils;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -32,24 +31,28 @@ import java.util.List;
 public final class ReferenceComposer<T> implements Composer<T> {
 
     @Override
-    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
+    public Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType referenceType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, referenceType, null);
-        Object value = deserializer.deserialize(settings, source, referenceType, defaultValue, entryAsRecord);
-        Reference<Object> reference = (Reference<Object>) defaultValue;
-        ReferenceUtils.setValue(reference, value);
-        return (T) MEMBER_ALREADY_PROCESSED;
+
+        return CdnUtils.findComposer(settings, referenceType, null)
+                .flatMap(deserializer -> deserializer.deserialize(settings, source, referenceType, defaultValue, entryAsRecord))
+                .map(value -> {
+                    Reference<Object> reference = (Reference<Object>) defaultValue;
+                    ReferenceUtils.setValue(reference, value);
+                    return (T) MEMBER_ALREADY_PROCESSED;
+                });
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
+    public Result<? extends Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
         Reference<Object> reference = (Reference<Object>) entity;
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType[] referenceTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
         AnnotatedType referenceType = referenceTypes[0];
-        Serializer<Object> serializer = CdnUtils.findComposer(settings, referenceType, null);
-        return serializer.serialize(settings, description, key, referenceType, reference.get());
+
+        return CdnUtils.findComposer(settings, referenceType, null)
+                .flatMap(serializer -> serializer.serialize(settings, description, key, referenceType, reference.get()));
     }
 
 }

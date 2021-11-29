@@ -18,6 +18,7 @@ package net.dzikoysk.cdn.serdes;
 
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
+import panda.std.Result;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
@@ -30,6 +31,6 @@ import java.util.List;
 @FunctionalInterface
 public interface Serializer<T> {
 
-    Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException;
+    Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity);
 
 }

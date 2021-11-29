@@ -19,7 +19,8 @@ package net.dzikoysk.cdn.serdes;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
+import panda.std.Result;
 import panda.utilities.StringUtils;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
@@ -28,21 +29,20 @@ import java.util.List;
  * Represents process of converting Java object into simple configuration element (Units and Entries)
  *
  * @param <T> the type of serialized value
- * @see net.dzikoysk.cdn.model.Unit
+ * @see net.dzikoysk.cdn.model.Piece
  * @see net.dzikoysk.cdn.model.Entry
  */
 @FunctionalInterface
 public interface SimpleSerializer<T> extends Serializer<T> {
 
     @Override
-    default Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
-        String result = serialize(entity);
-
-        return StringUtils.isEmpty(key)
-                ? new Unit(serialize(entity)) 
-                : new Entry(description, key, result);
+    default Result<Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
+        return serialize(entity)
+                .map(result -> StringUtils.isEmpty(key)
+                        ? new Piece(result)
+                        : new Entry(description, key, result));
     }
 
-    String serialize(T entity);
+    Result<String, Exception> serialize(T entity);
 
 }

@@ -30,6 +30,7 @@ import net.dzikoysk.cdn.serdes.composers.EnumComposer;
 import net.dzikoysk.cdn.serdes.composers.ListComposer;
 import net.dzikoysk.cdn.serdes.composers.MapComposer;
 import net.dzikoysk.cdn.serdes.composers.ReferenceComposer;
+import panda.std.Result;
 import panda.std.reactive.MutableReference;
 import panda.std.reactive.Reference;
 import panda.utilities.ClassUtils;
@@ -43,6 +44,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+
+import static panda.std.Result.ok;
 
 /**
  * Settings used by CDN instance. By default, the {@link net.dzikoysk.cdn.CdnSettings} register serializers&deserializers for the given types:
@@ -69,22 +72,22 @@ public final class CdnSettings {
     private MemberResolver memberResolver = new DefaultMemberResolver();
 
     {
-        withComposer(boolean.class, Object::toString, Boolean::parseBoolean);
-        withComposer(int.class, Object::toString, Integer::parseInt);
-        withComposer(long.class, Object::toString, Long::parseLong);
-        withComposer(float.class, Object::toString, Float::parseFloat);
-        withComposer(double.class, Object::toString, Double::parseDouble);
-        withComposer(String.class, CdnUtils::stringify, CdnUtils::destringify);
+        withComposer(boolean.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Boolean.parseBoolean(value)));
+        withComposer(int.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Integer.parseInt(value)));
+        withComposer(long.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Long.parseLong(value)));
+        withComposer(float.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Float.parseFloat(value)));
+        withComposer(double.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Double.parseDouble(value)));
+        withComposer(String.class, value -> ok(CdnUtils.stringify(value)), value -> ok(CdnUtils.destringify(value)));
 
-        withComposer(List.class, new ListComposer<>());
-        withComposer(ArrayList.class, new ListComposer<>());
-        withComposer(LinkedList.class, new ListComposer<>());
+        withComposer(List.class, new ListComposer());
+        withComposer(ArrayList.class, new ListComposer());
+        withComposer(LinkedList.class, new ListComposer());
 
-        withComposer(Map.class, new MapComposer<>());
-        withComposer(HashMap.class, new MapComposer<>());
-        withComposer(TreeMap.class, new MapComposer<>());
-        withComposer(LinkedHashMap.class, new MapComposer<>());
-        withComposer(ConcurrentHashMap.class, new MapComposer<>());
+        withComposer(Map.class, new MapComposer());
+        withComposer(HashMap.class, new MapComposer());
+        withComposer(TreeMap.class, new MapComposer());
+        withComposer(LinkedHashMap.class, new MapComposer());
+        withComposer(ConcurrentHashMap.class, new MapComposer());
 
         withComposer(Reference.class, new ReferenceComposer<>());
         withComposer(MutableReference.class, new ReferenceComposer<>());
@@ -106,7 +109,7 @@ public final class CdnSettings {
     }
 
     /**
-     * Register simple serializer. Simple serializer can serialize only {@link net.dzikoysk.cdn.model.Unit} and {@link net.dzikoysk.cdn.model.Entry} values.
+     * Register simple serializer. Simple serializer can serialize only {@link net.dzikoysk.cdn.model.Piece} and {@link net.dzikoysk.cdn.model.Entry} values.
      *
      * @param type the type to serialize
      * @param serializer the serializer instance
@@ -131,19 +134,17 @@ public final class CdnSettings {
     }
 
     /**
-     * Register simple serializer. Simple serializer can serialize only {@link net.dzikoysk.cdn.model.Unit} and {@link net.dzikoysk.cdn.model.Entry} values.
+     * Register simple serializer. Simple serializer can serialize only {@link net.dzikoysk.cdn.model.Piece} and {@link net.dzikoysk.cdn.model.Entry} values.
      *
      * @param type the type to serialize
      * @param composer the serializer instance
-     * @param <T> generic type of serialized type
      * @return settings instance
      */
-    @SuppressWarnings("unchecked")
-    public <T> CdnSettings withComposer(Class<? super T> type, Composer<T> composer) {
+    public CdnSettings withComposer(Class<?> type, Composer<?> composer) {
         composers.put(type, composer);
 
         if (type.isPrimitive()) {
-            withComposer((Class<T>) ClassUtils.getNonPrimitiveClass(type), composer);
+            withComposer(ClassUtils.getNonPrimitiveClass(type), composer);
         }
 
         return this;

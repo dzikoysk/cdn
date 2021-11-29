@@ -19,12 +19,13 @@ package net.dzikoysk.cdn
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class CdnDeserializerTest : CdnSpec() {
 
     @Test
     fun `should deserialize source into scheme`() {
-        val configuration = standard.load(Source.of("""
+        val configuration = assertOk(standard.load(Source.of("""
         rootEntry: custom value
         section {
           subEntry: 7
@@ -36,7 +37,7 @@ class CdnDeserializerTest : CdnSpec() {
             count: 3080
           }
         }
-        """), TestConfiguration::class.java)
+        """), TestConfiguration::class.java))
 
         assertEquals("custom value", configuration.rootEntry)
         assertEquals(7, configuration.section.subEntry)

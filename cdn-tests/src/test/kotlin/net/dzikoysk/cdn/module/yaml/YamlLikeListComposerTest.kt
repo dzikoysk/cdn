@@ -24,6 +24,7 @@ import net.dzikoysk.cdn.serdes.composers.ListComposerTest.ConfigurationWithListO
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 internal class YamlLikeListComposerTest : CdnSpec() {
 
@@ -33,14 +34,14 @@ internal class YamlLikeListComposerTest : CdnSpec() {
         list: []
         """)
 
-        val configuration = yamlLike.loadAs<ConfigurationWithEmptyList>(Source.of(source))
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithEmptyList>(Source.of(source)))
         assertEquals(emptyList<String>(), configuration.list)
 
         val expectedRender = cfg("""
         list: []
         """)
 
-        assertEquals(expectedRender, yamlLike.render(configuration))
+        assertEquals(expectedRender, assertOk(yamlLike.render(configuration)))
     }
 
     @Test
@@ -53,9 +54,9 @@ internal class YamlLikeListComposerTest : CdnSpec() {
             name: custom 2
         """)
 
-        val configuration = yamlLike.loadAs<ConfigurationWithListOfValues>(Source.of(source))
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithListOfValues>(Source.of(source)))
         assertEquals(listOf(ElementConfiguration("custom 1"), ElementConfiguration("custom 2")), configuration.elements)
-        assertEquals(source, yamlLike.render(configuration))
+        assertEquals(source, assertOk(yamlLike.render(configuration)))
     }
 
     @Test
@@ -67,7 +68,7 @@ internal class YamlLikeListComposerTest : CdnSpec() {
           - c
         """)
 
-        val configuration = yamlLike.loadAs<ConfigurationWithEmptyList>(Source.of(source))
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithEmptyList>(Source.of(source)))
         assertEquals(listOf("a:", "b {", "c"), configuration.list)
 
         val expectedRender = cfg("""
@@ -77,7 +78,7 @@ internal class YamlLikeListComposerTest : CdnSpec() {
           - c
         """)
 
-        assertEquals(expectedRender, yamlLike.render(configuration))
+        assertEquals(expectedRender, assertOk(yamlLike.render(configuration)))
     }
 
 }

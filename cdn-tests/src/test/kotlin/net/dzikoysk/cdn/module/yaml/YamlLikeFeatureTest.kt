@@ -18,12 +18,10 @@ package net.dzikoysk.cdn.module.yaml
 
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Contextual
-import net.dzikoysk.cdn.serdes.ElementConfiguration
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.text.Typography.section
-
+import panda.std.ResultAssertions.assertOk
 
 class YamlLikeFeatureTest : CdnSpec() {
 
@@ -53,7 +51,6 @@ class YamlLikeFeatureTest : CdnSpec() {
         """.trimIndent(), converter.convertToCdn(source))
     }
 
-
     @Test
     fun `should parse and render yaml like lists`() {
         val source = cfg("""
@@ -62,28 +59,28 @@ class YamlLikeFeatureTest : CdnSpec() {
           - b
         """)
 
-        val configuration = yamlLike.load(Source.of(source))
+        val configuration = assertOk(yamlLike.load(Source.of(source)))
 
-        assertEquals(listOf("a", "b"), configuration.getArray("list").get().getList())
-        assertEquals(source, yamlLike.render(configuration))
+        assertEquals(listOf("a", "b"), configuration.getArray("list").get().list)
+        assertEquals(source, assertOk(yamlLike.render(configuration)))
     }
 
     @Test
     fun `should read lines with brackets`() {
-        val result = yamlLike.load(Source.of("""
+        val result = assertOk(yamlLike.load(Source.of("""
         section:
             key: {value}
-        """))
+        """)))
 
         assertEquals("{value}", result.getString("section.key", ""))
     }
 
     @Test
     fun `should use prettier`() {
-        val configuration = yamlLike.load(Source.of("""
+        val configuration = assertOk(yamlLike.load(Source.of("""
         section :
           key : value
-        """.trimIndent()))
+        """.trimIndent())))
 
         assertEquals("value", configuration.getString("section.key", "value"))
     }
@@ -100,7 +97,7 @@ class YamlLikeFeatureTest : CdnSpec() {
         assertEquals(cfg("""
         section:
           key: default value
-        """), yamlLike.render(IndentationTestConfiguration()))
+        """), assertOk(yamlLike.render(IndentationTestConfiguration())))
     }
 
 }

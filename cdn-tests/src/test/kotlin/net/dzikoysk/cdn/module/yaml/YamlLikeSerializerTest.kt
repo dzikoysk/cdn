@@ -20,6 +20,7 @@ import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.TestConfiguration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class YamlLikeSerializerTest : CdnSpec() {
 
@@ -41,7 +42,7 @@ class YamlLikeSerializerTest : CdnSpec() {
           custom:
             id: rtx
             count: 3070
-        """), yamlLike.render(TestConfiguration()))
+        """), assertOk(yamlLike.render(TestConfiguration())))
     }
 
 }

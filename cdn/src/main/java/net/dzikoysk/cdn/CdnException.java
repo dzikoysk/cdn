@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.serdes;
+package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.CdnSettings;
-import net.dzikoysk.cdn.model.Element;
-import panda.std.Result;
-import java.lang.reflect.AnnotatedType;
+import java.util.function.Function;
 
-/**
- * Represents process of converting configuration element into the Java object
- *
- * @param <T> the type of deserialized value
- * @see net.dzikoysk.cdn.model.Piece
- * @see net.dzikoysk.cdn.model.Entry
- */
-@FunctionalInterface
-public interface Deserializer<T> {
+public class CdnException extends Exception {
 
-    Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord);
+    public CdnException(String message) {
+        super(message);
+    }
+
+    public CdnException(Throwable cause) {
+        super(cause);
+    }
+
+    public CdnException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static  <E extends CdnException> Function<E, CdnException> identity() {
+        return exception -> (CdnException) exception;
+    }
 
 }

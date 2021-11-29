@@ -16,16 +16,17 @@
 
 package net.dzikoysk.cdn.model;
 
-import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.CdnUtils;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
 import org.jetbrains.annotations.Contract;
 import panda.std.Option;
 import panda.utilities.ObjectUtils;
 import panda.utilities.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Represents a list of configuration elements
@@ -58,7 +59,7 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
 
     public void setString(String key, String value) {
         getEntry(key)
-                .peek(entry -> entry.setValue(new Unit(value)))
+                .peek(entry -> entry.setValue(new Piece(value)))
                 .orElseGet(() -> append(new Entry(Collections.emptyList(), key, value)));
     }
 
@@ -147,7 +148,7 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
 
     public Option<String> getString(String key) {
         return getEntry(key)
-                .map(Entry::getUnitValue)
+                .map(Entry::getPieceValue)
                 .map(CdnUtils::destringify);
     }
 
@@ -186,6 +187,17 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
 
     public String[] getOperators() {
         return operators;
+    }
+
+    public static Collector<Element<?>, Section, Section> collector(Supplier<Section> sectionSupplier) {
+        return Collector.of(
+                sectionSupplier,
+                Section::append,
+                (left, right) -> {
+                    right.getValue().forEach(left::append);
+                    return left;
+                }
+        );
     }
 
 }

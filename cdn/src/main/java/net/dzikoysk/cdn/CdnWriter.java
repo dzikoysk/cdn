@@ -19,11 +19,16 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import panda.std.Result;
+import panda.std.Unit;
 import panda.utilities.StringUtils;
 import java.util.Map;
+
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
 
 final class CdnWriter {
 
@@ -33,19 +38,23 @@ final class CdnWriter {
         this.settings = settings;
     }
 
-    public String render(Element<?> element) {
+    public Result<String, CdnException> render(Element<?> element) {
         StringBuilder content = new StringBuilder();
-        render(content, 0, element);
-        String result = content.toString();
 
-        for (Map.Entry<? extends String, ? extends String> entry : settings.getPlaceholders().entrySet()) {
-            result = StringUtils.replace(result, "${{" + entry.getKey() + "}}", entry.getValue());
-        }
+        return render(content, 0, element)
+                .map(success -> {
+                    String result = content.toString();
 
-        return result.trim();
+                    for (Map.Entry<? extends String, ? extends String> entry : settings.getPlaceholders().entrySet()) {
+                        result = StringUtils.replace(result, "${{" + entry.getKey() + "}}", entry.getValue());
+                    }
+
+                    return result.trim();
+                })
+                .mapErr(CdnException::new);
     }
 
-    private void render(StringBuilder output, int level, Element<?> element) {
+    private Result<Unit, Exception> render(StringBuilder output, int level, Element<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
 
         // render multiline description
@@ -58,7 +67,7 @@ final class CdnWriter {
             output.append(indentation)
                     .append(((Entry) element).getRecord())
                     .append(StandardOperators.LINE_SEPARATOR);
-            return;
+            return ok();
         }
 
         // render section
@@ -85,17 +94,17 @@ final class CdnWriter {
                 settings.getModules().visitSectionEnding(output, indentation, section);
             }
 
-            return;
+            return ok();
         }
 
-        if (element instanceof Unit) {
+        if (element instanceof Piece) {
             output.append(indentation)
-                    .append(((Unit) element).getValue())
+                    .append(((Piece) element).getValue())
                     .append(StandardOperators.LINE_SEPARATOR);
-            return;
+            return ok();
         }
 
-        throw new IllegalStateException("Unknown element: " + element);
+        return error(new IllegalStateException("Unknown element: " + element));
     }
 
 }

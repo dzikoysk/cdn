@@ -19,9 +19,11 @@ package net.dzikoysk.cdn.serdes;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
-import net.dzikoysk.cdn.model.Unit;
-
+import net.dzikoysk.cdn.model.Piece;
+import panda.std.Result;
 import java.lang.reflect.AnnotatedType;
+
+import static java.lang.String.format;
 
 /**
  * Represents process of converting simple configuration element (Units and Entries) into the Java object
@@ -32,23 +34,23 @@ import java.lang.reflect.AnnotatedType;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
-        if (source instanceof Unit) {
-            return deserialize(type, ((Unit) source).getValue());
+    default Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
+        if (source instanceof Piece) {
+            return deserialize(type, ((Piece) source).getValue());
         }
 
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            return deserialize(type, entryAsRecord ? entry.getRaw() : entry.getUnitValue());
+            return deserialize(type, entryAsRecord ? entry.getRaw() : entry.getPieceValue());
         }
 
-        throw new UnsupportedOperationException("Simple deserializer can deserialize only units (" + type + " from " + source.getClass() + ")");
+        return Result.error(new UnsupportedOperationException(format("Simple deserializer can deserialize only units (%s from %s)", type, source.getClass())));
     }
 
-    default T deserialize(AnnotatedType type, String source) {
+    default Result<T, Exception> deserialize(AnnotatedType type, String source) {
         return deserialize(source);
     }
 
-    T deserialize(String source);
+    Result<T, Exception> deserialize(String source);
 
 }

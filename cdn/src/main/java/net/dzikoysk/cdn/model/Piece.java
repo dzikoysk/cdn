@@ -24,11 +24,11 @@ import java.util.List;
 /**
  * Represents the smallest piece of information in configuration
  */
-public final class Unit implements Element<String> {
+public final class Piece implements Element<String> {
 
     private final String value;
 
-    public Unit(String value) {
+    public Piece(String value) {
         this.value = value;
     }
 

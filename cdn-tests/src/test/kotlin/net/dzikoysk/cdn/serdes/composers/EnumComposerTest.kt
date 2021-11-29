@@ -17,9 +17,11 @@
 package net.dzikoysk.cdn.serdes.composers
 
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.loadAs
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class EnumComposerTest : CdnSpec() {
 
@@ -29,9 +31,7 @@ class EnumComposerTest : CdnSpec() {
     }
 
     class ConfigurationWithEnum {
-
         var enumValue = SomeEnum.VAL
-
     }
 
     @Test
@@ -40,11 +40,11 @@ class EnumComposerTest : CdnSpec() {
         enumValue: val
         """)
 
-        val result = standard.load(Source.of(source), ConfigurationWithEnum::class.java)
+        val result = assertOk(standard.loadAs<ConfigurationWithEnum>(Source.of(source)))
         assertEquals(SomeEnum.VAL, result.enumValue)
 
         result.enumValue = SomeEnum.VAR
-        assertEquals(cfg("enumValue: VAR"), standard.render(result))
+        assertEquals(cfg("enumValue: VAR"), assertOk(standard.render(result)))
     }
 
 }

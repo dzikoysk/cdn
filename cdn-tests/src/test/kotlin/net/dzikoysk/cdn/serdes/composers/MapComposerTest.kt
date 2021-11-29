@@ -22,6 +22,7 @@ import net.dzikoysk.cdn.serdes.ElementConfiguration
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class MapComposerTest : CdnSpec() {
 
@@ -57,9 +58,9 @@ class MapComposerTest : CdnSpec() {
             2 to mapOf(1 to "a")
         )
 
-        val configuration = standard.loadAs<ConfigurationWithMaps>(Source.of(source))
+        val configuration = assertOk(standard.loadAs<ConfigurationWithMaps>(Source.of(source)))
         assertEquals(map, configuration.map)
-        assertEquals(source, standard.render(configuration))
+        assertEquals(source, assertOk(standard.render(configuration)))
     }
 
     @Test
@@ -79,9 +80,9 @@ class MapComposerTest : CdnSpec() {
         val second = ElementConfiguration("2nd")
         val map = mapOf("first" to first, "second" to second)
 
-        val configuration = standard.load(Source.of(source), ConfigurationWithSection::class.java)
+        val configuration = assertOk(standard.loadAs<ConfigurationWithSection>(Source.of(source)))
         assertEquals(map, configuration.groups)
-        assertEquals(source, standard.render(configuration))
+        assertEquals(source, assertOk(standard.render(configuration)))
     }
 
 }

@@ -1,18 +1,16 @@
-# CDN ![CDN CI](https://github.com/dzikoysk/cdn/workflows/CDN%20CI/badge.svg) [![codecov](https://codecov.io/gh/dzikoysk/cdn/branch/master/graph/badge.svg?token=374BLLP5OI)](https://codecov.io/gh/dzikoysk/cdn) [![CodeFactor](https://www.codefactor.io/repository/github/dzikoysk/cdn/badge)](https://www.codefactor.io/repository/github/dzikoysk/cdn)
+# CDN ![CDN CI](https://github.com/dzikoysk/cdn/workflows/CDN%20CI/badge.svg) [![Reposilite](https://repo.panda-lang.org/api/badge/latest/releases/net/dzikoysk/cdn?color=4c1&name=Latest%20release&prefix=v)](https://repo.panda-lang.org/#/releases/net/dzikoysk/cdn) [![codecov](https://codecov.io/gh/dzikoysk/cdn/branch/master/graph/badge.svg?token=374BLLP5OI)](https://codecov.io/gh/dzikoysk/cdn) [![CodeFactor](https://www.codefactor.io/repository/github/dzikoysk/cdn/badge)](https://www.codefactor.io/repository/github/dzikoysk/cdn)
 Simple and fast configuration library for JVM based apps, powered by CDN *(Configuration Data Notation)* format, based on enhanced JSON for Humans standard. Handles [CDN](https://github.com/dzikoysk/cdn), [JSON](https://www.json.org) and [YAML](https://yaml.org)-like configurations with built-in support for comments and automatic scheme updates.
 
 ## Overview
 - [x] Supports Java, Kotlin _(dedicated extension)_ and Groovy
 - [x] Automatically updates configuration structure and migrates user's values
-- [x] Lightweight ~ 50kB (no extra dependencies) 
+- [x] Lightweight ~ 70kB
 - [x] Respects properties order and comment entries
 - [x] Bidirectional parse and render of CDN sources
 - [x] Serialization and deserialization of Java entities 
 - [x] Indentation based configuration _(YAML-like)_
 - [x] Compatibility with JSON format
-- [x] Null-safe querying API with [`@Contract`](https://www.jetbrains.com/help/idea/contract-annotations.html) support
-- [x] 95%+ test coverage
-- [x] Actively supported and docs
+- [x] Null-safe querying API
 
 ### Table of Contents
 * [Installation](#installation)
@@ -36,9 +34,9 @@ repositories {
 
 dependencies {
     // Default
-    implementation 'net.dzikoysk:cdn:1.12.3'
+    implementation 'net.dzikoysk:cdn:1.13.0'
     // Kotlin wrapper
-    implementation 'net.dzikoysk:cdn-kt:1.12.3'
+    implementation 'net.dzikoysk:cdn-kt:1.13.0'
 }
 ```
 

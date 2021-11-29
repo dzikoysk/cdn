@@ -23,7 +23,7 @@
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.12.3</version>
+    <version>1.13.0</version>
 
     <scm>
         <connection>scm:git:https://github.com/dzikoysk/cdn.git</connection>
@@ -60,8 +60,8 @@
     </distributionManagement>
 
     <properties>
-        <cdn.version>1.12.3</cdn.version>
-        <expressible.version>1.1.1</expressible.version>
+        <cdn.version>1.13.0</cdn.version>
+        <expressible.version>1.1.9</expressible.version>
         <kotlin.version>1.6.0</kotlin.version>
         <java.version>1.8</java.version>
 
@@ -88,6 +88,12 @@
                 <groupId>org.panda-lang</groupId>
                 <artifactId>panda-utilities</artifactId>
                 <version>0.5.0-alpha</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.panda-lang</groupId>
@@ -98,6 +104,12 @@
                 <groupId>org.panda-lang</groupId>
                 <artifactId>expressible-kt</artifactId>
                 <version>${expressible.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.panda-lang</groupId>
+                <artifactId>expressible-junit</artifactId>
+                <version>${expressible.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Kotlin -->

@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.module;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -67,7 +67,7 @@ public final class Modules implements CdnModule {
     }
 
     @Override
-    public boolean resolveArray(Stack<Section> sections, Unit value) {
+    public boolean resolveArray(Stack<Section> sections, Piece value) {
         return CdnUtils.process(modules, false, (module, previousValue) -> previousValue || module.resolveArray(sections, value));
     }
 

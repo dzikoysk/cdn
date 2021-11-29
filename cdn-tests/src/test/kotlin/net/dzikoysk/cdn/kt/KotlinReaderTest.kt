@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.loadAs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 import panda.std.reactive.reference
 
 internal class KotlinReaderTest {
@@ -53,7 +54,7 @@ internal class KotlinReaderTest {
 
     @Test
     fun `should load configuration in kotlin`() {
-        val configuration = KCdnFactory.createStandard().loadAs<KotlinConfiguration> { "key: custom" }
+        val configuration = assertOk(KCdnFactory.createStandard().loadAs<KotlinConfiguration> { "key: custom" })
 
         assertEquals("custom", configuration.key)
         assertEquals("ref", configuration.reference.get())
@@ -69,7 +70,7 @@ internal class KotlinReaderTest {
         key: custom
         # Description
         reference: ref
-        """.trimIndent(), KCdnFactory.createStandard().render(configuration))
+        """.trimIndent(), assertOk(KCdnFactory.createStandard().render(configuration)))
     }
 
 }

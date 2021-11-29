@@ -18,7 +18,7 @@ package net.dzikoysk.cdn.module;
 
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
 
 import java.util.Stack;
 
@@ -36,6 +36,6 @@ public interface CdnModule {
 
     default Element<?> resolveArrayValue(Element<?> element) { return element; }
 
-    default boolean resolveArray(Stack<Section> sections, Unit value) { return false; }
+    default boolean resolveArray(Stack<Section> sections, Piece value) { return false; }
 
 }

@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.serdes;
 
+import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.annotation.AnnotatedMember;
@@ -25,10 +26,16 @@ import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import panda.std.stream.PandaStream;
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
 
 public final class CdnSerializer {
 
@@ -38,58 +45,66 @@ public final class CdnSerializer {
         this.settings = settings;
     }
 
-    public Configuration serialize(Object entity) {
-        try {
-            return serialize(entity, new Configuration());
-        }
-        catch (Exception exception) {
-            throw new IllegalStateException("Cannot serialize " + entity.getClass(), exception);
-        }
+    public Result<Configuration, CdnException> serialize(Object entity) {
+        return serialize(entity, new Configuration());
     }
 
-    public <S extends Section> S serialize(Object entity, S output) throws ReflectiveOperationException {
-        for (AnnotatedMember field : settings.getAnnotationResolver().getFields(entity)) {
-            serializeMember(field, output);
+    public <S extends Section> Result<S, CdnException> serialize(Object entity, S output) {
+        List<AnnotatedMember> members = new ArrayList<>();
+        members.addAll(settings.getAnnotationResolver().getFields(entity));
+        members.addAll(settings.getAnnotationResolver().getProperties(entity));
+
+        for (AnnotatedMember annotatedMember : members) {
+            Result<Unit, ? extends Exception> serializeResult = serializeMember(annotatedMember, output);
+
+            if (serializeResult.isErr()) {
+                return serializeResult
+                        .mapErr(CdnException::new)
+                        .projectToError();
+            }
         }
 
-        for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(entity)) {
-            serializeMember(annotatedMember, output);
-        }
-
-        return output;
+        return ok(output);
     }
 
-    private void serializeField(Object entity, Field field, Section output) throws ReflectiveOperationException {
-        serializeMember(settings.getAnnotationResolver().fromField(entity, field), output);
-    }
-
-    private void serializeMember(AnnotatedMember member, Section output) throws ReflectiveOperationException {
+    private Result<Unit, ? extends Exception> serializeMember(AnnotatedMember member, Section output)  {
         if (member.isIgnored()) {
-            return;
+            return ok();
         }
 
-        Object propertyValue = member.getValue();
+        Result<Option<Object>, ReflectiveOperationException> propertyValueResult = member.getValue();
+
+        if (propertyValueResult.isErr()) {
+            return error(propertyValueResult.getError());
+        }
+
         List<String> description = PandaStream.of(member.getAnnotationsByType(Description.class))
                 .flatMap(annotation -> Arrays.asList(annotation.value()))
                 .toList();
 
         if (description.isEmpty()) {
-            description = PandaStream.of(member.getAnnotationsByType(Descriptions.class))
-                    .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
-                    .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
-                    .toList();
+            description.addAll(
+                    PandaStream.of(member.getAnnotationsByType(Descriptions.class))
+                        .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
+                        .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
+                        .toList()
+            );
         }
+
+        Option<Object> propertyValue = propertyValueResult.get();
+
         if (member.isAnnotationPresent(Contextual.class)) {
             Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, member.getName());
             output.append(section);
-            serialize(propertyValue, section);
-            return;
+            return serialize(propertyValue.get(), section).mapToUnit();
         }
 
-        if (propertyValue != null) {
-            Serializer<Object> serializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
-            output.append(serializer.serialize(settings, description, member.getName(), member.getAnnotatedType(), propertyValue));
-        }
+        return propertyValue
+                .map(value -> CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
+                        .flatMap(serializer -> serializer.serialize(settings, description, member.getName(), member.getAnnotatedType(), value))
+                        .peek(output::append)
+                        .mapToUnit())
+                .orElseGet(Result.ok());
     }
 
 }

@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.serdes;
 
+import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.annotation.AnnotatedMember;
@@ -23,7 +24,13 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import panda.utilities.ObjectUtils;
+import java.util.ArrayList;
+import java.util.List;
+
+import static panda.std.Result.ok;
 
 public final class CdnDeserializer<T> {
 
@@ -33,58 +40,73 @@ public final class CdnDeserializer<T> {
         this.settings = settings;
     }
 
-    public T deserialize(Section source, Class<T> template) throws ReflectiveOperationException {
-        return deserialize(source, template.getConstructor().newInstance());
+    public Result<T, ? extends CdnException> deserialize(Section source, Class<T> template) {
+        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> template.getConstructor().newInstance())
+                .flatMap(instance -> deserialize(source, instance))
+                .mapErr(CdnException::new);
     }
 
-    public T deserialize(Section source, T instance) throws ReflectiveOperationException {
-        deserializeToSection(source, instance);
+    public Result<T, ? extends CdnException> deserialize(Section source, T instance) {
+        return deserializeToSection(source, instance)
+                .map(result -> {
+                    if (result instanceof DeserializationHandler) {
+                        DeserializationHandler<T> handler = ObjectUtils.cast(result);
+                        return handler.handle(ObjectUtils.cast(instance));
+                    }
 
-        if (instance instanceof DeserializationHandler) {
-            DeserializationHandler<T> handler = ObjectUtils.cast(instance);
-            instance = handler.handle(ObjectUtils.cast(instance));
-        }
-
-        return instance;
+                    return result;
+                })
+                .mapErr(CdnException::new);
     }
 
-    private Object deserializeToSection(Section source, Object instance) throws ReflectiveOperationException {
-        for (AnnotatedMember field : settings.getAnnotationResolver().getFields(instance)) {
-            deserializeMember(source, field);
+    private <I> Result<I, ? extends Exception> deserializeToSection(Section source, I instance) {
+        List<AnnotatedMember> members = new ArrayList<>();
+        members.addAll(settings.getAnnotationResolver().getFields(instance));
+        members.addAll(settings.getAnnotationResolver().getProperties(instance));
+
+        for (AnnotatedMember annotatedMember : members) {
+            Result<Unit, ? extends Exception> result = deserializeMember(source, annotatedMember);
+
+            if (result.isErr()) {
+                return result.projectToError();
+            }
         }
 
-        for (AnnotatedMember annotatedMember : settings.getAnnotationResolver().getProperties(instance)) {
-            deserializeMember(source, annotatedMember);
-        }
-
-        return instance;
+        return ok(instance);
     }
 
-    private void deserializeMember(Section source, AnnotatedMember member) throws ReflectiveOperationException {
+    private Result<Unit, ? extends Exception> deserializeMember(Section source, AnnotatedMember member) {
         if (member.isIgnored()) {
-            return;
+            return ok();
         }
 
         Option<Element<?>> elementValue = source.get(member.getName());
 
         if (elementValue.isEmpty()) {
-            return;
+            return ok();
         }
 
         Element<?> element = elementValue.get();
-        Object defaultValue = member.getValue();
+        Result<Option<Object>, ReflectiveOperationException> defaultValueResult = member.getValue();
+
+        if (defaultValueResult.isErr()) {
+            return defaultValueResult.projectToError();
+        }
+
+        Object defaultValue = defaultValueResult.get().get(); // TODO: Sheeesh
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            deserializeToSection((Section) element, defaultValue);
-            return;
+            return deserializeToSection((Section) element, defaultValue).mapToUnit();
         }
 
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member);
-        Object value = deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false);
-
-        if (value != Composer.MEMBER_ALREADY_PROCESSED) {
-            member.setValue(value);
-        }
+        return CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
+                .flatMap(deserializer -> deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false))
+                .peek(value -> {
+                    if (value != Composer.MEMBER_ALREADY_PROCESSED) {
+                        member.setValue(value);
+                    }
+                })
+                .mapToUnit();
     }
 
 }

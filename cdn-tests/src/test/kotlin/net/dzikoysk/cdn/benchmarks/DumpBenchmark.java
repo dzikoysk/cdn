@@ -55,12 +55,12 @@ public class DumpBenchmark extends BenchmarkSpec {
 
     @Benchmark
     public String cdn() {
-        return CdnFactory.createStandard().render(new Entity());
+        return CdnFactory.createStandard().render(new Entity()).get();
     }
 
     @Benchmark
     public String cdnCache() {
-        return CDN.render(new Entity());
+        return CDN.render(new Entity()).get();
     }
 
     @Benchmark

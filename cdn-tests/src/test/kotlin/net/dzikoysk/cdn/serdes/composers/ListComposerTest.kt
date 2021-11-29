@@ -17,10 +17,12 @@
 package net.dzikoysk.cdn.serdes.composers
 
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.loadAs
 import net.dzikoysk.cdn.serdes.ElementConfiguration
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class ListComposerTest : CdnSpec() {
 
@@ -41,7 +43,7 @@ class ListComposerTest : CdnSpec() {
         ]
         """)
 
-        val configuration = standard.load(Source.of(source), ConfigurationWithEmptyList::class.java)
+        val configuration = assertOk(standard.loadAs<ConfigurationWithEmptyList>(Source.of(source)))
         assertEquals(listOf("a:1", "b:2"), configuration.list)
 
         val expectedSource = cfg("""
@@ -51,12 +53,12 @@ class ListComposerTest : CdnSpec() {
         ]
         """)
 
-        assertEquals(expectedSource, standard.render(configuration))
+        assertEquals(expectedSource, assertOk(standard.render(configuration)))
     }
 
     @Test
     fun `should load object based list`() {
-        val configuration = standard.load(Source.empty(), ConfigurationWithListOfValues::class.java)
+        val configuration = assertOk(standard.loadAs<ConfigurationWithListOfValues>(Source.empty()))
 
         val formattedSource = cfg("""
         elements [
@@ -69,7 +71,7 @@ class ListComposerTest : CdnSpec() {
         ]
         """)
 
-        assertEquals(formattedSource, standard.render(configuration))
+        assertEquals(formattedSource, assertOk(standard.render(configuration)))
     }
 
 }

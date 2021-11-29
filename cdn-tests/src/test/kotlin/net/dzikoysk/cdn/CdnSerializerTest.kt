@@ -18,6 +18,7 @@ package net.dzikoysk.cdn
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class CdnSerializerTest : CdnSpec() {
 
@@ -42,7 +43,7 @@ class CdnSerializerTest : CdnSpec() {
             count: 3070
           }
         }
-        """), standard.render(TestConfiguration()))
+        """), assertOk(standard.render(TestConfiguration())))
     }
 
 }

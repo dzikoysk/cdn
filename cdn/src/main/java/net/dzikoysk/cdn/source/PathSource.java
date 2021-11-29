@@ -16,6 +16,8 @@
 
 package net.dzikoysk.cdn.source;
 
+import panda.std.Result;
+import panda.utilities.FileUtils;
 import panda.utilities.StringUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -23,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-final class PathSource implements Source {
+final class PathSource implements Resource {
 
     private final Path path;
     private final Charset encoding;
@@ -43,6 +45,14 @@ final class PathSource implements Source {
 
     PathSource(Path path) {
         this(path, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public Result<String, IOException> save(String content) {
+        return Result.attempt(IOException.class, () -> {
+            FileUtils.overrideFile(path.toFile(), content);
+            return content;
+        });
     }
 
     @Override

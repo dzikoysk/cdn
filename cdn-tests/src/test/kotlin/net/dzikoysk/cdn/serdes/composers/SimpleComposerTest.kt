@@ -18,18 +18,17 @@ package net.dzikoysk.cdn.serdes.composers
 
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
+import net.dzikoysk.cdn.loadAs
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class SimpleComposerTest : CdnSpec() {
 
     class Configuration {
-
         @Description("# Separator with space")
         var separator = ", "
-
         var empty = ""
-
     }
 
     // Make sure that these tricky values are properly handled by CDN
@@ -37,12 +36,12 @@ class SimpleComposerTest : CdnSpec() {
     // ~ https://github.com/dzikoysk/cdn/issues/43 - empty strings
     @Test
     fun `should properly serialize and deserialize empty value, value with comma and values with spaces`() {
-        var currentSource = yamlLike.render(Configuration())
+        var currentSource = assertOk(yamlLike.render(Configuration()))
 
         repeat(3) {
             println(currentSource)
-            val configuration = yamlLike.load(Source.of(currentSource), Configuration::class.java)
-            currentSource = yamlLike.render(configuration)
+            val configuration = assertOk(yamlLike.loadAs<Configuration>(Source.of(currentSource)))
+            currentSource = assertOk(yamlLike.render(configuration))
         }
     }
 

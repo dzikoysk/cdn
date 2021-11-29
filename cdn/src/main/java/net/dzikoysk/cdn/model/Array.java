@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents section of direct values such as e.g. {@link net.dzikoysk.cdn.model.Unit}s
+ * Represents section of direct values such as e.g. {@link Piece}s
  */
 public class Array extends Section {
 
@@ -40,9 +40,9 @@ public class Array extends Section {
         int listOperators = 0;
 
         for (Element<?> element : getValue()) {
-            if (element instanceof Unit) {
-                Unit unit = (Unit) element;
-                String record = unit.getValue();
+            if (element instanceof Piece) {
+                Piece piece = (Piece) element;
+                String record = piece.getValue();
 
                 if (record.startsWith(StandardOperators.ARRAY)) {
                     listOperators++;

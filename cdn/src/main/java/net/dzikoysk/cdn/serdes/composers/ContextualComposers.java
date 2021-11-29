@@ -16,15 +16,15 @@
 
 package net.dzikoysk.cdn.serdes.composers;
 
-import net.dzikoysk.cdn.module.standard.StandardOperators;
-import net.dzikoysk.cdn.serdes.CdnDeserializer;
-import net.dzikoysk.cdn.serdes.CdnSerializer;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.serdes.CdnDeserializer;
+import net.dzikoysk.cdn.serdes.CdnSerializer;
 import net.dzikoysk.cdn.serdes.Composer;
-
+import panda.std.Result;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
@@ -32,12 +32,12 @@ public final class ContextualComposers implements Composer<Object> {
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Object deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Object defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
+    public Result<Object, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Object defaultValue, boolean entryAsRecord) {
         return new CdnDeserializer(settings).deserialize((Section) source, CdnUtils.toClass(type.getType()));
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Object entity) throws ReflectiveOperationException {
+    public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Object entity) {
         Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, key);
         return new CdnSerializer(settings).serialize(entity, section);
     }

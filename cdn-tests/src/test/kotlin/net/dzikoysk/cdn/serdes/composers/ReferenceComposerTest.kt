@@ -21,23 +21,20 @@ import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 import panda.std.reactive.mutableReference
 import panda.std.reactive.reference
 
 class ReferenceComposerTest : CdnSpec() {
 
     class ReferenceConfiguration {
-
         val reference = reference("default-value")
-
         val mutableReference = mutableReference("mutable-default-value")
-
     }
 
     @Test
     fun `should support references`() {
         val configuration = ReferenceConfiguration()
-
         var subscriberCalled = false
         configuration.mutableReference.subscribe { subscriberCalled = true }
 
@@ -56,7 +53,7 @@ class ReferenceComposerTest : CdnSpec() {
         assertEquals(cfg("""
         reference: value
         mutableReference: mutable-value
-        """), standard.render(configuration))
+        """), assertOk(standard.render(configuration)))
     }
 
 }

@@ -18,6 +18,9 @@ package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.NotNull;
+import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -40,13 +43,16 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public void setValue(@NotNull Object value) throws IllegalAccessException {
-        field.set(instance, value);
+    public Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value) {
+        return Result.attempt(ReflectiveOperationException.class, () -> {
+            field.set(instance, value);
+            return Unit.UNIT;
+        });
     }
 
     @Override
-    public Object getValue() throws IllegalAccessException {
-        return field.get(instance);
+    public Result<Option<Object>, ReflectiveOperationException> getValue() {
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(field.get(instance)));
     }
 
     @Override

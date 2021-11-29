@@ -21,22 +21,22 @@ import net.dzikoysk.cdn.module.standard.StandardOperators;
 import java.util.List;
 
 /**
- * Represents key-value relation of {@link java.lang.String} and {@link net.dzikoysk.cdn.model.Unit}
+ * Represents key-value relation of {@link java.lang.String} and {@link Piece}
  */
-public class Entry extends AbstractNamedElement<Unit> {
+public class Entry extends AbstractNamedElement<Piece> {
 
     private final String raw;
 
-    public Entry(List<? extends String> description, String raw, String name, Unit value) {
+    public Entry(List<? extends String> description, String raw, String name, Piece value) {
         super(description, name, value);
         this.raw = raw;
     }
 
     public Entry(List<? extends String> description, String raw, String name, String value) {
-        this(description, raw, name, new Unit(value));
+        this(description, raw, name, new Piece(value));
     }
 
-    public Entry(List<? extends String> description, String name, Unit value) {
+    public Entry(List<? extends String> description, String name, Piece value) {
         this(description, name + StandardOperators.OPERATOR + value, name, value);
     }
 
@@ -50,7 +50,7 @@ public class Entry extends AbstractNamedElement<Unit> {
      * @return entry as string
      */
     public String getRecord() {
-        return name + ": " + getUnitValue();
+        return name + ": " + getPieceValue();
     }
 
     /**
@@ -63,11 +63,11 @@ public class Entry extends AbstractNamedElement<Unit> {
     }
 
     /**
-     * Get unit's value using {@link net.dzikoysk.cdn.model.Unit#getValue()} method.
+     * Get unit's value using {@link Piece#getValue()} method.
      *
      * @return the unit's value
      */
-    public String getUnitValue() {
+    public String getPieceValue() {
         return getValue().getValue();
     }
 

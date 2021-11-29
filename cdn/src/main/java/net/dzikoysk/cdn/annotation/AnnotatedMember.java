@@ -18,18 +18,20 @@ package net.dzikoysk.cdn.annotation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface AnnotatedMember {
 
     boolean isIgnored();
 
-    void setValue(@NotNull Object value) throws IllegalAccessException, InvocationTargetException;
+    Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value);
 
-    Object getValue() throws IllegalAccessException, InvocationTargetException;
+    Result<Option<Object>, ReflectiveOperationException> getValue();
 
     boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotation);
 

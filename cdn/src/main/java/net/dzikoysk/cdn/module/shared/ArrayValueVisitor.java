@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.module.shared;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
 
 public class ArrayValueVisitor {
 
@@ -32,9 +32,9 @@ public class ArrayValueVisitor {
     }
 
     public Element<?> visit(Element<?> element) {
-        if (element instanceof Unit) {
-            Unit unit = (Unit) element;
-            element = new Unit(prefix + unit.getValue() + suffix);
+        if (element instanceof Piece) {
+            Piece piece = (Piece) element;
+            element = new Piece(prefix + piece.getValue() + suffix);
         }
         else if (element instanceof Entry) {
             Entry entry = (Entry) element;

@@ -22,6 +22,7 @@ import net.dzikoysk.cdn.serdes.composers.MapComposerTest.ConfigurationWithMaps
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 internal class YamlLikeMapComposerTest : CdnSpec(){
 
@@ -35,10 +36,10 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
         map: []
         """)
 
-        val configuration = yamlLike.loadAs<EmptyMapConfiguration>(Source.of(source))
+        val configuration = assertOk(yamlLike.loadAs<EmptyMapConfiguration>(Source.of(source)))
         assertEquals(emptyMap<Int, Map<Int, String>>(), configuration.map)
 
-        assertEquals(cfg("map: []"), yamlLike.render(configuration))
+        assertEquals(cfg("map: []"), assertOk(yamlLike.render(configuration)))
     }
 
 
@@ -57,7 +58,7 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
             2 to mapOf(1 to "a")
         )
 
-        val configuration = yamlLike.loadAs<ConfigurationWithMaps>(Source.of(source))
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithMaps>(Source.of(source)))
         assertEquals(expectedMap, configuration.map)
 
         assertEquals(cfg("""
@@ -69,7 +70,7 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
         elements:
           a:
             name: default value
-        """), yamlLike.render(configuration))
+        """), assertOk(yamlLike.render(configuration)))
     }
 
 

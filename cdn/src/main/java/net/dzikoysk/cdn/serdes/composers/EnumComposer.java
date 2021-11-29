@@ -21,36 +21,40 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.SimpleDeserializer;
-
+import panda.std.Result;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
+
+import static java.lang.String.format;
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
 
 public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer<Enum<?>> {
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Enum deserialize(AnnotatedType type, String source) {
-        return searchEnum((Class<Enum>) type.getType(), source);
+    @SuppressWarnings({ "unchecked" })
+    public Result<Enum<?>, Exception> deserialize(AnnotatedType type, String source) {
+        return searchEnum((Class<Enum<?>>) type.getType(), source);
     }
 
-    public static <T extends Enum<?>> T searchEnum(Class<T> enumeration, String search) {
+    public static <T extends Enum<?>> Result<T, Exception> searchEnum(Class<T> enumeration, String search) {
         for (T each : enumeration.getEnumConstants()) {
             if (each.name().equalsIgnoreCase(search)) {
-                return each;
+                return ok(each);
             }
         }
 
-        throw new IllegalArgumentException("No '" + search + "' enum constant in " + enumeration);
+        return error(new IllegalArgumentException(format("No '%s' enum constant in %s", search, enumeration)));
     }
 
     @Override
-    public Enum<?> deserialize(String source) {
+    public Result<Enum<?>, Exception> deserialize(String source) {
         throw new UnsupportedOperationException("Enum deserializer requires enum class");
     }
 
     @Override
-    public Element<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) throws ReflectiveOperationException {
-        return new Entry(description, key, entity.name());
+    public Result<? extends Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) {
+        return ok(new Entry(description, key, entity.name()));
     }
     
 }

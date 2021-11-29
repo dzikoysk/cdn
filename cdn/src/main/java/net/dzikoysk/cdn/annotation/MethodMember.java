@@ -18,12 +18,16 @@ package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.NotNull;
+import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+
+import static panda.std.Unit.UNIT;
 
 public class MethodMember implements AnnotatedMember {
 
@@ -43,13 +47,16 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public void setValue(@NotNull Object value) throws IllegalAccessException, InvocationTargetException {
-        setter.invoke(instance, value);
+    public Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value) {
+        return Result.attempt(ReflectiveOperationException.class, () -> {
+            setter.invoke(instance, value);
+            return UNIT;
+        });
     }
 
     @Override
-    public Object getValue() throws IllegalAccessException, InvocationTargetException {
-        return getter.invoke(instance);
+    public Result<Option<Object>, ReflectiveOperationException> getValue() {
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(getter.invoke(instance)));
     }
 
     @Override

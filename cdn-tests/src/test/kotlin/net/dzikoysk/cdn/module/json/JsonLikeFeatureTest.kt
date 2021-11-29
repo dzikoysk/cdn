@@ -20,6 +20,7 @@ import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class JsonLikeFeatureTest : CdnSpec() {
 
@@ -42,7 +43,7 @@ class JsonLikeFeatureTest : CdnSpec() {
         }
         """), source)
 
-        val configuration = json.load(Source.of(source))
+        val configuration = assertOk(json.load(Source.of(source)))
         val list = configuration.getSection("list").get()
         assertEquals(2, list.size())
     }
@@ -50,7 +51,8 @@ class JsonLikeFeatureTest : CdnSpec() {
     @Test
     fun `should convert json like list`() {
         val source = converter.convertToCdn("""{ "list": [ "a", "b", "c" ] }""")
-        assertEquals(listOf("a", "b", "c"), standard.load(Source.of(source)).getList("list", listOf("value")))
+        val configuration = assertOk(standard.load(Source.of(source)))
+        assertEquals(listOf("a", "b", "c"), configuration.getList("list", listOf("value")))
     }
 
     @Test
@@ -78,8 +80,8 @@ class JsonLikeFeatureTest : CdnSpec() {
         ]
         """)
 
-        val jsonResult = json.load(Source.of(source))
-        val standardResult = standard.load(Source.of(cdn))
+        val jsonResult = assertOk(json.load(Source.of(source)))
+        val standardResult = assertOk(standard.load(Source.of(cdn)))
 
         assertEquals(standardResult.getString("object.key", "valueCDN"), jsonResult.getString("object.key", "valueJSON"))
         assertEquals(standardResult.getList("array", listOf("valueCDN")), jsonResult.getList("array", listOf("valueJSON")))

@@ -42,11 +42,12 @@ class KotlinMemberResolver : MemberResolver {
             .map { Pair(it, findIndex(instance::class.java, it)) }
             .sortedBy { (_, index) -> index }
             .mapNotNull { (property) ->
-                when {
-                    property is KMutableProperty<*> -> KPropertyMember(instance, property)
+                KPropertyMember(instance, property)
+                /*when {
+                    property is KProperty<*> -> KPropertyMember(instance, property)
                     property.returnType.isSubtypeOf(Reference::class.createType(listOf(KTypeProjection.STAR))) -> KPropertyMember(instance, property)
                     else -> null
-                }
+                }*/
             }
 
     /**

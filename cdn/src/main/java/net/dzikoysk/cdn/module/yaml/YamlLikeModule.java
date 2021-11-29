@@ -19,7 +19,7 @@ package net.dzikoysk.cdn.module.yaml;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.shared.ArrayValueVisitor;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
@@ -75,13 +75,13 @@ public final class YamlLikeModule implements CdnModule {
 
     @Override
     public Element<?> resolveArrayValue(Element<?> element) {
-        if (element instanceof Unit) {
-            Unit unit = (Unit) element;
-            element = new Unit(unit.getValue().replaceFirst(StandardOperators.ARRAY, "").trim());
+        if (element instanceof Piece) {
+            Piece piece = (Piece) element;
+            element = new Piece(piece.getValue().replaceFirst(StandardOperators.ARRAY, "").trim());
         }
         else if (element instanceof Entry) {
             Entry entry = (Entry) element;
-            element = new Unit(entry.getRecord().replaceFirst(StandardOperators.ARRAY, ""));
+            element = new Piece(entry.getRecord().replaceFirst(StandardOperators.ARRAY, ""));
         }
         else if (element instanceof Section) {
             Section sectionElement = (Section) element;
@@ -95,8 +95,8 @@ public final class YamlLikeModule implements CdnModule {
     }
 
     @Override
-    public boolean resolveArray(Stack<Section> sections, Unit unit) {
-        return unit.getValue().startsWith(ARRAY);
+    public boolean resolveArray(Stack<Section> sections, Piece piece) {
+        return piece.getValue().startsWith(ARRAY);
     }
 
 }

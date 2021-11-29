@@ -16,12 +16,13 @@
 
 package net.dzikoysk.cdn.module.json
 
-import net.dzikoysk.cdn.CdnFactory
+import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
-class JsonLikeFeatureWriterTest {
+class JsonLikeFeatureWriterTest : CdnSpec() {
 
     class ConfigurationWithDescription {
         @Description("# Description")
@@ -31,7 +32,8 @@ class JsonLikeFeatureWriterTest {
 
     @Test
     fun `should ignore description as it is not supported by json`() {
-        assertEquals("key: value", CdnFactory.createJsonLike().render(ConfigurationWithDescription()))
+        val configuration = assertOk(json.render(ConfigurationWithDescription()))
+        assertEquals("key: value", configuration)
     }
 
     class ConfigurationWithList {
@@ -46,7 +48,7 @@ class JsonLikeFeatureWriterTest {
           "a",
           "b"
         ]
-        """.trimIndent(), CdnFactory.createJsonLike().render(ConfigurationWithList()))
+        """.trimIndent(), assertOk(json.render(ConfigurationWithList())))
     }
 
 }

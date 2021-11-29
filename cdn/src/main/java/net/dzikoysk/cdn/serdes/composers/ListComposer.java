@@ -22,69 +22,62 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.NamedElement;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.Deserializer;
-import net.dzikoysk.cdn.serdes.Serializer;
+import panda.std.Result;
+import panda.std.stream.PandaStream;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public final class ListComposer<T> implements Composer<T> {
+import static net.dzikoysk.cdn.module.standard.StandardOperators.ARRAY_SEPARATOR;
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
+import static panda.utilities.StringUtils.EMPTY;
+
+public final class ListComposer implements Composer<List<Object>> {
 
     @Override
-    @SuppressWarnings("unchecked")
-    public T deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) throws ReflectiveOperationException {
+    public Result<List<Object>, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, List<Object> defaultValue, boolean entryAsRecord) {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
-            if (entry.getUnitValue().trim().endsWith("[]")) {
-                return (T) Collections.emptyList();
+            if (entry.getPieceValue().trim().endsWith("[]")) {
+                return ok(Collections.emptyList());
             }
 
-            throw new UnsupportedOperationException("Cannot deserialize list of " + entry);
+            return error(new UnsupportedOperationException("Cannot deserialize list of " + entry));
         }
 
+        Section section = (Section) source;
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
-        Deserializer<Object> deserializer = CdnUtils.findComposer(settings, collectionType, null);
 
-        List<Object> result = new ArrayList<>();
-        Section section = (Section) source;
-
-        for (Element<?> element : section.getValue()) {
-            element = settings.getModules().resolveArrayValue(element);
-            result.add(deserializer.deserialize(settings, element, collectionType, null, true));
-        }
-
-        return (T) result;
+        return CdnUtils.findComposer(settings, collectionType, null)
+                .flatMap(composer -> PandaStream.of(section.getValue())
+                        .map(element -> settings.getModules().resolveArrayValue(element))
+                        .map(element -> composer.deserialize(settings, element, collectionType, null, true))
+                        .filterToResult(Result::errorToOption)
+                        .map(stream -> stream.map(Result::get).toList()));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public NamedElement<?> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) throws ReflectiveOperationException {
-        Collection<Object> collection = (Collection<Object>) entity;
-
-        if (collection.isEmpty()) {
-            return new Entry(description, key, "[]");
+    public Result<NamedElement<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, List<Object> entity) {
+        if (entity.isEmpty()) {
+            return ok(new Entry(description, key, "[]"));
         }
 
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
-        Serializer<Object> serializer = CdnUtils.findComposer(settings, collectionType, null);
 
-        Section section = new Section(description, StandardOperators.ARRAY_SEPARATOR, key);
-
-        for (Object element : collection) {
-            Element<?> serializedElement = serializer.serialize(settings, Collections.emptyList(), "", collectionType, element);
-            serializedElement = settings.getModules().visitArrayValue(serializedElement);
-            section.append(serializedElement);
-        }
-
-        return section;
+        return CdnUtils.findComposer(settings, collectionType, null)
+                .flatMap(serializer -> PandaStream.of(entity)
+                        .map(element -> serializer.serialize(settings, Collections.emptyList(), EMPTY, collectionType, element))
+                        .filterToResult(Result::errorToOption)
+                        .map(stream -> stream
+                                .map(Result::get)
+                                .map(serializedElement -> settings.getModules().visitArrayValue(serializedElement))
+                                .collect(Section.collector(() -> new Section(description, ARRAY_SEPARATOR, key)))));
     }
 
 }

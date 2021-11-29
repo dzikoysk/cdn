@@ -17,7 +17,7 @@
 package net.dzikoysk.cdn.module.standard;
 
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.module.CdnModule;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class StandardModule implements CdnModule {
     }
 
     @Override
-    public boolean resolveArray(Stack<Section> sections, Unit value) {
+    public boolean resolveArray(Stack<Section> sections, Piece value) {
         return !sections.isEmpty() && Arrays.equals(sections.peek().getOperators(), StandardOperators.ARRAY_SEPARATOR);
     }
 

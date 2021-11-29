@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.module.standard.StandardModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class CdnWriterTest : CdnSpec() {
 
@@ -31,7 +32,7 @@ class CdnWriterTest : CdnSpec() {
         assertEquals(cfg("""
         # description
         key: value
-        """), standard.render(entry))
+        """), assertOk(standard.render(entry)))
     }
 
     @Test
@@ -42,7 +43,7 @@ class CdnWriterTest : CdnSpec() {
         # description
         section {
         }
-        """), standard.render(section))
+        """), assertOk(standard.render(section)))
     }
 
     @Test
@@ -61,7 +62,7 @@ class CdnWriterTest : CdnSpec() {
             entry: value
           }
         }
-        """), standard.render(section))
+        """), assertOk(standard.render(section)))
     }
 
     @Test
@@ -76,7 +77,7 @@ class CdnWriterTest : CdnSpec() {
         assertEquals(cfg("""
         # dance with me
         key: value
-        """), cdn.render(entry))
+        """), assertOk(cdn.render(entry)))
     }
 
 }

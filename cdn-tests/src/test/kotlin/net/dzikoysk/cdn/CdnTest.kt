@@ -19,6 +19,7 @@ package net.dzikoysk.cdn
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import panda.std.ResultAssertions.assertOk
 
 class CdnTest : CdnSpec() {
 
@@ -38,8 +39,9 @@ class CdnTest : CdnSpec() {
         }
         """)
 
-        val result = standard.load(Source.of(source))
-        assertEquals(source, standard.render(result))
+        val result = assertOk(standard.load(Source.of(source)))
+        val render = assertOk(standard.render(result))
+        assertEquals(source, render)
     }
 
 }

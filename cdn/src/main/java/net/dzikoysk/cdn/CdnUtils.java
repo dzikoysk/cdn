@@ -16,16 +16,16 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.serdes.composers.ContextualComposers;
+import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.annotation.AnnotatedMember;
+import net.dzikoysk.cdn.serdes.composers.ContextualComposers;
 import org.jetbrains.annotations.Nullable;
+import panda.std.Result;
 import panda.utilities.ObjectUtils;
-
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -34,24 +34,37 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static panda.std.Result.error;
+import static panda.std.Result.ok;
 
 public final class CdnUtils {
 
     private CdnUtils() {}
 
-    public static Composer<Object> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
+    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) {
         return findComposer(settings, toClass(type.getType()), type, member);
     }
 
     @SuppressWarnings("unchecked")
-    public static Composer<Object> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable AnnotatedMember member) throws ReflectiveOperationException {
+    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable AnnotatedMember member) {
         Composer<?> composer = null;
 
         if (member != null && member.isAnnotationPresent(CustomComposer.class)) {
-            CustomComposer customComposer = member.getAnnotation(CustomComposer.class);
-            composer = ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+            Result<Composer<?>, ReflectiveOperationException> composerInstance = Result.attempt(ReflectiveOperationException.class, () -> {
+                CustomComposer customComposer = Objects.requireNonNull(member.getAnnotation(CustomComposer.class));
+                return ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+            });
+
+            if (composerInstance.isErr()) {
+                return error(composerInstance.getError());
+            }
+
+            composer = composerInstance.get();
         }
         else {
             for (Entry<? extends Class<?>, ? extends Composer<?>> serializerEntry : settings.getComposers().entrySet()) {
@@ -78,13 +91,13 @@ public final class CdnUtils {
         if (composer == null) {
             try {
                 clazz.getMethod("getMetaClass");
-                throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type. Remember that Groovy does not support @Contextual annotation in generic parameters.");
+                return error(new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type. Remember that Groovy does not support @Contextual annotation in generic parameters"));
             } catch (NoSuchMethodException noSuchMethodException) {
-                throw new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type");
+                return error(new UnsupportedOperationException("Cannot find composer for '" + clazz  + "' type"));
             }
         }
 
-        return (Composer<Object>) composer;
+        return ok((Composer<Object>) composer);
     }
 
     public static Class<?> toClass(Type type) {
@@ -177,6 +190,10 @@ public final class CdnUtils {
         }
 
         return value;
+    }
+
+    public static <T> Function<? extends T, T> recapture() {
+        return value -> value;
     }
 
 }

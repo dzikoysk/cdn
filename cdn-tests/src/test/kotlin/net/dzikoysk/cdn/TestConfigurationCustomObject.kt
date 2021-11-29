@@ -20,6 +20,9 @@ import net.dzikoysk.cdn.model.Element
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serdes.Composer
+import panda.std.Result
+import panda.std.asError
+import panda.std.asSuccess
 
 import java.lang.reflect.AnnotatedType
 
@@ -33,15 +36,15 @@ class CustomObjectComposer : Composer<TestConfigurationCustomObject> {
         type: AnnotatedType,
         valueValue: TestConfigurationCustomObject?,
         entryAsRecord: Boolean
-    ): TestConfigurationCustomObject {
+    ): Result<TestConfigurationCustomObject, Exception> {
         if (source !is Section) {
-            throw IllegalArgumentException("Unsupported element")
+            return IllegalArgumentException("Unsupported element").asError()
         }
 
         return TestConfigurationCustomObject(
             id = source.getString("id", valueValue?.id),
             count = source.getInt("count", valueValue?.count ?: 0)
-        )
+        ).asSuccess()
     }
 
     override fun serialize(
@@ -50,11 +53,11 @@ class CustomObjectComposer : Composer<TestConfigurationCustomObject> {
         key: String,
         type: AnnotatedType,
         entity: TestConfigurationCustomObject
-    ): Element<*> {
+    ): Result<Element<*>, Exception> {
         val section = Section(description, key)
         section.append(Entry(emptyList(), "id", entity.id))
         section.append(Entry(emptyList(), "count", entity.count.toString()))
-        return section
+        return section.asSuccess()
     }
 
 }

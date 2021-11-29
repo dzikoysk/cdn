@@ -1,6 +1,10 @@
 package net.dzikoysk.cdn.annotation
 
 import net.dzikoysk.cdn.CdnUtils
+import panda.std.Option
+import panda.std.Result
+import panda.std.Unit
+import panda.std.Unit.UNIT
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
 import java.util.Arrays
@@ -15,12 +19,16 @@ internal class KPropertyMember(private val instance: Any, private val property: 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(property.javaField, false) || CdnUtils.isIgnored(property.getter.javaMethod)
 
-    override fun setValue(value: Any) {
-        (property as KMutableProperty).setter.call(instance, value)
-    }
+    override fun setValue(value: Any): Result<Unit, ReflectiveOperationException> =
+        Result.attempt(ReflectiveOperationException::class.java) {
+            (property as KMutableProperty).setter.call(instance, value)
+            UNIT
+        }
 
-    override fun getValue(): Any? =
-        property.getter.call(instance)
+    override fun getValue(): Result<Option<Any>, ReflectiveOperationException> =
+        Result.attempt(ReflectiveOperationException::class.java) {
+            Option.of(property.getter.call(instance))
+        }
 
     override fun isAnnotationPresent(annotation: Class<out Annotation>): Boolean =
         property.annotations.any { it.javaClass == annotation }

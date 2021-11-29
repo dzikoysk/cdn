@@ -31,7 +31,7 @@ class EntryTest : CdnSpec() {
 
     @Test
     fun `should return entry value`() {
-        assertEquals("entry-value", entry.unitValue)
+        assertEquals("entry-value", entry.pieceValue)
     }
 
     @Test

@@ -19,17 +19,22 @@ package net.dzikoysk.cdn;
 import net.dzikoysk.cdn.model.Array;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.model.Unit;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.source.Source;
 import panda.std.Option;
+import panda.std.Result;
+import panda.std.Unit;
 import panda.utilities.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
+
+import static panda.std.Result.ok;
+import static panda.std.Unit.UNIT;
 
 final class CdnReader {
 
@@ -42,7 +47,7 @@ final class CdnReader {
         this.settings = settings;
     }
 
-    public Configuration read(Source sourceProvider) {
+    public Result<Configuration, ? extends CdnException> read(Source sourceProvider) {
         String source = sourceProvider.getSource();
         source = settings.getModules().convertToCdn(source);
 
@@ -53,65 +58,76 @@ final class CdnReader {
                 .map(String::trim)
                 .collect(Collectors.toList());
 
-        for (String line : lines) {
-            line = line.trim();
-            String originalLine = line;
+        for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
+            String originalLine = lines.get(lineNumber).trim();
+            int currentLineNumber = lineNumber;
 
-            // handle description
-            if (line.isEmpty() || line.startsWith(StandardOperators.COMMENT_OPERATORS[0]) || line.startsWith(StandardOperators.COMMENT_OPERATORS[1])) {
-                description.add(line);
-                continue;
-            }
+            Result<Unit, Exception> result = Result.attempt(() -> {
+                String line = originalLine;
 
-            // remove operator at the end of line
-            if (line.endsWith(StandardOperators.SEPARATOR)) {
-                line = line.substring(0, line.length() - StandardOperators.SEPARATOR.length()).trim();
-            }
-
-            boolean isArray = line.endsWith(StandardOperators.ARRAY_SEPARATOR[0]);
-
-            // initialize section
-            if ((isArray || line.endsWith(StandardOperators.OBJECT_SEPARATOR[0]))) {
-                String sectionName = trimSeparator(line);
-
-                if (sectionName.endsWith(StandardOperators.OPERATOR)) {
-                    sectionName = sectionName.substring(0, sectionName.length() - StandardOperators.OPERATOR.length()).trim();
+                // handle description
+                if (line.isEmpty() || line.startsWith(StandardOperators.COMMENT_OPERATORS[0]) || line.startsWith(StandardOperators.COMMENT_OPERATORS[1])) {
+                    description.add(line);
+                    return UNIT;
                 }
 
-                Section section = isArray
-                        ? new Array(description, sectionName)
-                        : new Section(description, sectionName);
+                // remove operator at the end of line
+                if (line.endsWith(StandardOperators.SEPARATOR)) {
+                    line = line.substring(0, line.length() - StandardOperators.SEPARATOR.length()).trim();
+                }
 
-                appendElement(section);
-                sections.push(section); // has to be after append
+                boolean isArray = line.endsWith(StandardOperators.ARRAY_SEPARATOR[0]);
 
+                // initialize section
+                if ((isArray || line.endsWith(StandardOperators.OBJECT_SEPARATOR[0]))) {
+                    String sectionName = trimSeparator(line);
+
+                    if (sectionName.endsWith(StandardOperators.OPERATOR)) {
+                        sectionName = sectionName.substring(0, sectionName.length() - StandardOperators.OPERATOR.length()).trim();
+                    }
+
+                    Section section = isArray
+                            ? new Array(description, sectionName)
+                            : new Section(description, sectionName);
+
+                    appendElement(section);
+                    sections.push(section); // has to be after append
+
+                    description = new ArrayList<>();
+                    return UNIT;
+                }
+                // pop section
+                else if (!sections.isEmpty() && line.endsWith(sections.peek().getOperators()[1])) {
+                    String lineBefore = trimSeparator(line);
+
+                    // skip values with section operators
+                    if (lineBefore.isEmpty()) {
+                        sections.pop();
+                        return UNIT;
+                    }
+                }
+
+                // add standard entry
+                Piece piece = new Piece(originalLine);
+                boolean isInArray = settings.getModules().resolveArray(sections, piece);
+                appendElement(isInArray ? piece : piece.toEntry(description));
                 description = new ArrayList<>();
-                continue;
-            }
-            // pop section
-            else if (!sections.isEmpty() && line.endsWith(sections.peek().getOperators()[1])) {
-                String lineBefore = trimSeparator(line);
+                return UNIT;
+            });
 
-                // skip values with section operators
-                if (lineBefore.isEmpty()) {
-                    sections.pop();
-                    continue;
-                }
+            if (result.isErr()) {
+                return result
+                        .mapErr(exception -> new CdnExceptionInSource("Cannot read sources", originalLine, currentLineNumber, exception))
+                        .projectToError();
             }
-
-            // add standard entry
-            Unit unit = new Unit(originalLine);
-            boolean isInArray = settings.getModules().resolveArray(sections, unit);
-            appendElement(isInArray ? unit : unit.toEntry(description));
-            description = new ArrayList<>();
         }
 
         // flat map json-like formats with declared root operators
-        return Option.when(root.size() == 1, root)
+        return ok(Option.when(root.size() == 1, root)
                 .flatMap(root -> root.getSection(0))
                 .filter(element -> element.getName().isEmpty())
                 .map(element -> new Configuration(element.getValue()))
-                .orElseGet(root);
+                .orElseGet(root));
     }
 
     private Element<?> appendElement(Element<?> element) {

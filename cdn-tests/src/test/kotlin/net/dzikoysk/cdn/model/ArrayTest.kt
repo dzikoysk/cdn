@@ -25,8 +25,8 @@ class ArrayTest : CdnSpec() {
     @Test
     fun `should remove list operators`() {
         val section = Array(emptyList(), "list", listOf(
-                Unit("- val1 "),
-                Unit("- \" val2 \"")
+            Piece("- val1 "),
+            Piece("- \" val2 \"")
         ))
 
         assertEquals(listOf("val1", " val2 "), section.list)
@@ -36,8 +36,8 @@ class ArrayTest : CdnSpec() {
     fun `should return list`() {
         val section = Section(emptyList(), "section", listOf(
                 Array(emptyList(), "list", listOf(
-                        Unit("record 1"),
-                        Unit("- record 2 : with semicolon")
+                    Piece("record 1"),
+                    Piece("- record 2 : with semicolon")
                 ))
         ))
 

@@ -20,12 +20,10 @@ import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.serdes.CdnDeserializer;
 import net.dzikoysk.cdn.serdes.CdnSerializer;
+import net.dzikoysk.cdn.source.Output;
 import net.dzikoysk.cdn.source.Source;
 import org.jetbrains.annotations.NotNull;
-import panda.utilities.FileUtils;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
+import panda.std.Result;
 
 /**
  * The main class of Cdn library that expose methods related to process of loading/rendering configurations.
@@ -57,8 +55,8 @@ public final class Cdn {
      * @return the parsed configuration
      * @see net.dzikoysk.cdn.source.Source
      */
-    public Configuration load(@NotNull Source source) {
-        return new CdnReader(settings).read(source);
+    public Result<Configuration, CdnException> load(@NotNull Source source) {
+        return new CdnReader(settings).read(source).mapErr(CdnException.identity());
     }
 
     /**
@@ -68,10 +66,9 @@ public final class Cdn {
      * @param configurationClass the class to use
      * @param <T> the expected type
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
-     * @throws Exception in case of any deserialization error
      */
-    public <T> T load(@NotNull Source source, @NotNull Class<T> configurationClass) throws Exception {
-        return new CdnDeserializer<T>(settings).deserialize(load(source), configurationClass);
+    public <T> Result<T, CdnException> load(@NotNull Source source, @NotNull Class<T> configurationClass) {
+        return load(source).flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, configurationClass));
     }
 
     /**
@@ -81,10 +78,9 @@ public final class Cdn {
      * @param instance the instance to use
      * @param <T> the expected type
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
-     * @throws Exception in case of any deserialization error
      */
-    public <T> T load(@NotNull Source source, @NotNull T instance) throws Exception {
-        return new CdnDeserializer<T>(settings).deserialize(load(source), instance);
+    public <T> Result<T, CdnException> load(@NotNull Source source, @NotNull T instance) {
+        return load(source).flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, instance));
     }
 
     /**
@@ -93,8 +89,10 @@ public final class Cdn {
      * @param entity the instance to convert
      * @return the rendered output
      */
-    public String render(@NotNull Object entity) {
-        return render(new CdnSerializer(settings).serialize(entity));
+    public Result<String, CdnException> render(@NotNull Object entity) {
+        return new CdnSerializer(settings)
+                .serialize(entity)
+                .flatMap(this::render);
     }
 
     /**
@@ -103,18 +101,11 @@ public final class Cdn {
      * @param entity the instance to convert
      * @param output the output file
      */
-    public void render(@NotNull Object entity, @NotNull File output) throws IOException {
-        FileUtils.overrideFile(output, render(entity));
-    }
-
-    /**
-     * Convert the given instance using {@link #render(Object)} method and save the output in the given file using UTF-8 charset.
-     *
-     * @param entity the instance to convert
-     * @param output the output file
-     */
-    public void render(@NotNull Object entity, @NotNull Path output) throws IOException {
-        FileUtils.overrideFile(output.toFile(), render(entity));
+    public Result<String, CdnException> render(@NotNull Object entity, @NotNull Output output) {
+        return render(entity)
+                .flatMap(result -> output
+                    .save(result)
+                    .mapErr(CdnException::new));
     }
 
     /**
@@ -123,7 +114,7 @@ public final class Cdn {
      * @param element the element to convert
      * @return the rendered output
      */
-    public String render(@NotNull Element<?> element) {
+    public Result<String, CdnException> render(@NotNull Element<?> element) {
         return new CdnWriter(settings).render(element);
     }
 
@@ -133,18 +124,11 @@ public final class Cdn {
      * @param element the element to convert
      * @param output the output file
      */
-    public void render(@NotNull Element<?> element, @NotNull File output) throws IOException {
-        FileUtils.overrideFile(output, render(element));
-    }
-
-    /**
-     * Convert the given instance using {@link #render(net.dzikoysk.cdn.model.Element)} method and save the output in the given file using UTF-8 charset.
-     *
-     * @param element the element to convert
-     * @param output the output file
-     */
-    public void render(@NotNull Element<?> element, @NotNull Path output) throws IOException {
-        FileUtils.overrideFile(output.toFile(), render(element));
+    public Result<String, CdnException> render(@NotNull Element<?> element, @NotNull Output output) {
+        return render(element)
+                .flatMap(result -> output
+                        .save(result)
+                        .mapErr(CdnException::new));
     }
 
     /**

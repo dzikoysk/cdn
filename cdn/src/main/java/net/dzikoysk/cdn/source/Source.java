@@ -40,19 +40,19 @@ public interface Source {
         return new StringSource(source != null ? source : "");
     }
 
-    static Source of(@NotNull File file) {
+    static Resource of(@NotNull File file) {
         return of(file, StandardCharsets.UTF_8);
     }
 
-    static Source of(@NotNull File file, @NotNull Charset encoding) {
+    static Resource of(@NotNull File file, @NotNull Charset encoding) {
         return new PathSource(file.getAbsoluteFile().toPath(), encoding);
     }
 
-    static Source of(@NotNull Path path) {
+    static Resource of(@NotNull Path path) {
         return new PathSource(path);
     }
 
-    static Source of(@NotNull Path path, @NotNull Charset encoding) {
+    static Resource of(@NotNull Path path, @NotNull Charset encoding) {
         return new PathSource(path, encoding);
     }
 
