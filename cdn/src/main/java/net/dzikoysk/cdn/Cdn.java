@@ -56,7 +56,9 @@ public final class Cdn {
      * @see net.dzikoysk.cdn.source.Source
      */
     public Result<Configuration, CdnException> load(@NotNull Source source) {
-        return new CdnReader(settings).read(source).mapErr(CdnException.identity());
+        return new CdnReader(settings)
+                .read(source)
+                .mapErr(CdnException.identity());
     }
 
     /**
@@ -68,7 +70,8 @@ public final class Cdn {
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
      */
     public <T> Result<T, CdnException> load(@NotNull Source source, @NotNull Class<T> configurationClass) {
-        return load(source).flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, configurationClass));
+        return load(source)
+                .flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, configurationClass));
     }
 
     /**
@@ -80,7 +83,8 @@ public final class Cdn {
      * @return an instance of configuration class mapped from {@link net.dzikoysk.cdn.model.Configuration} structure
      */
     public <T> Result<T, CdnException> load(@NotNull Source source, @NotNull T instance) {
-        return load(source).flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, instance));
+        return load(source)
+                .flatMap(entity -> new CdnDeserializer<T>(settings).deserialize(entity, instance));
     }
 
     /**
@@ -115,7 +119,8 @@ public final class Cdn {
      * @return the rendered output
      */
     public Result<String, CdnException> render(@NotNull Element<?> element) {
-        return new CdnWriter(settings).render(element);
+        return new CdnWriter(settings)
+                .render(element);
     }
 
     /**

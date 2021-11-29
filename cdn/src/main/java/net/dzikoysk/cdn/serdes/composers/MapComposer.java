@@ -58,9 +58,9 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
         return CdnUtils.findComposer(settings, keyType, null)
                 .<Exception> mapErr(exception -> new CdnException("Cannot find serializer for key of Map<Key, Value>", exception))
                 .merge(
-                        CdnUtils.findComposer(settings, valueType, null)
-                                .mapErr(exception -> new CdnException("Cannot find serializer for value of Map<Key, Value>", exception)),
-                        Pair::of)
+                        CdnUtils.findComposer(settings, valueType, null).mapErr(exception -> new CdnException("Cannot find serializer for value of Map<Key, Value>", exception)),
+                        Pair::of
+                )
                 .flatMap(serializers -> PandaStream.of(entity.entrySet())
                         .map(entry -> serializers.getFirst()
                                 .serialize(settings, Collections.emptyList(), "", keyType, ObjectUtils.cast(entry.getKey()))
