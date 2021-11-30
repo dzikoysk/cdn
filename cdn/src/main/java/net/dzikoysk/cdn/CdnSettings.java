@@ -73,6 +73,8 @@ public final class CdnSettings {
 
     {
         withComposer(boolean.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Boolean.parseBoolean(value)));
+        withComposer(byte.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Byte.parseByte(value)));
+        withComposer(short.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Short.parseShort(value)));
         withComposer(int.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Integer.parseInt(value)));
         withComposer(long.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Long.parseLong(value)));
         withComposer(float.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Float.parseFloat(value)));

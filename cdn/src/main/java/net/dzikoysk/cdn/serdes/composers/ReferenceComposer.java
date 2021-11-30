@@ -32,11 +32,12 @@ public final class ReferenceComposer<T> implements Composer<T> {
 
     @Override
     public Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
+        Reference<Object> defaultReference = (Reference<Object>) defaultValue;
         AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
         AnnotatedType referenceType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
 
         return CdnUtils.findComposer(settings, referenceType, null)
-                .flatMap(deserializer -> deserializer.deserialize(settings, source, referenceType, defaultValue, entryAsRecord))
+                .flatMap(deserializer -> deserializer.deserialize(settings, source, referenceType, defaultReference.get(), entryAsRecord))
                 .map(value -> {
                     Reference<Object> reference = (Reference<Object>) defaultValue;
                     ReferenceUtils.setValue(reference, value);

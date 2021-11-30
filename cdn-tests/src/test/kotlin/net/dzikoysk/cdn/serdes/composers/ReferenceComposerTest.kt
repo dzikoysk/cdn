@@ -30,6 +30,7 @@ class ReferenceComposerTest : CdnSpec() {
     class ReferenceConfiguration {
         val reference = reference("default-value")
         val mutableReference = mutableReference("mutable-default-value")
+        val listReference = reference(listOf<String>())
     }
 
     @Test
@@ -42,17 +43,20 @@ class ReferenceComposerTest : CdnSpec() {
                 Source.of("""
                 reference: value
                 mutableReference: mutable-value
+                listReference: []
                 """),
                 configuration
         )
 
         assertEquals("value", configuration.reference.get())
         assertEquals("mutable-value", configuration.mutableReference.get())
+        assertEquals(listOf<String>(), configuration.listReference.get())
         assertTrue(subscriberCalled)
 
         assertEquals(cfg("""
         reference: value
         mutableReference: mutable-value
+        listReference: []
         """), assertOk(standard.render(configuration)))
     }
 
