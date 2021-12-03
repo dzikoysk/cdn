@@ -29,6 +29,9 @@ class TestConfiguration {
     @Description("", "// Section description")
     var section = SectionConfiguration()
 
+    @Description("# Skip")
+    var skip: String? = null
+
     @Contextual
     open class ParentSectionConfiguration {
 

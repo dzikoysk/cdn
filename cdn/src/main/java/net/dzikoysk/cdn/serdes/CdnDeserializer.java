@@ -93,14 +93,18 @@ public final class CdnDeserializer<T> {
             return defaultValueResult.projectToError();
         }
 
-        Object defaultValue = defaultValueResult.get().get(); // TODO: Sheeesh
+        Option<Object> defaultValue = defaultValueResult.get();
+
+        if (defaultValue.isEmpty()) {
+            return ok();
+        }
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            return deserializeToSection((Section) element, defaultValue).mapToUnit();
+            return deserializeToSection((Section) element, defaultValue.get()).mapToUnit();
         }
 
         return CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
-                .flatMap(deserializer -> deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue, false))
+                .flatMap(deserializer -> deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue.get(), false))
                 .peek(value -> {
                     if (value != Composer.MEMBER_ALREADY_PROCESSED) {
                         member.setValue(value);
