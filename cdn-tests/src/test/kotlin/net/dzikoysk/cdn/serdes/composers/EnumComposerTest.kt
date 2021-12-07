@@ -34,6 +34,10 @@ class EnumComposerTest : CdnSpec() {
         var enumValue = SomeEnum.VAL
     }
 
+    class ConfigurationWithListOfEnums {
+        var elements = listOf(SomeEnum.VAL, SomeEnum.VAR)
+    }
+
     @Test
     fun `should support enum types`() {
         val source = cfg("""
@@ -45,6 +49,20 @@ class EnumComposerTest : CdnSpec() {
 
         result.enumValue = SomeEnum.VAR
         assertEquals(cfg("enumValue: VAR"), assertOk(standard.render(result)))
+    }
+
+
+    @Test
+    fun `should support list of enums`() {
+        val source = cfg("""
+        elements:
+          - VAL
+          - VAR
+        """)
+
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithListOfEnums>(Source.of(source)))
+        assertEquals(listOf(SomeEnum.VAL, SomeEnum.VAR), configuration.elements)
+        assertEquals(source, assertOk(yamlLike.render(configuration)))
     }
 
 }
