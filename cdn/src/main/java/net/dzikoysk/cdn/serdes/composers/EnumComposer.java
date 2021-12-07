@@ -19,6 +19,7 @@ package net.dzikoysk.cdn.serdes.composers;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
+import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.SimpleDeserializer;
 import panda.std.Result;
@@ -54,7 +55,7 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
 
     @Override
     public Result<? extends Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) {
-        return ok(new Entry(description, key, entity.name()));
+        return ok(key.isEmpty() ? new Piece(entity.name()) : new Entry(description, key, entity.name()));
     }
     
 }
