@@ -62,7 +62,7 @@
     <properties>
         <cdn.version>1.13.3</cdn.version>
         <expressible.version>1.1.9</expressible.version>
-        <kotlin.version>1.6.0</kotlin.version>
+        <kotlin.version>1.6.10</kotlin.version>
         <java.version>1.8</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
