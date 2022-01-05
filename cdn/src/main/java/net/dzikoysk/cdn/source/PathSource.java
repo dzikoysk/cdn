@@ -51,8 +51,10 @@ final class PathSource implements Resource {
     @Override
     public Result<String, IOException> save(String content) {
         return Result.attempt(IOException.class, () -> {
-            if (path.getNameCount() > 1) {
-                Files.createDirectories(path.getParent());
+            Path parent = path.getParent();
+
+            if (parent != null) {
+                Files.createDirectories(parent);
             }
 
             FileUtils.overrideFile(path.toFile(), content);
