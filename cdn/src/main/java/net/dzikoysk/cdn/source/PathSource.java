@@ -19,6 +19,8 @@ package net.dzikoysk.cdn.source;
 import panda.std.Result;
 import panda.utilities.FileUtils;
 import panda.utilities.StringUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +51,16 @@ final class PathSource implements Resource {
 
     @Override
     public Result<String, IOException> save(String content) {
+        int count = path.getNameCount();
+
+        if (count > 1) {
+            File folder = path.subpath(0, count - 1).toFile();
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+        }
+
         return Result.attempt(IOException.class, () -> {
             FileUtils.overrideFile(path.toFile(), content);
             return content;
