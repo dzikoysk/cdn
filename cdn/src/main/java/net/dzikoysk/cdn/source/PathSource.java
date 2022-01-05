@@ -51,7 +51,7 @@ final class PathSource implements Resource {
     @Override
     public Result<String, IOException> save(String content) {
         return Result.attempt(IOException.class, () -> {
-            Path parent = path.getParent();
+            Path parent = path.toAbsolutePath().getParent();
 
             if (parent != null) {
                 Files.createDirectories(parent);
