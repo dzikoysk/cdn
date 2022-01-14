@@ -18,9 +18,9 @@ package net.dzikoysk.cdn.annotation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
@@ -29,7 +29,7 @@ public interface AnnotatedMember {
 
     boolean isIgnored();
 
-    Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value);
+    Result<Blank, ReflectiveOperationException> setValue(@NotNull Object value);
 
     Result<Option<Object>, ReflectiveOperationException> getValue();
 

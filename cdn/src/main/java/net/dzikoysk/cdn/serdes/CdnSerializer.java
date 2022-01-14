@@ -26,9 +26,9 @@ import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
 import panda.std.stream.PandaStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public final class CdnSerializer {
         members.addAll(settings.getAnnotationResolver().getProperties(entity));
 
         for (AnnotatedMember annotatedMember : members) {
-            Result<Unit, ? extends Exception> serializeResult = serializeMember(annotatedMember, output);
+            Result<Blank, ? extends Exception> serializeResult = serializeMember(annotatedMember, output);
 
             if (serializeResult.isErr()) {
                 return serializeResult
@@ -67,7 +67,7 @@ public final class CdnSerializer {
         return ok(output);
     }
 
-    private Result<Unit, ? extends Exception> serializeMember(AnnotatedMember member, Section output)  {
+    private Result<Blank, ? extends Exception> serializeMember(AnnotatedMember member, Section output)  {
         if (member.isIgnored()) {
             return ok();
         }
@@ -96,14 +96,14 @@ public final class CdnSerializer {
         if (member.isAnnotationPresent(Contextual.class)) {
             Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, member.getName());
             output.append(section);
-            return serialize(propertyValue.get(), section).mapToUnit();
+            return serialize(propertyValue.get(), section).mapToBlank();
         }
 
         return propertyValue
                 .map(value -> CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
                         .flatMap(serializer -> serializer.serialize(settings, description, member.getName(), member.getAnnotatedType(), value))
                         .peek(output::append)
-                        .mapToUnit())
+                        .mapToBlank())
                 .orElseGet(Result.ok());
     }
 

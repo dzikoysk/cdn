@@ -23,9 +23,9 @@ import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public final class CdnDeserializer<T> {
         members.addAll(settings.getAnnotationResolver().getProperties(instance));
 
         for (AnnotatedMember annotatedMember : members) {
-            Result<Unit, ? extends Exception> result = deserializeMember(source, annotatedMember);
+            Result<Blank, ? extends Exception> result = deserializeMember(source, annotatedMember);
 
             if (result.isErr()) {
                 return result.projectToError();
@@ -75,7 +75,7 @@ public final class CdnDeserializer<T> {
         return ok(instance);
     }
 
-    private Result<Unit, ? extends Exception> deserializeMember(Section source, AnnotatedMember member) {
+    private Result<Blank, ? extends Exception> deserializeMember(Section source, AnnotatedMember member) {
         if (member.isIgnored()) {
             return ok();
         }
@@ -100,7 +100,7 @@ public final class CdnDeserializer<T> {
         }
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            return deserializeToSection((Section) element, defaultValue.get()).mapToUnit();
+            return deserializeToSection((Section) element, defaultValue.get()).mapToBlank();
         }
 
         return CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
@@ -110,7 +110,7 @@ public final class CdnDeserializer<T> {
                         member.setValue(value);
                     }
                 })
-                .mapToUnit();
+                .mapToBlank();
     }
 
 }

@@ -23,9 +23,9 @@ import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.source.Source;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
 import panda.utilities.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static panda.std.Blank.BLANK;
 import static panda.std.Result.ok;
-import static panda.std.Unit.UNIT;
 
 final class CdnReader {
 
@@ -62,13 +62,13 @@ final class CdnReader {
             String originalLine = lines.get(lineNumber).trim();
             int currentLineNumber = lineNumber;
 
-            Result<Unit, Exception> result = Result.attempt(() -> {
+            Result<Blank, Exception> result = Result.attempt(() -> {
                 String line = originalLine;
 
                 // handle description
                 if (line.isEmpty() || line.startsWith(StandardOperators.COMMENT_OPERATORS[0]) || line.startsWith(StandardOperators.COMMENT_OPERATORS[1])) {
                     description.add(line);
-                    return UNIT;
+                    return BLANK;
                 }
 
                 // remove operator at the end of line
@@ -94,7 +94,7 @@ final class CdnReader {
                     sections.push(section); // has to be after append
 
                     description = new ArrayList<>();
-                    return UNIT;
+                    return BLANK;
                 }
                 // pop section
                 else if (!sections.isEmpty() && line.endsWith(sections.peek().getOperators()[1])) {
@@ -103,7 +103,7 @@ final class CdnReader {
                     // skip values with section operators
                     if (lineBefore.isEmpty()) {
                         sections.pop();
-                        return UNIT;
+                        return BLANK;
                     }
                 }
 
@@ -112,7 +112,7 @@ final class CdnReader {
                 boolean isInArray = settings.getModules().resolveArray(sections, piece);
                 appendElement(isInArray ? piece : piece.toEntry(description));
                 description = new ArrayList<>();
-                return UNIT;
+                return BLANK;
             });
 
             if (result.isErr()) {

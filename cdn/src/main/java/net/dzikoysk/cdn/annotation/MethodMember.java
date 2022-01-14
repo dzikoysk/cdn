@@ -18,16 +18,15 @@ package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.NotNull;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
+import sun.tools.jconsole.Plotter.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-
-import static panda.std.Unit.UNIT;
 
 public class MethodMember implements AnnotatedMember {
 
@@ -47,11 +46,8 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value) {
-        return Result.attempt(ReflectiveOperationException.class, () -> {
-            setter.invoke(instance, value);
-            return UNIT;
-        });
+    public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object value) {
+        return Result.attempt(ReflectiveOperationException.class, () -> setter.invoke(instance, value)).mapToBlank();
     }
 
     @Override

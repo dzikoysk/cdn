@@ -18,14 +18,16 @@ package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.NotNull;
+import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import panda.std.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+
+import static panda.std.Blank.BLANK;
 
 public class FieldMember implements AnnotatedMember {
 
@@ -43,10 +45,10 @@ public class FieldMember implements AnnotatedMember {
     }
 
     @Override
-    public Result<Unit, ReflectiveOperationException> setValue(@NotNull Object value) {
+    public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object value) {
         return Result.attempt(ReflectiveOperationException.class, () -> {
             field.set(instance, value);
-            return Unit.UNIT;
+            return BLANK;
         });
     }
 

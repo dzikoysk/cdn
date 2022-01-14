@@ -22,8 +22,8 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import panda.std.Blank;
 import panda.std.Result;
-import panda.std.Unit;
 import panda.utilities.StringUtils;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ final class CdnWriter {
                 .mapErr(CdnException::new);
     }
 
-    private Result<Unit, Exception> render(StringBuilder output, int level, Element<?> element) {
+    private Result<Blank, Exception> render(StringBuilder output, int level, Element<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
 
         // render multiline description
