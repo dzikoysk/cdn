@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
-import sun.tools.jconsole.Plotter.Unit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
