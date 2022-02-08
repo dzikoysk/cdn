@@ -16,12 +16,18 @@
 
 package net.dzikoysk.cdn.module.standard;
 
+import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.module.CdnModule;
+import org.jetbrains.annotations.Nullable;
+import panda.std.Blank;
+import panda.std.Result;
 
 import java.util.Arrays;
 import java.util.Stack;
+
+import static panda.std.Result.ok;
 
 /**
  * Default implementation of CDN file format
@@ -29,14 +35,14 @@ import java.util.Stack;
 public class StandardModule implements CdnModule {
 
     @Override
-    public void visitDescription(StringBuilder output, String indentation, String description) {
+    public void renderDescription(StringBuilder output, String indentation, String description) {
         output.append(indentation)
                 .append(description)
                 .append(StandardOperators.LINE_SEPARATOR);
     }
 
     @Override
-    public void visitSectionOpening(StringBuilder output, String indentation, Section section) {
+    public void renderSectionOpening(StringBuilder output, String indentation, Section section) {
         // Don't add space to unnamed sections
         // ~ https://github.com/dzikoysk/cdn/issues/29
         output.append(indentation)
@@ -46,7 +52,7 @@ public class StandardModule implements CdnModule {
     }
 
     @Override
-    public void visitSectionEnding(StringBuilder output, String indentation, Section section) {
+    public void renderSectionEnding(StringBuilder output, String indentation, @Nullable Section parent, Section section) {
         output.append(indentation)
                 .append(section.getOperators()[1])
                 .append(StandardOperators.LINE_SEPARATOR);
@@ -55,6 +61,22 @@ public class StandardModule implements CdnModule {
     @Override
     public boolean resolveArray(Stack<Section> sections, Piece value) {
         return !sections.isEmpty() && Arrays.equals(sections.peek().getOperators(), StandardOperators.ARRAY_SEPARATOR);
+    }
+
+    @Override
+    public Result<Blank, Exception> renderEntry(StringBuilder output, String indentation, @Nullable Section parent, Entry element) {
+        output.append(indentation)
+                .append(element.getRecord())
+                .append(StandardOperators.LINE_SEPARATOR);
+        return ok();
+    }
+
+    @Override
+    public Result<Blank, Exception> renderPiece(StringBuilder output, String indentation, @Nullable Section parent, Piece element) {
+        output.append(indentation)
+                .append(element.getValue())
+                .append(StandardOperators.LINE_SEPARATOR);
+        return ok();
     }
 
 }

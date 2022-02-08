@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.module.yaml;
 
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
@@ -49,7 +50,7 @@ public final class YamlLikeModule implements CdnModule {
     }
 
     @Override
-    public void visitDescription(StringBuilder output, String indentation, String description) {
+    public void renderDescription(StringBuilder output, String indentation, String description) {
         description = StringUtils.trimStart(description);
 
         if (description.startsWith("//")) {
@@ -62,7 +63,7 @@ public final class YamlLikeModule implements CdnModule {
     }
 
     @Override
-    public void visitSectionOpening(StringBuilder output, String indentation, Section section) {
+    public void renderSectionOpening(StringBuilder output, String indentation, Section section) {
         output.append(indentation)
                 .append(section.getName()).append(":")
                 .append(StandardOperators.LINE_SEPARATOR);
