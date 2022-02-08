@@ -19,7 +19,7 @@
     <parent>
         <artifactId>cdn-parent</artifactId>
         <groupId>net.dzikoysk</groupId>
-        <version>1.13.7</version>
+        <version>1.13.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -102,6 +102,7 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <executions>
+                    <!-- Ignore sources of test module
                     <execution>
                         <id>compile</id>
                         <phase>process-sources</phase>
@@ -114,6 +115,7 @@
                             </sourceDirs>
                         </configuration>
                     </execution>
+                    -->
                     <execution>
                         <id>test-compile</id>
                         <goals>

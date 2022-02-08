@@ -18,6 +18,8 @@ package net.dzikoysk.cdn.serdes.composers
 
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.loadAs
+import net.dzikoysk.cdn.serdes.composers.EnumComposerTest.SomeEnum.VAL
+import net.dzikoysk.cdn.serdes.composers.EnumComposerTest.SomeEnum.VAR
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -31,11 +33,7 @@ class EnumComposerTest : CdnSpec() {
     }
 
     class ConfigurationWithEnum {
-        var enumValue = SomeEnum.VAL
-    }
-
-    class ConfigurationWithListOfEnums {
-        var elements = listOf(SomeEnum.VAL, SomeEnum.VAR)
+        var enumValue = VAL
     }
 
     @Test
@@ -45,12 +43,15 @@ class EnumComposerTest : CdnSpec() {
         """)
 
         val result = assertOk(standard.loadAs<ConfigurationWithEnum>(Source.of(source)))
-        assertEquals(SomeEnum.VAL, result.enumValue)
+        assertEquals(VAL, result.enumValue)
 
-        result.enumValue = SomeEnum.VAR
+        result.enumValue = VAR
         assertEquals(cfg("enumValue: VAR"), assertOk(standard.render(result)))
     }
 
+    class ConfigurationWithListOfEnums {
+        var elements = listOf(VAL, VAR)
+    }
 
     @Test
     fun `should support list of enums`() {
@@ -61,7 +62,23 @@ class EnumComposerTest : CdnSpec() {
         """)
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithListOfEnums>(Source.of(source)))
-        assertEquals(listOf(SomeEnum.VAL, SomeEnum.VAR), configuration.elements)
+        assertEquals(listOf(VAL, VAR), configuration.elements)
+        assertEquals(source, assertOk(yamlLike.render(configuration)))
+    }
+
+    class ConfigurationWithEnumMap {
+        var enums = mapOf(VAR to VAL)
+    }
+
+    @Test
+    fun `should support maps with enums`() {
+        val source = cfg("""
+        enums:
+          VAL: VAR
+        """)
+
+        val configuration = assertOk(yamlLike.loadAs<ConfigurationWithEnumMap>(Source.of(source)))
+        assertEquals(mapOf(VAL to VAR), configuration.enums)
         assertEquals(source, assertOk(yamlLike.render(configuration)))
     }
 

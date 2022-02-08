@@ -23,7 +23,9 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.shared.ArrayValueVisitor;
+import net.dzikoysk.cdn.module.standard.StandardModule;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import org.jetbrains.annotations.Nullable;
 import panda.utilities.StringUtils;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -38,7 +40,7 @@ import static net.dzikoysk.cdn.module.standard.StandardOperators.ARRAY;
  *     <li>Dash operator before array entry</li>
  * </ul>
  */
-public final class YamlLikeModule implements CdnModule {
+public final class YamlLikeModule extends StandardModule {
 
     private static final Pattern DEFAULT_COMMENT_OPENING = Pattern.compile("//");
     private static final ArrayValueVisitor ARRAY_VALUE_VISITOR = new ArrayValueVisitor(ARRAY + " ", "");
@@ -67,6 +69,11 @@ public final class YamlLikeModule implements CdnModule {
         output.append(indentation)
                 .append(section.getName()).append(":")
                 .append(StandardOperators.LINE_SEPARATOR);
+    }
+
+    @Override
+    public void renderSectionEnding(StringBuilder output, String indentation, @Nullable Section parent, Section section) {
+        // skip section operators in yaml-like format
     }
 
     @Override
