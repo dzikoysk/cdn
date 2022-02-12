@@ -42,6 +42,9 @@ class YamlLikeSerializerTest : CdnSpec() {
           custom:
             id: rtx
             count: 3070
+        
+        # Class
+        clazz: java.lang.String
         """), assertOk(yamlLike.render(TestConfiguration())))
     }
 
