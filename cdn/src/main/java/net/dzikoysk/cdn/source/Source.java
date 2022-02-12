@@ -44,8 +44,16 @@ public interface Source {
         return of(file, StandardCharsets.UTF_8);
     }
 
+    static Resource of(@NotNull File parent, @NotNull String child) {
+        return of(new File(parent, child));
+    }
+
     static Resource of(@NotNull File file, @NotNull Charset encoding) {
         return new PathSource(file.getAbsoluteFile().toPath(), encoding);
+    }
+
+    static Resource of(@NotNull File parent, @NotNull String child, @NotNull Charset encoding) {
+        return of(new File(parent, child), encoding);
     }
 
     static Resource of(@NotNull Path path) {

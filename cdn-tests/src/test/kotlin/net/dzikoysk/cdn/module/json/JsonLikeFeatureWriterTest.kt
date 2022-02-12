@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn.module.json
 
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.entity.Description
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -26,29 +27,56 @@ class JsonLikeFeatureWriterTest : CdnSpec() {
 
     class ConfigurationWithDescription {
         @Description("# Description")
-        @JvmField
-        val key = "value"
+        @JvmField val key = "value"
     }
 
     @Test
     fun `should ignore description as it is not supported by json`() {
         val configuration = assertOk(json.render(ConfigurationWithDescription()))
-        assertEquals("key: value", configuration)
+        assertEquals("\"key\": \"value\"", configuration)
     }
 
-    class ConfigurationWithList {
-        @JvmField
-        val key = listOf("a", "b")
+    class ConfigurationWithLists {
+        @JvmField val key1 = listOf("a", "b")
+        @JvmField val key2 = listOf("a", "b")
     }
 
-    // @Test
+    @Test
     fun `should render lists`() {
         assertEquals("""
-        "key": [
+        "key1": [
+          "a",
+          "b"
+        ],
+        "key2": [
           "a",
           "b"
         ]
-        """.trimIndent(), assertOk(json.render(ConfigurationWithList())))
+        """.trimIndent(), assertOk(json.render(ConfigurationWithLists())))
+    }
+
+    class ConfigurationWithSections {
+        @JvmField val section1 = Section()
+        @JvmField val section2 = Section()
+
+        @Contextual class Section {
+            @JvmField val key1 = "value1"
+            @JvmField val key2 = "value2"
+        }
+    }
+
+    @Test
+    fun `should render sections`() {
+        assertEquals("""
+        "section1": {
+          "key1": "value1",
+          "key2": "value2"
+        },
+        "section2": {
+          "key1": "value1",
+          "key2": "value2"
+        }
+        """.trimIndent(), assertOk(json.render(ConfigurationWithSections())))
     }
 
 }

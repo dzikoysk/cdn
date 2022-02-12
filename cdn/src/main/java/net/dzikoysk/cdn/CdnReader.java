@@ -49,7 +49,7 @@ final class CdnReader {
 
     public Result<Configuration, ? extends CdnException> read(Source sourceProvider) {
         String source = sourceProvider.getSource();
-        source = settings.getModules().convertToCdn(source);
+        source = settings.getModule().convertToCdn(source);
 
         // replace system-dependent line separators with unified one
         String normalizedSource = StringUtils.replace(source.trim(), System.lineSeparator(), StandardOperators.LINE_SEPARATOR);
@@ -109,7 +109,7 @@ final class CdnReader {
 
                 // add standard entry
                 Piece piece = new Piece(originalLine);
-                boolean isInArray = settings.getModules().resolveArray(sections, piece);
+                boolean isInArray = settings.getModule().resolveArray(sections, piece);
                 appendElement(isInArray ? piece : piece.toEntry(description));
                 description = new ArrayList<>();
                 return BLANK;

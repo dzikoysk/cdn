@@ -180,16 +180,28 @@ public final class CdnUtils {
         return operational;
     }
 
+    public static boolean isStringified(String value) {
+        return value.startsWith("\"") && value.endsWith("\"");
+    }
+
     public static String stringify(String value) {
         String safe = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.FAKE_LINE_SEPARATOR);
 
-        if (!safe.startsWith("\"") && !safe.endsWith("\"")) {
+        if (!isStringified(safe)) {
             if (safe.isEmpty() || safe.trim().length() != safe.length() || safe.endsWith(",") || safe.endsWith("{") || safe.endsWith(":")) {
                 return "\"" + safe + "\"";
             }
         }
 
         return safe;
+    }
+
+    public static String forceStringify(String value) {
+        if (!isStringified(value)) {
+            return "\"" + value + "\"";
+        }
+
+        return value;
     }
 
     public static <T, R> R process(Collection<T> processors, R value, BiFunction<T, R, R> handler) {

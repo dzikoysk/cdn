@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.dzikoysk.cdn.module.standard.StandardOperators.OBJECT_SEPARATOR;
 import static panda.std.Result.error;
 import static panda.std.Result.ok;
 
@@ -72,7 +73,7 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
                         .flatMap(allElementsStream -> allElementsStream
                                 .map(Result::get)
                                 .filterToResult(element -> Option.when(!(element instanceof Entry || element instanceof Section), new CdnException("Unsupported element in map: " + element)))
-                                .map(filteredStream -> filteredStream.collect(Section.collector(() -> new Section(description, StandardOperators.OBJECT_SEPARATOR, key))))));
+                                .map(filteredStream -> filteredStream.collect(Section.collector(() -> new Section(description, OBJECT_SEPARATOR, key))))));
     }
 
     @Override
