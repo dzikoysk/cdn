@@ -29,6 +29,9 @@ class TestConfiguration {
     @Description("", "// Section description")
     var section = SectionConfiguration()
 
+    @Description("", "# Class")
+    var clazz: Class<Any> = String.javaClass
+
     @Description("# Skip")
     var skip: String? = null
 

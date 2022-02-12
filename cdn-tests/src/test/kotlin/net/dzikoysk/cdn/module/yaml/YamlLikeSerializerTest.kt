@@ -42,6 +42,9 @@ class YamlLikeSerializerTest : CdnSpec() {
           custom:
             id: rtx
             count: 3070
+        
+        # Class
+        clazz: kotlin.jvm.internal.StringCompanionObject
         """), assertOk(yamlLike.render(TestConfiguration())))
     }
 

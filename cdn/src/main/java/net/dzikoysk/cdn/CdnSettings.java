@@ -80,6 +80,7 @@ public final class CdnSettings {
         withComposer(float.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Float.parseFloat(value)));
         withComposer(double.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Double.parseDouble(value)));
         withComposer(String.class, value -> ok(CdnUtils.stringify(value)), value -> ok(CdnUtils.destringify(value)));
+        withComposer(Class.class, value -> ok(value.getName()), value -> Result.attempt(Exception.class, () -> Class.forName(value)));
 
         withComposer(List.class, new ListComposer());
         withComposer(ArrayList.class, new ListComposer());
