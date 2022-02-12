@@ -18,7 +18,7 @@ package net.dzikoysk.cdn.module.standard;
 
 public class StandardOperators {
 
-    public static final String FAKE_LINE_SEPARATOR = "\\n";
+    public static final String RAW_LINE_SEPARATOR = "\\n";
 
     public static final String LINE_SEPARATOR = "\n";
 

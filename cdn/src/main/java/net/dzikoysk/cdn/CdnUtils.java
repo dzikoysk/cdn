@@ -169,7 +169,7 @@ public final class CdnUtils {
             return value;
         }
 
-        String operational = value.replace(StandardOperators.FAKE_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
+        String operational = value.replace(StandardOperators.RAW_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
 
         for (String operator : StandardOperators.STRING_OPERATORS) {
             if (operational.startsWith(operator) && operational.endsWith(operator)) {
@@ -185,7 +185,7 @@ public final class CdnUtils {
     }
 
     public static String stringify(String value) {
-        String safe = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.FAKE_LINE_SEPARATOR);
+        String safe = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.RAW_LINE_SEPARATOR);
 
         if (!isStringified(safe)) {
             if (safe.isEmpty() || safe.trim().length() != safe.length() || safe.endsWith(",") || safe.endsWith("{") || safe.endsWith(":")) {
