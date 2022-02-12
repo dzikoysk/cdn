@@ -30,7 +30,7 @@ class TestConfiguration {
     var section = SectionConfiguration()
 
     @Description("", "# Class")
-    var clazz: Class<Any> = String.javaClass
+    var clazz: Class<*> = String::class.java
 
     @Description("# Skip")
     var skip: String? = null

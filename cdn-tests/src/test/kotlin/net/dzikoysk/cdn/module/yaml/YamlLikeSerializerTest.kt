@@ -44,7 +44,7 @@ class YamlLikeSerializerTest : CdnSpec() {
             count: 3070
         
         # Class
-        clazz: kotlin.jvm.internal.StringCompanionObject
+        clazz: java.lang.String
         """), assertOk(yamlLike.render(TestConfiguration())))
     }
 

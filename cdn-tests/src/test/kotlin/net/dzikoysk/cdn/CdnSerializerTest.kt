@@ -45,7 +45,7 @@ class CdnSerializerTest : CdnSpec() {
         }
         
         # Class
-        clazz: kotlin.jvm.internal.StringCompanionObject
+        clazz: java.lang.String
         """), assertOk(standard.render(TestConfiguration())))
     }
 
