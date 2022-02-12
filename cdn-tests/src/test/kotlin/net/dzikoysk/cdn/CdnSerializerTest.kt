@@ -27,6 +27,7 @@ class CdnSerializerTest : CdnSpec() {
         assertEquals(cfg("""
         # Root entry description
         rootEntry: value value
+        strangeValue: "
 
         // Section description
         section {

@@ -165,6 +165,10 @@ public final class CdnUtils {
     }
 
     public static String destringify(String value) {
+        if (value.length() <= 1) {
+            return value;
+        }
+
         for (String operator : StandardOperators.STRING_OPERATORS) {
             if (value.startsWith(operator) && value.endsWith(operator)) {
                 return value.substring(1, value.length() - 1);

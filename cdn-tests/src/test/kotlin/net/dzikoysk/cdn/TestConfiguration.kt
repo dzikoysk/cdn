@@ -26,6 +26,8 @@ class TestConfiguration {
     @Description("# Root entry description")
     var rootEntry = "value value"
 
+    var strangeValue = "\""
+
     @Description("", "// Section description")
     var section = SectionConfiguration()
 

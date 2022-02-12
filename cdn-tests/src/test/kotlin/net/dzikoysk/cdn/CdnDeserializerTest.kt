@@ -27,6 +27,7 @@ class CdnDeserializerTest : CdnSpec() {
     fun `should deserialize source into scheme`() {
         val configuration = assertOk(standard.load(Source.of("""
         rootEntry: custom value
+        strangeValue: "
         section {
           subEntry: 7
           list [
@@ -40,6 +41,7 @@ class CdnDeserializerTest : CdnSpec() {
         """), TestConfiguration::class.java))
 
         assertEquals("custom value", configuration.rootEntry)
+        assertEquals("\"", configuration.strangeValue)
         assertEquals(7, configuration.section.subEntry)
         assertEquals(listOf("key: value", "value"), configuration.section.list)
         assertEquals("rtx", configuration.section.custom.id)
