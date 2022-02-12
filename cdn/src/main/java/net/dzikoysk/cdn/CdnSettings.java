@@ -192,7 +192,7 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnModule getModules() {
+    public CdnModule getModule() {
         return modules;
     }
 

@@ -55,7 +55,7 @@ public final class ListComposer implements Composer<List<Object>> {
 
         return CdnUtils.findComposer(settings, collectionType, null)
                 .flatMap(composer -> PandaStream.of(section.getValue())
-                        .map(element -> settings.getModules().resolveArrayValue(element))
+                        .map(element -> settings.getModule().resolveArrayValue(element))
                         .map(element -> composer.deserialize(settings, element, collectionType, null, true))
                         .filterToResult(Result::errorToOption)
                         .map(stream -> stream.map(Result::get).toList()));
@@ -76,7 +76,7 @@ public final class ListComposer implements Composer<List<Object>> {
                         .filterToResult(Result::errorToOption)
                         .map(stream -> stream
                                 .map(Result::get)
-                                .map(serializedElement -> settings.getModules().visitArrayValue(serializedElement))
+                                .map(serializedElement -> settings.getModule().visitArrayValue(serializedElement))
                                 .collect(Section.collector(() -> new Section(description, ARRAY_SEPARATOR, key)))));
     }
 

@@ -21,7 +21,8 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
-import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.module.CdnModule;
+import org.jetbrains.annotations.Nullable;
 import panda.std.Blank;
 import panda.std.Result;
 import panda.utilities.StringUtils;
@@ -41,7 +42,7 @@ final class CdnWriter {
     public Result<String, CdnException> render(Element<?> element) {
         StringBuilder content = new StringBuilder();
 
-        return render(content, 0, element)
+        return render(content, 0, null, element)
                 .map(success -> {
                     String result = content.toString();
 
@@ -54,20 +55,18 @@ final class CdnWriter {
                 .mapErr(CdnException::new);
     }
 
-    private Result<Blank, Exception> render(StringBuilder output, int level, Element<?> element) {
+    private Result<Blank, Exception> render(StringBuilder output, int level, @Nullable Section parent, Element<?> element) {
         String indentation = StringUtils.buildSpace(level * 2);
+        CdnModule module = settings.getModule();
 
         // render multiline description
         for (String description : element.getDescription()) {
-            settings.getModules().visitDescription(output, indentation, description);
+            module.renderDescription(output, indentation, description);
         }
 
         // render simple entry
         if (element instanceof Entry) {
-            output.append(indentation)
-                    .append(((Entry) element).getRecord())
-                    .append(StandardOperators.LINE_SEPARATOR);
-            return ok();
+            return module.renderEntry(output, indentation, parent, (Entry) element);
         }
 
         // render section
@@ -76,7 +75,7 @@ final class CdnWriter {
             boolean isRoot = section instanceof Configuration;
 
             if (!isRoot) {
-                settings.getModules().visitSectionOpening(output, indentation, section);
+                module.renderSectionOpening(output, indentation, section);
             }
 
             // do not indent root sections
@@ -86,22 +85,19 @@ final class CdnWriter {
 
             // render section content
             for (Element<?> sectionElement : section.getValue()) {
-                render(output, subLevel, sectionElement);
+                render(output, subLevel, section, sectionElement);
             }
 
             // append opening operator for cdn format
             if (!isRoot) {
-                settings.getModules().visitSectionEnding(output, indentation, section);
+                module.renderSectionEnding(output, indentation, parent, section);
             }
 
             return ok();
         }
 
         if (element instanceof Piece) {
-            output.append(indentation)
-                    .append(((Piece) element).getValue())
-                    .append(StandardOperators.LINE_SEPARATOR);
-            return ok();
+            return module.renderPiece(output, indentation, parent, (Piece) element);
         }
 
         return error(new IllegalStateException("Unknown element: " + element));

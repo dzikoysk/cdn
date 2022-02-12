@@ -174,11 +174,23 @@ public final class CdnUtils {
         return value;
     }
 
+    public static boolean isStringified(String value) {
+        return value.startsWith("\"") && value.endsWith("\"");
+    }
+
     public static String stringify(String value) {
-        if (!value.startsWith("\"") && !value.endsWith("\"")) {
-            if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":")) {
+        if (!isStringified(value)) {
+            if (value.isEmpty() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":") || value.trim().length() != value.length()) {
                 return "\"" + value + "\"";
             }
+        }
+
+        return value;
+    }
+
+    public static String forceStringify(String value) {
+        if (!isStringified(value)) {
+            return "\"" + value + "\"";
         }
 
         return value;
