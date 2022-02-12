@@ -31,6 +31,7 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
         # Root entry description
         rootEntry: value value
         strangeValue: "
+        newLine: \n
 
         # Section description
         section:
@@ -53,6 +54,7 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
         # Root entry description
         rootEntry:  custom value!
         strangeValue: "
+        newLine: \n
         
         # Section description
         section:
@@ -70,6 +72,7 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
 
         assertEquals("custom value!", configuration.rootEntry)
         assertEquals("\"", configuration.strangeValue)
+        assertEquals("\n", configuration.newLine)
         assertEquals(7, configuration.section.subEntry)
         assertEquals(listOf("record :", "record : with : semicolons"), configuration.section.list)
         assertEquals("rtx", configuration.section.custom.id)

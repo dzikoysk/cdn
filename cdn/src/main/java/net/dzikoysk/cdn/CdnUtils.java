@@ -169,23 +169,27 @@ public final class CdnUtils {
             return value;
         }
 
+        String operational = value.replace(StandardOperators.FAKE_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
+
         for (String operator : StandardOperators.STRING_OPERATORS) {
-            if (value.startsWith(operator) && value.endsWith(operator)) {
-                return value.substring(1, value.length() - 1);
+            if (operational.startsWith(operator) && operational.endsWith(operator)) {
+                return operational.substring(1, operational.length() - 1);
             }
         }
 
-        return value;
+        return operational;
     }
 
     public static String stringify(String value) {
-        if (!value.startsWith("\"") && !value.endsWith("\"")) {
-            if (value.isEmpty() || value.trim().length() != value.length() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":")) {
-                return "\"" + value + "\"";
+        String safe = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.FAKE_LINE_SEPARATOR);
+
+        if (!safe.startsWith("\"") && !safe.endsWith("\"")) {
+            if (safe.isEmpty() || safe.trim().length() != safe.length() || safe.endsWith(",") || safe.endsWith("{") || safe.endsWith(":")) {
+                return "\"" + safe + "\"";
             }
         }
 
-        return value;
+        return safe;
     }
 
     public static <T, R> R process(Collection<T> processors, R value, BiFunction<T, R, R> handler) {
