@@ -42,7 +42,6 @@ class CdnDeserializerTest : CdnSpec() {
         """), TestConfiguration::class.java))
 
         assertEquals("custom value", configuration.rootEntry)
-        assertEquals("\"", configuration.strangeValue)
         assertEquals(7, configuration.section.subEntry)
         assertEquals(listOf("key: value", "value"), configuration.section.list)
         assertEquals("rtx", configuration.section.custom.id)
