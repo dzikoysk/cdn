@@ -28,7 +28,6 @@ class CdnSerializerTest : CdnSpec() {
         # Root entry description
         rootEntry: value value
         strangeValue: "
-        newLine: \n
 
         // Section description
         section {

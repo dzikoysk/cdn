@@ -27,7 +27,6 @@ class TestConfiguration {
     var rootEntry = "value value"
 
     var strangeValue = "\""
-    var newLine = "\n"
 
     @Description("", "// Section description")
     var section = SectionConfiguration()
