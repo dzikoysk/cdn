@@ -27,7 +27,6 @@ class CdnDeserializerTest : CdnSpec() {
     fun `should deserialize source into scheme`() {
         val configuration = assertOk(standard.load(Source.of("""
         rootEntry: custom value
-        strangeValue: "
         section {
           subEntry: 7
           list [

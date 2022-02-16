@@ -54,7 +54,6 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
         val configuration = assertOk(yamlLike.load(Source.of("""
         # Root entry description
         rootEntry:  custom value!
-        strangeValue: "
         
         # Section description
         section:
