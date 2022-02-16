@@ -42,11 +42,9 @@ public final class ListComposer implements Composer<List<Object>> {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
-            if (entry.getPieceValue().trim().endsWith("[]")) {
-                return ok(Collections.emptyList());
-            }
-
-            return error(new UnsupportedOperationException("Cannot deserialize list of " + entry));
+            return entry.getPieceValue().trim().endsWith("[]")
+                ? ok(Collections.emptyList())
+                : error(new UnsupportedOperationException("Cannot deserialize list of " + entry));
         }
 
         Section section = (Section) source;
