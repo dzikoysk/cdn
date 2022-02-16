@@ -52,7 +52,6 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
         # Root entry description
         rootEntry:  custom value!
         strangeValue: "
-        newLine: \n
         
         # Section description
         section:
