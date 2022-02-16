@@ -28,6 +28,7 @@ class SimpleComposerTest : CdnSpec() {
     class Configuration {
         @Description("# Separator with space")
         var separator = ", "
+        var singleQuote = "\""
         var empty = ""
     }
 

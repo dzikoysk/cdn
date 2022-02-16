@@ -164,7 +164,13 @@ public final class CdnUtils {
         return method.isAnnotationPresent(Exclude.class);
     }
 
-    public static String destringify(String value) {
+    public static String destringify(String raw) {
+        if (raw.length() <= 1) {
+            return raw;
+        }
+
+        String value = raw.replace(StandardOperators.RAW_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
+
         for (String operator : StandardOperators.STRING_OPERATORS) {
             if (value.startsWith(operator) && value.endsWith(operator)) {
                 return value.substring(1, value.length() - 1);
@@ -179,13 +185,15 @@ public final class CdnUtils {
     }
 
     public static String stringify(String value) {
-        if (!isStringified(value)) {
-            if (value.isEmpty() || value.endsWith(",") || value.endsWith("{") || value.endsWith(":") || value.trim().length() != value.length()) {
-                return "\"" + value + "\"";
+        String raw = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.RAW_LINE_SEPARATOR);
+
+        if (!isStringified(raw)) {
+            if (raw.isEmpty() || raw.trim().length() != raw.length() || raw.endsWith(",") || raw.endsWith("{") || raw.endsWith(":")) {
+                return "\"" + raw + "\"";
             }
         }
 
-        return value;
+        return raw;
     }
 
     public static String forceStringify(String value) {
