@@ -43,6 +43,9 @@ class CdnSerializerTest : CdnSpec() {
             count: 3070
           }
         }
+        
+        # Class
+        clazz: java.lang.String
         """), assertOk(standard.render(TestConfiguration())))
     }
 
