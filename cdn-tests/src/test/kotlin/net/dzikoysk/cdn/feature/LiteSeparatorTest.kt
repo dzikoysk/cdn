@@ -2,6 +2,7 @@ package net.dzikoysk.cdn.feature
 
 import net.dzikoysk.cdn.CdnSpec
 import net.dzikoysk.cdn.entity.Description
+import net.dzikoysk.cdn.loadAs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
@@ -54,7 +55,7 @@ class LiteSeparatorTest : CdnSpec()  {
         val renderResult = standard.render(TestConfiguration())
         val render = assertOk(renderResult)
 
-        val loadResult = standard.load({ render }, TestConfiguration::class.java)
+        val loadResult = standard.loadAs<TestConfiguration> { render }
         val load = assertOk(loadResult)
 
         assertEquals("\n", load.separator)
