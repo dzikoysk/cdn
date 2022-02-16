@@ -164,20 +164,20 @@ public final class CdnUtils {
         return method.isAnnotationPresent(Exclude.class);
     }
 
-    public static String destringify(String value) {
-        if (value.length() <= 1) {
-            return value;
+    public static String destringify(String raw) {
+        if (raw.length() <= 1) {
+            return raw;
         }
 
-        String operational = value.replace(StandardOperators.RAW_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
+        String value = raw.replace(StandardOperators.RAW_LINE_SEPARATOR, StandardOperators.LINE_SEPARATOR);
 
         for (String operator : StandardOperators.STRING_OPERATORS) {
-            if (operational.startsWith(operator) && operational.endsWith(operator)) {
-                return operational.substring(1, operational.length() - 1);
+            if (value.startsWith(operator) && value.endsWith(operator)) {
+                return value.substring(1, value.length() - 1);
             }
         }
 
-        return operational;
+        return value;
     }
 
     public static boolean isStringified(String value) {
@@ -185,15 +185,15 @@ public final class CdnUtils {
     }
 
     public static String stringify(String value) {
-        String safe = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.RAW_LINE_SEPARATOR);
+        String raw = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.RAW_LINE_SEPARATOR);
 
-        if (!isStringified(safe)) {
-            if (safe.isEmpty() || safe.trim().length() != safe.length() || safe.endsWith(",") || safe.endsWith("{") || safe.endsWith(":")) {
-                return "\"" + safe + "\"";
+        if (!isStringified(raw)) {
+            if (raw.isEmpty() || raw.trim().length() != raw.length() || raw.endsWith(",") || raw.endsWith("{") || raw.endsWith(":")) {
+                return "\"" + raw + "\"";
             }
         }
 
-        return safe;
+        return raw;
     }
 
     public static String forceStringify(String value) {
