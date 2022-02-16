@@ -9,7 +9,7 @@ import panda.std.ResultAssertions.assertOk
 
 class EscapeOperatorsSerdeTest : CdnSpec()  {
 
-    class TestConfiguration {
+    class ConfigurationWithSeparators {
 
         @Description("// Separator")
         var separator = "\n"
@@ -27,7 +27,7 @@ class EscapeOperatorsSerdeTest : CdnSpec()  {
 
     @Test
     fun `should render with raw separators in entries`() {
-        val renderResult = standard.render(TestConfiguration())
+        val renderResult = standard.render(ConfigurationWithSeparators())
         val render = assertOk(renderResult)
 
         assertEquals("""
@@ -52,10 +52,10 @@ class EscapeOperatorsSerdeTest : CdnSpec()  {
 
     @Test
     fun `should load to  separators`() {
-        val renderResult = standard.render(TestConfiguration())
+        val renderResult = standard.render(ConfigurationWithSeparators())
         val render = assertOk(renderResult)
 
-        val loadResult = standard.loadAs<TestConfiguration> { render }
+        val loadResult = standard.loadAs<ConfigurationWithSeparators> { render }
         val load = assertOk(loadResult)
 
         assertEquals("\n", load.separator)
