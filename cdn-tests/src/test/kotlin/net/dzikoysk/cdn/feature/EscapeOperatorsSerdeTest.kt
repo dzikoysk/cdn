@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
 
-class LiteSeparatorTest : CdnSpec()  {
+class EscapeOperatorsSerdeTest : CdnSpec()  {
 
     class TestConfiguration {
 
