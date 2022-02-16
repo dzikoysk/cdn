@@ -43,6 +43,9 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
           custom:
             id: rtx
             count: 3070
+        
+        # Class
+        clazz: java.lang.String
         """), assertOk(yamlLike.render(TestConfiguration())))
     }
 
@@ -65,6 +68,9 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
           custom:
             id: rtx
             count: 3080
+        
+        # Class
+        clazz: java.lang.String
         """), TestConfiguration::class.java))
 
         assertEquals("custom value!", configuration.rootEntry)
