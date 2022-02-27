@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn
+package net.dzikoysk.cdn.module.standard
 
+import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.TestConfiguration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
 
-class CdnSerializerTest : CdnSpec() {
+class StandardSerializerTest : CdnSpec() {
 
     @Test
     fun `should serialize entity`() {

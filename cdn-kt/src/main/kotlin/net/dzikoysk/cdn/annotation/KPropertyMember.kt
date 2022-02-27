@@ -44,7 +44,7 @@ internal class KPropertyMember(private val instance: Any, private val property: 
             .flatMapStream { Arrays.stream(it ?: emptyArray()) }
             .`is`(annotation)
             .head()
-            .orNull
+            .orNull()
 
     override fun getAnnotatedType(): AnnotatedType =
         property.javaGetter?.annotatedReturnType ?: property.javaField!!.annotatedType

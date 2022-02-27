@@ -43,7 +43,7 @@ internal class KFunctionMember(
         PandaStream.of(getter.annotations)
             .`is`(annotation)
             .head()
-            .orNull
+            .orNull()
 
     override fun getAnnotatedType(): AnnotatedType =
         getter.javaMethod!!.annotatedReturnType

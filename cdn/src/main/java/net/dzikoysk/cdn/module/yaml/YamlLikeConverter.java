@@ -38,7 +38,7 @@ final class YamlLikeConverter {
 
     String convert() {
         for (String line : lines) {
-            String indentation = StringUtils.extractParagraph(line);
+            String indentation = line.substring(0, line.lastIndexOf(line.trim()));
             close(indentation.length());
 
             line = line.trim();

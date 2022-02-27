@@ -20,6 +20,14 @@ import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.entity.CustomComposer
 import net.dzikoysk.cdn.entity.Description
 import net.dzikoysk.cdn.entity.Exclude
+import net.dzikoysk.cdn.model.Element
+import net.dzikoysk.cdn.model.Entry
+import net.dzikoysk.cdn.model.Section
+import net.dzikoysk.cdn.serdes.Composer
+import panda.std.Result
+import panda.std.asError
+import panda.std.asSuccess
+import java.lang.reflect.AnnotatedType
 
 class TestConfiguration {
 
@@ -60,6 +68,45 @@ class TestConfiguration {
         @Exclude
         var shouldBeIgnored = Object()
 
+    }
+
+}
+
+class TestConfigurationCustomObject(
+    val id: String,
+    val count: Int
+)
+
+internal class CustomObjectComposer : Composer<TestConfigurationCustomObject> {
+
+    override fun deserialize(
+        settings: CdnSettings,
+        source: Element<*>,
+        type: AnnotatedType,
+        valueValue: TestConfigurationCustomObject?,
+        entryAsRecord: Boolean
+    ): Result<TestConfigurationCustomObject, Exception> {
+        if (source !is Section) {
+            return IllegalArgumentException("Unsupported element").asError()
+        }
+
+        return TestConfigurationCustomObject(
+            id = source.getString("id", valueValue?.id),
+            count = source.getInt("count", valueValue?.count ?: 0)
+        ).asSuccess()
+    }
+
+    override fun serialize(
+        settings: CdnSettings,
+        description: MutableList<String>,
+        key: String,
+        type: AnnotatedType,
+        entity: TestConfigurationCustomObject
+    ): Result<Element<*>, Exception> {
+        val section = Section(description, key)
+        section.append(Entry(emptyList(), "id", entity.id))
+        section.append(Entry(emptyList(), "count", entity.count.toString()))
+        return section.asSuccess()
     }
 
 }

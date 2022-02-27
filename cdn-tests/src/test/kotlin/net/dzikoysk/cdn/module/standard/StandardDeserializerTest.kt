@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn
+package net.dzikoysk.cdn.module.standard
 
+import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.TestConfiguration
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
 
-class CdnDeserializerTest : CdnSpec() {
+class StandardDeserializerTest : CdnSpec() {
 
     @Test
     fun `should deserialize source into scheme`() {
