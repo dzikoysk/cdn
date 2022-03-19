@@ -17,6 +17,7 @@
 package net.dzikoysk.cdn.serdes;
 
 import net.dzikoysk.cdn.CdnSettings;
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
@@ -36,12 +37,12 @@ public interface SimpleDeserializer<T> extends Deserializer<T> {
     @Override
     default Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
         if (source instanceof Piece) {
-            return deserialize(type, ((Piece) source).getValue());
+            return deserialize(type, CdnUtils.destringify(((Piece) source).getValue()));
         }
 
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            return deserialize(type, entryAsRecord ? entry.getRaw() : entry.getPieceValue());
+            return deserialize(type, CdnUtils.destringify(entryAsRecord ? entry.getRaw() : entry.getPieceValue()));
         }
 
         return Result.error(new UnsupportedOperationException(format("Simple deserializer can deserialize only units (%s from %s)", type, source.getClass())));

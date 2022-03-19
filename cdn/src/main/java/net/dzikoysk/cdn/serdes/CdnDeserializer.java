@@ -25,6 +25,7 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
 import panda.std.Blank;
 import panda.std.Option;
+import panda.std.Pair;
 import panda.std.Result;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public final class CdnDeserializer<T> {
         List<AnnotatedMember> members = new ArrayList<>();
         members.addAll(settings.getAnnotationResolver().getFields(instance));
         members.addAll(settings.getAnnotationResolver().getProperties(instance));
-        List<Object> args = new ArrayList<>();
+        List<Pair<Class<?>, Object>> args = new ArrayList<>();
 
         for (AnnotatedMember annotatedMember : members) {
             Result<Option<Object>, ? extends Exception> result = deserializeMember(source, annotatedMember, immutable);
@@ -76,17 +77,25 @@ public final class CdnDeserializer<T> {
                 return result.projectToError();
             }
 
-            result.get().peek(args::add);
+            result.get()
+                    .map(arg -> new Pair<Class<?>, Object>(annotatedMember.getType(), arg))
+                    .peek(args::add);
         }
 
         if (immutable) {
             return Result.attempt(ReflectiveOperationException.class, () -> {
                 Class<?>[] argsTypes = args.stream()
-                        .map(Object::getClass)
+                        .map(Pair::getFirst)
                         .toArray(Class[]::new);
 
+                Object[] values = args.stream()
+                        .map(Pair::getSecond)
+                        .toArray();
+
                 //noinspection unchecked
-                return (I) instance.getClass().getConstructor(argsTypes).newInstance(args.toArray());
+                return (I) instance.getClass()
+                        .getConstructor(argsTypes)
+                        .newInstance(values);
             });
         }
 

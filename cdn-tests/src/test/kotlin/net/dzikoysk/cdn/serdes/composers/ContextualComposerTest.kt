@@ -7,6 +7,7 @@ import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
+import panda.std.reactive.Reference
 import panda.std.reactive.reference
 
 class ContextualComposerTest : CdnSpec() {
@@ -34,9 +35,30 @@ class ContextualComposerTest : CdnSpec() {
         }""".trimIndent(), assertOk(standard.render(ConfigurationWithImmutableSection())))
 
         assertEquals("custom", assertOk(standard.loadAs<ConfigurationWithImmutableSection>(Source.of("""
-        section { 
+        section {
             key: custom
         }"""))).section.get().key)
+    }
+
+    class ConfigurationWithImmutableSectionInMap(
+        val section: Reference<MapSection> = reference(MapSection())
+    ) {
+        @Contextual
+        data class MapSection(
+            val map: Map<String, ImmutableSection> = mapOf("entry" to ImmutableSection())
+        )
+    }
+
+    @Test
+    fun `should serialize data classes as sections in maps`() {
+        assertEquals("custom", assertOk(standard.loadAs<ConfigurationWithImmutableSectionInMap>(Source.of("""
+        section {
+            map {
+                entry {
+                    key: custom
+                }
+            }
+        }"""))).section.get().map["entry"]!!.key)
     }
 
 }
