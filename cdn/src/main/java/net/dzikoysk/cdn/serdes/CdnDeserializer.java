@@ -28,8 +28,10 @@ import panda.std.Option;
 import panda.std.Result;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static panda.std.Option.none;
 import static panda.std.Result.ok;
 
 public final class CdnDeserializer<T> {
@@ -47,7 +49,7 @@ public final class CdnDeserializer<T> {
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, T instance) {
-        return deserializeToSection(source, instance)
+        return deserializeToSection(source, instance, false)
                 .map(result -> {
                     if (result instanceof DeserializationHandler) {
                         DeserializationHandler<T> handler = ObjectUtils.cast(result);
@@ -59,31 +61,47 @@ public final class CdnDeserializer<T> {
                 .mapErr(CdnException::new);
     }
 
-    private <I> Result<I, ? extends Exception> deserializeToSection(Section source, I instance) {
+    private <I> Result<I, ? extends Exception> deserializeToSection(Section source, I instance, boolean immutableParent) {
+        boolean immutable = immutableParent || CdnUtils.isKotlinDataClass(instance.getClass());
+
         List<AnnotatedMember> members = new ArrayList<>();
         members.addAll(settings.getAnnotationResolver().getFields(instance));
         members.addAll(settings.getAnnotationResolver().getProperties(instance));
+        List<Object> args = new ArrayList<>();
 
         for (AnnotatedMember annotatedMember : members) {
-            Result<Blank, ? extends Exception> result = deserializeMember(source, annotatedMember);
+            Result<Option<Object>, ? extends Exception> result = deserializeMember(source, annotatedMember, immutable);
 
             if (result.isErr()) {
                 return result.projectToError();
             }
+
+            result.get().peek(args::add);
+        }
+
+        if (immutable) {
+            return Result.attempt(ReflectiveOperationException.class, () -> {
+                Class<?>[] argsTypes = args.stream()
+                        .map(Object::getClass)
+                        .toArray(Class[]::new);
+
+                //noinspection unchecked
+                return (I) instance.getClass().getConstructor(argsTypes).newInstance(args.toArray());
+            });
         }
 
         return ok(instance);
     }
 
-    private Result<Blank, ? extends Exception> deserializeMember(Section source, AnnotatedMember member) {
+    private Result<Option<Object>, ? extends Exception> deserializeMember(Section source, AnnotatedMember member, boolean immutable) {
         if (member.isIgnored()) {
-            return ok();
+            return ok(none());
         }
 
         Option<Element<?>> elementValue = source.get(member.getName());
 
         if (elementValue.isEmpty()) {
-            return ok();
+            return ok(none());
         }
 
         Element<?> element = elementValue.get();
@@ -96,21 +114,21 @@ public final class CdnDeserializer<T> {
         Option<Object> defaultValue = defaultValueResult.get();
 
         if (defaultValue.isEmpty()) {
-            return ok();
+            return ok(none());
         }
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            return deserializeToSection((Section) element, defaultValue.get()).mapToBlank();
+            return deserializeToSection((Section) element, defaultValue.get(), immutable).map(Option::of);
         }
 
         return CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
                 .flatMap(deserializer -> deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue.get(), false))
                 .peek(value -> {
-                    if (value != Composer.MEMBER_ALREADY_PROCESSED) {
+                    if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
                         member.setValue(value);
                     }
                 })
-                .mapToBlank();
+                .map(Option::of);
     }
 
 }

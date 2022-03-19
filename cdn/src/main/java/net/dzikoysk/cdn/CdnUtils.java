@@ -22,7 +22,7 @@ import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.composers.ContextualComposers;
+import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Result;
 import panda.utilities.ObjectUtils;
@@ -85,7 +85,7 @@ public final class CdnUtils {
         }
 
         if (clazz.isAnnotationPresent(Contextual.class) || type.isAnnotationPresent(Contextual.class) || (member != null && member.isAnnotationPresent(Contextual.class))) {
-            composer = new ContextualComposers();
+            composer = new ContextualComposer();
         }
 
         if (composer == null) {
@@ -162,6 +162,15 @@ public final class CdnUtils {
         }
 
         return method.isAnnotationPresent(Exclude.class);
+    }
+
+    public static boolean isKotlinDataClass(Class<?> clazz) {
+        try {
+            clazz.getMethod("component1");
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
     }
 
     public static String destringify(String raw) {

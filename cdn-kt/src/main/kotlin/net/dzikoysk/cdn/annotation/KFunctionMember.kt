@@ -2,6 +2,7 @@ package net.dzikoysk.cdn.annotation
 
 import net.dzikoysk.cdn.CdnUtils
 import panda.std.Blank
+import panda.std.Blank.BLANK
 import panda.std.Option
 import panda.std.Result
 import panda.std.stream.PandaStream
@@ -21,7 +22,7 @@ internal class KFunctionMember(
 
     override fun setValue(value: Any): Result<Blank, ReflectiveOperationException> =
         Result
-            .attempt(ReflectiveOperationException::class.java) { setter.call(instance, value) }
+            .attempt(ReflectiveOperationException::class.java) { setter.call(instance, value) ?: BLANK }
             .mapToBlank()
 
     override fun getValue(): Result<Option<Any>, ReflectiveOperationException> =

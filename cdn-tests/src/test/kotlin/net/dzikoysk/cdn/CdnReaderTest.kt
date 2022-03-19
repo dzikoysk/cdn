@@ -43,11 +43,11 @@ class CdnReaderTest : CdnSpec() {
         }
         """)))
 
-        val section = result.getSection("section").orNull
+        val section = result.getSection("section").orNull()
         assertNotNull(section)
         assertEquals(listOf("# comment1", "// comment2"), section!!.description)
 
-        val entry = section.getEntry("entry").orNull
+        val entry = section.getEntry("entry").orNull()
         assertNotNull(entry)
         assertEquals("value", entry!!.pieceValue)
     }

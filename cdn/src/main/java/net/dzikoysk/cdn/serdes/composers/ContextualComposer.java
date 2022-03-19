@@ -28,7 +28,7 @@ import panda.std.Result;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
-public final class ContextualComposers implements Composer<Object> {
+public final class ContextualComposer implements Composer<Object> {
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
