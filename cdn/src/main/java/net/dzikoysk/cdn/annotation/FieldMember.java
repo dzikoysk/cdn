@@ -17,6 +17,8 @@
 package net.dzikoysk.cdn.annotation;
 
 import net.dzikoysk.cdn.CdnUtils;
+import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType;
 import org.jetbrains.annotations.NotNull;
 import panda.std.Blank;
 import panda.std.Option;
@@ -70,6 +72,11 @@ public class FieldMember implements AnnotatedMember {
     @Override
     public <A extends Annotation> A getAnnotation(@NotNull Class<A> annotation) {
         return field.getAnnotation(annotation);
+    }
+
+    @Override
+    public TargetType getTargetType() {
+        return new AnnotatedTargetType(field.getAnnotatedType());
     }
 
     @Override

@@ -23,10 +23,9 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.NamedElement;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.serdes.Composer;
+import net.dzikoysk.cdn.serdes.TargetType;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,18 +37,17 @@ import static panda.utilities.StringUtils.EMPTY;
 public final class ListComposer implements Composer<List<Object>> {
 
     @Override
-    public Result<List<Object>, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, List<Object> defaultValue, boolean entryAsRecord) {
+    public Result<List<Object>, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, List<Object> defaultValue, boolean entryAsRecord) {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
 
-            return entry.getPieceValue().trim().endsWith("[]")
+            return CdnUtils.destringify(entry.getPieceValue()).trim().endsWith("[]")
                 ? ok(Collections.emptyList())
                 : error(new UnsupportedOperationException("Cannot deserialize list of " + entry));
         }
 
         Section section = (Section) source;
-        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
-        AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
+        TargetType collectionType = type.getAnnotatedActualTypeArguments()[0];
 
         return CdnUtils.findComposer(settings, collectionType, null)
                 .flatMap(composer -> PandaStream.of(section.getValue())
@@ -60,13 +58,12 @@ public final class ListComposer implements Composer<List<Object>> {
     }
 
     @Override
-    public Result<NamedElement<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, List<Object> entity) {
+    public Result<NamedElement<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, List<Object> entity) {
         if (entity.isEmpty()) {
             return ok(new Entry(description, key, "[]"));
         }
 
-        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
-        AnnotatedType collectionType = annotatedParameterizedType.getAnnotatedActualTypeArguments()[0];
+        TargetType collectionType = type.getAnnotatedActualTypeArguments()[0];
 
         return CdnUtils.findComposer(settings, collectionType, null)
                 .flatMap(serializer -> PandaStream.of(entity)

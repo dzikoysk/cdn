@@ -23,13 +23,11 @@ import net.dzikoysk.cdn.annotation.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
-import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Pair;
 import panda.std.Result;
 import panda.utilities.ObjectUtils;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static panda.std.Option.none;
@@ -130,8 +128,10 @@ public final class CdnDeserializer<T> {
             return deserializeToSection((Section) element, defaultValue.get(), immutable).map(Option::of);
         }
 
-        return CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
-                .flatMap(deserializer -> deserializer.deserialize(settings, element, member.getAnnotatedType(), defaultValue.get(), false))
+        TargetType targetType = member.getTargetType();
+
+        return CdnUtils.findComposer(settings, targetType, member)
+                .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, defaultValue.get(), false))
                 .peek(value -> {
                     if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
                         member.setValue(value);

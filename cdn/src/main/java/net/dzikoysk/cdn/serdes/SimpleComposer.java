@@ -19,7 +19,6 @@ package net.dzikoysk.cdn.serdes;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
 import panda.std.Result;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 public final class SimpleComposer<T> implements Composer<T> {
@@ -33,12 +32,12 @@ public final class SimpleComposer<T> implements Composer<T> {
     }
 
     @Override
-    public Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
+    public Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, T defaultValue, boolean entryAsRecord) {
         return deserializer.deserialize(settings, source, type, defaultValue, entryAsRecord);
     }
 
     @Override
-    public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
+    public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, T entity) {
         return serializer.serialize(settings, description, key, type, entity);
     }
 

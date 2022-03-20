@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.model;
 
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 
 import java.util.List;

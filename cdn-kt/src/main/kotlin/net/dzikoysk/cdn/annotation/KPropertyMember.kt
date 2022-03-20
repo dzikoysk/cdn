@@ -1,11 +1,14 @@
 package net.dzikoysk.cdn.annotation
 
 import net.dzikoysk.cdn.CdnUtils
+import net.dzikoysk.cdn.serdes.TargetType
+import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType
 import panda.std.Blank
 import panda.std.Option
 import panda.std.Result
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
+import java.lang.reflect.ParameterizedType
 import java.util.Arrays
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
@@ -13,7 +16,10 @@ import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaMethod
 
-internal class KPropertyMember(private val instance: Any, private val property: KProperty<*>) : AnnotatedMember {
+internal class KPropertyMember(
+    private val instance: Any,
+    private val property: KProperty<*>
+) : AnnotatedMember, TargetType {
 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(property.javaField, false) || CdnUtils.isIgnored(property.getter.javaMethod)
@@ -45,6 +51,12 @@ internal class KPropertyMember(private val instance: Any, private val property: 
             .`is`(annotation)
             .head()
             .orNull()
+
+    override fun getAnnotatedActualTypeArguments(): Array<TargetType> =
+        AnnotatedTargetType(annotatedType).annotatedActualTypeArguments
+
+    override fun getTargetType(): TargetType =
+        this
 
     override fun getAnnotatedType(): AnnotatedType =
         property.javaGetter?.annotatedReturnType ?: property.javaField!!.annotatedType

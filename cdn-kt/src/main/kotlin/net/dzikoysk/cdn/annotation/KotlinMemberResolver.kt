@@ -1,14 +1,10 @@
 package net.dzikoysk.cdn.annotation
 
-import panda.std.reactive.Reference
 import panda.utilities.StringUtils
 import java.lang.reflect.Field
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
-import kotlin.reflect.KTypeProjection
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.functions
-import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
@@ -41,14 +37,7 @@ class KotlinMemberResolver : MemberResolver {
         instance::class.memberProperties
             .map { Pair(it, findIndex(instance::class.java, it)) }
             .sortedBy { (_, index) -> index }
-            .mapNotNull { (property) ->
-                KPropertyMember(instance, property)
-                /*when {
-                    property is KProperty<*> -> KPropertyMember(instance, property)
-                    property.returnType.isSubtypeOf(Reference::class.createType(listOf(KTypeProjection.STAR))) -> KPropertyMember(instance, property)
-                    else -> null
-                }*/
-            }
+            .map { (property) -> KPropertyMember(instance, property) }
 
     /**
      * This method attempts to recreate order of properties in sources.

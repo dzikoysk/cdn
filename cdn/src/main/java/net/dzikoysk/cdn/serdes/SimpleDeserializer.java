@@ -22,7 +22,6 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import panda.std.Result;
-import java.lang.reflect.AnnotatedType;
 
 import static java.lang.String.format;
 
@@ -35,7 +34,7 @@ import static java.lang.String.format;
 public interface SimpleDeserializer<T> extends Deserializer<T> {
 
     @Override
-    default Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, T defaultValue, boolean entryAsRecord) {
+    default Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, T defaultValue, boolean entryAsRecord) {
         if (source instanceof Piece) {
             return deserialize(type, CdnUtils.destringify(((Piece) source).getValue()));
         }
@@ -48,7 +47,7 @@ public interface SimpleDeserializer<T> extends Deserializer<T> {
         return Result.error(new UnsupportedOperationException(format("Simple deserializer can deserialize only units (%s from %s)", type, source.getClass())));
     }
 
-    default Result<T, Exception> deserialize(AnnotatedType type, String source) {
+    default Result<T, Exception> deserialize(TargetType type, String source) {
         return deserialize(source);
     }
 

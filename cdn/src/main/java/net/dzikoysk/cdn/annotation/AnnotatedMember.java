@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.annotation;
 
+import net.dzikoysk.cdn.serdes.TargetType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Blank;
@@ -38,6 +39,8 @@ public interface AnnotatedMember {
     <A extends Annotation> @NotNull List<A> getAnnotationsByType(@NotNull Class<A> annotation);
 
     <A extends Annotation> @Nullable A getAnnotation(@NotNull Class<A> annotation);
+
+    TargetType getTargetType();
 
     @NotNull AnnotatedType getAnnotatedType();
 

@@ -1,6 +1,8 @@
 package net.dzikoysk.cdn.annotation
 
 import net.dzikoysk.cdn.CdnUtils
+import net.dzikoysk.cdn.serdes.TargetType
+import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType
 import panda.std.Blank
 import panda.std.Blank.BLANK
 import panda.std.Option
@@ -15,7 +17,7 @@ internal class KFunctionMember(
     private val getter: KFunction<*>,
     private val setter: KFunction<*>,
     private val propertyName: String
-) : AnnotatedMember {
+) : AnnotatedMember, TargetType {
 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(setter.javaMethod) || CdnUtils.isIgnored(getter.javaMethod)
@@ -45,6 +47,12 @@ internal class KFunctionMember(
             .`is`(annotation)
             .head()
             .orNull()
+
+    override fun getAnnotatedActualTypeArguments(): Array<TargetType> =
+        AnnotatedTargetType(annotatedType).annotatedActualTypeArguments
+
+    override fun getTargetType(): TargetType =
+        this
 
     override fun getAnnotatedType(): AnnotatedType =
         getter.javaMethod!!.annotatedReturnType

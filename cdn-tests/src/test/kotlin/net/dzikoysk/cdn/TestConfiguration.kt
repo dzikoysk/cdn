@@ -24,10 +24,10 @@ import net.dzikoysk.cdn.model.Element
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serdes.Composer
+import net.dzikoysk.cdn.serdes.TargetType
 import panda.std.Result
 import panda.std.asError
 import panda.std.asSuccess
-import java.lang.reflect.AnnotatedType
 
 class TestConfiguration {
 
@@ -82,7 +82,7 @@ internal class CustomObjectComposer : Composer<TestConfigurationCustomObject> {
     override fun deserialize(
         settings: CdnSettings,
         source: Element<*>,
-        type: AnnotatedType,
+        type: TargetType,
         valueValue: TestConfigurationCustomObject?,
         entryAsRecord: Boolean
     ): Result<TestConfigurationCustomObject, Exception> {
@@ -100,7 +100,7 @@ internal class CustomObjectComposer : Composer<TestConfigurationCustomObject> {
         settings: CdnSettings,
         description: MutableList<String>,
         key: String,
-        type: AnnotatedType,
+        type: TargetType,
         entity: TestConfigurationCustomObject
     ): Result<Element<*>, Exception> {
         val section = Section(description, key)

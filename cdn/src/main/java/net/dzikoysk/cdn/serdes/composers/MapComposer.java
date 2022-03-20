@@ -26,6 +26,8 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.Deserializer;
+import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType;
 import panda.std.Option;
 import panda.std.Pair;
 import panda.std.Result;
@@ -45,15 +47,14 @@ import static panda.std.Result.ok;
 public final class MapComposer implements Composer<Map<Object, Object>> {
 
     @Override
-    public Result<Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Map<Object, Object> entity) {
+    public Result<Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Map<Object, Object> entity) {
         if (entity.isEmpty()) {
             return ok(new Entry(description, key, "[]"));
         }
 
-        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
-        AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-        AnnotatedType keyType = collectionTypes[0];
-        AnnotatedType valueType = collectionTypes[1];
+        TargetType[] collectionTypes = type.getAnnotatedActualTypeArguments();
+        TargetType keyType = collectionTypes[0];
+        TargetType valueType = collectionTypes[1];
 
         // umm... I know
         return CdnUtils.findComposer(settings, keyType, null)
@@ -77,11 +78,11 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
     }
 
     @Override
-    public Result<Map<Object, Object>, Exception> deserialize(CdnSettings settings, Element<?> source, AnnotatedType type, Map<Object, Object> defaultValue, boolean entryAsRecord) {
+    public Result<Map<Object, Object>, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, Map<Object, Object> defaultValue, boolean entryAsRecord) {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
             // String value = entryAsRecord ? entry.get() : entry.getValue();
-            String value = entry.getPieceValue();
+            String value = CdnUtils.destringify(entry.getPieceValue());
 
             if (value.equals("[]") /* || entry.getRecord().equals(value) ?what the f is this even doing here? */) {
                 return ok(Collections.emptyMap());
@@ -91,10 +92,9 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
         }
 
         Section section = (Section) source;
-        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) type;
-        AnnotatedType[] collectionTypes = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-        AnnotatedType keyType = collectionTypes[0];
-        AnnotatedType valueType = collectionTypes[1];
+        TargetType[] collectionTypes = type.getAnnotatedActualTypeArguments();
+        TargetType keyType = collectionTypes[0];
+        TargetType valueType = collectionTypes[1];
 
         return CdnUtils.findComposer(settings, keyType, null)
                 .merge(CdnUtils.findComposer(settings, valueType, null), Pair::of)
@@ -109,9 +109,9 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
     private Result<Pair<Object, Object>, Exception> deserializeElement(
             CdnSettings settings,
             Deserializer<?> keyDeserializer,
-            AnnotatedType keyType,
+            TargetType keyType,
             Deserializer<?> valueDeserializer,
-            AnnotatedType valueType,
+            TargetType valueType,
             Element<?> element,
             boolean entryAsRecord
     ) {
@@ -131,9 +131,9 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
             CdnSettings settings,
             String name,
             Deserializer<?> keyDeserializer,
-            AnnotatedType keyType,
+            TargetType keyType,
             Deserializer<?> valueDeserializer,
-            AnnotatedType valueType,
+            TargetType valueType,
             Element<?> source,
             boolean entryAsRecord
     ) {

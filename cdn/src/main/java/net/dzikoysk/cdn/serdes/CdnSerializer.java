@@ -99,9 +99,11 @@ public final class CdnSerializer {
             return serialize(propertyValue.get(), section).mapToBlank();
         }
 
+        TargetType targetType = member.getTargetType();
+
         return propertyValue
-                .map(value -> CdnUtils.findComposer(settings, member.getType(), member.getAnnotatedType(), member)
-                        .flatMap(serializer -> serializer.serialize(settings, description, member.getName(), member.getAnnotatedType(), value))
+                .map(value -> CdnUtils.findComposer(settings, targetType, member)
+                        .flatMap(serializer -> serializer.serialize(settings, description, member.getName(), targetType, value))
                         .peek(output::append)
                         .mapToBlank())
                 .orElseGet(Result.ok());

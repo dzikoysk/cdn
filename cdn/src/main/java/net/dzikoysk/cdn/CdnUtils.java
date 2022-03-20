@@ -22,6 +22,8 @@ import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
+import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType;
 import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Result;
@@ -47,11 +49,15 @@ public final class CdnUtils {
     private CdnUtils() {}
 
     public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) {
-        return findComposer(settings, toClass(type.getType()), type, member);
+        return findComposer(settings, new AnnotatedTargetType(type), member);
+    }
+
+    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, TargetType type, @Nullable AnnotatedMember member) {
+        return findComposer(settings, type.getType(), type, member);
     }
 
     @SuppressWarnings("unchecked")
-    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, Class<?> clazz, AnnotatedType type, @Nullable AnnotatedMember member) {
+    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, Class<?> clazz, TargetType type, @Nullable AnnotatedMember member) {
         Composer<?> composer = null;
 
         if (member != null && member.isAnnotationPresent(CustomComposer.class)) {

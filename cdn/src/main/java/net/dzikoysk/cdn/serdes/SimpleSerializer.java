@@ -22,7 +22,6 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import panda.std.Result;
 import panda.utilities.StringUtils;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ import java.util.List;
 public interface SimpleSerializer<T> extends Serializer<T> {
 
     @Override
-    default Result<Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, T entity) {
+    default Result<Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, T entity) {
         return serialize(entity)
                 .map(result -> StringUtils.isEmpty(key)
                         ? new Piece(result)

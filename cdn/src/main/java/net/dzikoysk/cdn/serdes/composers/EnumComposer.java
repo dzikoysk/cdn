@@ -22,8 +22,8 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.SimpleDeserializer;
+import net.dzikoysk.cdn.serdes.TargetType;
 import panda.std.Result;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -34,7 +34,7 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    public Result<Enum<?>, Exception> deserialize(AnnotatedType type, String source) {
+    public Result<Enum<?>, Exception> deserialize(TargetType type, String source) {
         return searchEnum((Class<Enum<?>>) type.getType(), source);
     }
 
@@ -54,7 +54,7 @@ public final class EnumComposer implements Composer<Enum<?>>, SimpleDeserializer
     }
 
     @Override
-    public Result<? extends Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, AnnotatedType type, Enum<?> entity) {
+    public Result<? extends Element<?>, Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Enum<?> entity) {
         return ok(key.isEmpty() ? new Piece(entity.name()) : new Entry(description, key, entity.name()));
     }
     
