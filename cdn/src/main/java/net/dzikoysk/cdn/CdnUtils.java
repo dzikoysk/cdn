@@ -111,11 +111,32 @@ public final class CdnUtils {
             return toClass(((ParameterizedType) type).getRawType());
         }
 
+        String typeName = type.getTypeName();
+
         try {
-            return Class.forName(type.getTypeName());
+            if (typeName.contains(".")) {
+                return Class.forName(type.getTypeName());
+            } else {
+                return parsePrimitiveType(typeName);
+            }
         }
         catch (ClassNotFoundException classNotFoundException) {
             throw new IllegalArgumentException("Cannot find generic type " + type);
+        }
+    }
+
+    public static Class<?> parsePrimitiveType(String name) throws ClassNotFoundException {
+        switch (name) {
+            case "boolean": return boolean.class;
+            case "byte": return byte.class;
+            case "short": return short.class;
+            case "int": return int.class;
+            case "long": return long.class;
+            case "float": return float.class;
+            case "double": return double.class;
+            case "char": return char.class;
+            case "void": return void.class;
+            default: throw new ClassNotFoundException("Unknown primitive type " + name);
         }
     }
 
