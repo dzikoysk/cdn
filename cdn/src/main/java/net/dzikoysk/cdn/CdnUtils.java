@@ -16,14 +16,14 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.annotation.AnnotatedMember;
+import net.dzikoysk.cdn.reflect.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.TargetType;
-import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType;
+import net.dzikoysk.cdn.reflect.TargetType;
+import net.dzikoysk.cdn.reflect.AnnotatedTargetType;
 import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Result;
@@ -49,7 +49,7 @@ public final class CdnUtils {
     private CdnUtils() {}
 
     public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) {
-        return findComposer(settings, new AnnotatedTargetType(type), member);
+        return findComposer(settings, new AnnotatedTargetType(type, settings.getAnnotationResolver()), member);
     }
 
     public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, TargetType type, @Nullable AnnotatedMember member) {

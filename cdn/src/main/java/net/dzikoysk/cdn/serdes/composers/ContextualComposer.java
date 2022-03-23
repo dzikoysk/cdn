@@ -23,7 +23,7 @@ import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.CdnDeserializer;
 import net.dzikoysk.cdn.serdes.CdnSerializer;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 import java.util.List;
 

@@ -20,7 +20,7 @@ import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 import panda.std.reactive.Reference;
 import panda.std.reactive.ReferenceUtils;

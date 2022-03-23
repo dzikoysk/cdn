@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.annotation;
+package net.dzikoysk.cdn.reflect;
 
 import net.dzikoysk.cdn.CdnUtils;
 import org.jetbrains.annotations.NotNull;
@@ -28,34 +28,34 @@ import java.util.List;
 public class DefaultMemberResolver implements MemberResolver {
 
     @Override
-    public AnnotatedMember fromField(@NotNull Object instance, @NotNull Field field) {
-        return new FieldMember(instance, field);
+    public AnnotatedMember fromField(@NotNull Class<?> type, @NotNull Field field) {
+        return new FieldMember(field, this);
     }
 
     @Override
-    public AnnotatedMember fromProperty(@NotNull Object instance, @NotNull String propertyName) throws NoSuchMethodException {
-        Method getter = instance.getClass().getMethod("get" + propertyName);
-        Method setter = instance.getClass().getMethod("set" + propertyName, getter.getReturnType());
+    public AnnotatedMember fromProperty(@NotNull Class<?> type, @NotNull String propertyName) throws NoSuchMethodException {
+        Method getter = type.getMethod("get" + propertyName);
+        Method setter = type.getMethod("set" + propertyName, getter.getReturnType());
 
-        return new MethodMember(instance, setter, getter);
+        return new MethodMember(setter, getter, this);
     }
 
     @Override
-    public List<AnnotatedMember> getFields(@NotNull Object instance) {
-        return PandaStream.of(instance.getClass().getFields())
-                .map(field -> fromField(instance,field))
+    public List<AnnotatedMember> getFields(@NotNull Class<?> type) {
+        return PandaStream.of(type.getFields())
+                .map(field -> fromField(type, field))
                 .toList();
     }
 
     @Override
-    public List<AnnotatedMember> getProperties(@NotNull Object instance) {
-        return PandaStream.of(instance.getClass().getMethods())
+    public List<AnnotatedMember> getProperties(@NotNull Class<?> type) {
+        return PandaStream.of(type.getMethods())
                 .filterNot(CdnUtils::isIgnored)
                 .map(Method::getName)
                 .filter(name -> name.startsWith("get"))
                 .map(StringUtils::capitalize)
                 .map(name -> name.substring(3))
-                .flatMap(name -> Option.attempt(NoSuchMethodException.class, () -> fromProperty(instance, name)))
+                .flatMap(name -> Option.attempt(NoSuchMethodException.class, () -> fromProperty(type, name)))
                 .toList();
     }
 

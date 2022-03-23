@@ -18,6 +18,7 @@ package net.dzikoysk.cdn.serdes;
 
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 import java.util.List;
 

@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn;
 
-import net.dzikoysk.cdn.annotation.DefaultMemberResolver;
-import net.dzikoysk.cdn.annotation.MemberResolver;
+import net.dzikoysk.cdn.reflect.DefaultMemberResolver;
+import net.dzikoysk.cdn.reflect.MemberResolver;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.Modules;
 import net.dzikoysk.cdn.serdes.Composer;

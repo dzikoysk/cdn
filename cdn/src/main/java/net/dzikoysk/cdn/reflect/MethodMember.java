@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.annotation;
+package net.dzikoysk.cdn.reflect;
 
 import net.dzikoysk.cdn.CdnUtils;
-import net.dzikoysk.cdn.serdes.TargetType;
-import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType;
 import org.jetbrains.annotations.NotNull;
 import panda.std.Blank;
 import panda.std.Option;
@@ -31,14 +29,14 @@ import java.util.List;
 
 public class MethodMember implements AnnotatedMember {
 
-    private final Object instance;
     private final Method setter;
     private final Method getter;
+    private final MemberResolver resolver;
 
-    public MethodMember(Object instance, Method setter, Method getter) {
-        this.instance  = instance;
+    public MethodMember(Method setter, Method getter, MemberResolver resolver) {
         this.setter = setter;
         this.getter = getter;
+        this.resolver = resolver;
     }
 
     @Override
@@ -47,12 +45,12 @@ public class MethodMember implements AnnotatedMember {
     }
 
     @Override
-    public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object value) {
+    public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
         return Result.attempt(ReflectiveOperationException.class, () -> setter.invoke(instance, value)).mapToBlank();
     }
 
     @Override
-    public Result<Option<Object>, ReflectiveOperationException> getValue() {
+    public Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance) {
         return Result.attempt(ReflectiveOperationException.class, () -> Option.of(getter.invoke(instance)));
     }
 
@@ -73,7 +71,7 @@ public class MethodMember implements AnnotatedMember {
 
     @Override
     public TargetType getTargetType() {
-        return new AnnotatedTargetType(getAnnotatedType());
+        return new AnnotatedTargetType(getAnnotatedType(), resolver);
     }
 
     @Override
@@ -89,11 +87,6 @@ public class MethodMember implements AnnotatedMember {
     @Override
     public @NotNull String getName() {
         return CdnUtils.getPropertyNameFromMethod(getter.getName());
-    }
-
-    @Override
-    public @NotNull Object getInstance() {
-        return instance;
     }
 
 }

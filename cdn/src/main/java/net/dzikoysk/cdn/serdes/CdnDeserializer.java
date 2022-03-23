@@ -19,10 +19,11 @@ package net.dzikoysk.cdn.serdes;
 import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
-import net.dzikoysk.cdn.annotation.AnnotatedMember;
+import net.dzikoysk.cdn.reflect.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Section;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Option;
 import panda.std.Pair;
 import panda.std.Result;
@@ -48,7 +49,7 @@ public final class CdnDeserializer<T> {
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, T instance) {
-        return deserializeToSection(source, instance, false)
+        return deserializeToSection(source, false, instance)
                 .map(result -> {
                     if (result instanceof DeserializationHandler) {
                         DeserializationHandler<T> handler = ObjectUtils.cast(result);
@@ -60,16 +61,17 @@ public final class CdnDeserializer<T> {
                 .mapErr(CdnException::new);
     }
 
-    private <I> Result<I, ? extends Exception> deserializeToSection(Section source, I instance, boolean immutableParent) {
-        boolean immutable = immutableParent || CdnUtils.isKotlinDataClass(instance.getClass());
+    private <I> Result<I, ? extends Exception> deserializeToSection(Section source, boolean immutableParent, I instance) {
+        Class<?> type = instance.getClass();
+        boolean immutable = immutableParent || CdnUtils.isKotlinDataClass(type);
 
         List<AnnotatedMember> members = new ArrayList<>();
-        members.addAll(settings.getAnnotationResolver().getFields(instance));
-        members.addAll(settings.getAnnotationResolver().getProperties(instance));
+        members.addAll(settings.getAnnotationResolver().getFields(type));
+        members.addAll(settings.getAnnotationResolver().getProperties(type));
         List<Pair<Class<?>, Object>> args = new ArrayList<>();
 
         for (AnnotatedMember annotatedMember : members) {
-            Result<Option<Object>, ? extends Exception> result = deserializeMember(source, annotatedMember, immutable);
+            Result<Option<Object>, ? extends Exception> result = deserializeMember(source, immutable, annotatedMember, instance);
 
             if (result.isErr()) {
                 return result.projectToError();
@@ -100,7 +102,7 @@ public final class CdnDeserializer<T> {
         return ok(instance);
     }
 
-    private Result<Option<Object>, ? extends Exception> deserializeMember(Section source, AnnotatedMember member, boolean immutable) {
+    private Result<Option<Object>, ? extends Exception> deserializeMember(Section source, boolean immutable, AnnotatedMember member, Object instance) {
         if (member.isIgnored()) {
             return ok(none());
         }
@@ -112,7 +114,7 @@ public final class CdnDeserializer<T> {
         }
 
         Element<?> element = elementValue.get();
-        Result<Option<Object>, ReflectiveOperationException> defaultValueResult = member.getValue();
+        Result<Option<Object>, ReflectiveOperationException> defaultValueResult = member.getValue(instance);
 
         if (defaultValueResult.isErr()) {
             return defaultValueResult.projectToError();
@@ -125,7 +127,7 @@ public final class CdnDeserializer<T> {
         }
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            return deserializeToSection((Section) element, defaultValue.get(), immutable).map(Option::of);
+            return deserializeToSection((Section) element, immutable, defaultValue.get()).map(Option::of);
         }
 
         TargetType targetType = member.getTargetType();
@@ -134,7 +136,7 @@ public final class CdnDeserializer<T> {
                 .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, defaultValue.get(), false))
                 .peek(value -> {
                     if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
-                        member.setValue(value);
+                        member.setValue(instance, value);
                     }
                 })
                 .map(Option::of);

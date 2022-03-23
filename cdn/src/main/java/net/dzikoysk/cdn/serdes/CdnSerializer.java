@@ -19,13 +19,14 @@ package net.dzikoysk.cdn.serdes;
 import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
-import net.dzikoysk.cdn.annotation.AnnotatedMember;
+import net.dzikoysk.cdn.reflect.AnnotatedMember;
 import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.Description;
 import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.model.Configuration;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
@@ -50,12 +51,13 @@ public final class CdnSerializer {
     }
 
     public <S extends Section> Result<S, CdnException> serialize(Object entity, S output) {
+        Class<?> type = entity.getClass();
         List<AnnotatedMember> members = new ArrayList<>();
-        members.addAll(settings.getAnnotationResolver().getFields(entity));
-        members.addAll(settings.getAnnotationResolver().getProperties(entity));
+        members.addAll(settings.getAnnotationResolver().getFields(type));
+        members.addAll(settings.getAnnotationResolver().getProperties(type));
 
         for (AnnotatedMember annotatedMember : members) {
-            Result<Blank, ? extends Exception> serializeResult = serializeMember(annotatedMember, output);
+            Result<Blank, ? extends Exception> serializeResult = serializeMember(output, annotatedMember, entity);
 
             if (serializeResult.isErr()) {
                 return serializeResult
@@ -67,12 +69,12 @@ public final class CdnSerializer {
         return ok(output);
     }
 
-    private Result<Blank, ? extends Exception> serializeMember(AnnotatedMember member, Section output)  {
+    private Result<Blank, ? extends Exception> serializeMember(Section output, AnnotatedMember member, Object instance)  {
         if (member.isIgnored()) {
             return ok();
         }
 
-        Result<Option<Object>, ReflectiveOperationException> propertyValueResult = member.getValue();
+        Result<Option<Object>, ReflectiveOperationException> propertyValueResult = member.getValue(instance);
 
         if (propertyValueResult.isErr()) {
             return error(propertyValueResult.getError());

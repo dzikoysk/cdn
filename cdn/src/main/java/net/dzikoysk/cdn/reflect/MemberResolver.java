@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.annotation;
+package net.dzikoysk.cdn.reflect;
 
 import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
@@ -22,12 +22,12 @@ import java.util.List;
 
 public interface MemberResolver {
 
-    AnnotatedMember fromField(@NotNull Object instance, @NotNull Field field);
+    AnnotatedMember fromField(@NotNull Class<?> type, @NotNull Field field);
 
-    AnnotatedMember fromProperty(@NotNull Object instance, @NotNull String propertyName) throws NoSuchMethodException;
+    AnnotatedMember fromProperty(@NotNull Class<?> type, @NotNull String propertyName) throws NoSuchMethodException;
 
-    List<AnnotatedMember> getFields(@NotNull Object instance);
+    List<AnnotatedMember> getFields(@NotNull Class<?> type);
 
-    List<AnnotatedMember> getProperties(@NotNull Object instance);
+    List<AnnotatedMember> getProperties(@NotNull Class<?> type);
 
 }

@@ -19,12 +19,12 @@ class ContextualComposerTest : CdnSpec() {
 
     @Test
     fun `should serialize data classes`() {
-        assertEquals("key: value", assertOk(standard.render(ImmutableSection())))
+        assertEquals("key: value", assertOk(standard.render(ImmutableSection("value"))))
         assertEquals("custom", assertOk(standard.loadAs<ImmutableSection>(Source.of("key: custom"))).key)
     }
 
     class ConfigurationWithImmutableSection {
-        val section = reference(ImmutableSection())
+        val section = reference(ImmutableSection("value"))
     }
 
     @Test
@@ -45,7 +45,7 @@ class ContextualComposerTest : CdnSpec() {
     ) {
         @Contextual
         data class MapSection(
-            val map: Map<String, ImmutableSection> = mapOf("entry" to ImmutableSection())
+            val map: Map<String, ImmutableSection> = mapOf("entry" to ImmutableSection("value"))
         )
     }
 

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.dzikoysk.cdn.annotation;
+package net.dzikoysk.cdn.reflect;
 
-import net.dzikoysk.cdn.serdes.TargetType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Blank;
@@ -30,9 +29,9 @@ public interface AnnotatedMember {
 
     boolean isIgnored();
 
-    Result<Blank, ReflectiveOperationException> setValue(@NotNull Object value);
+    Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value);
 
-    Result<Option<Object>, ReflectiveOperationException> getValue();
+    Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance);
 
     boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotation);
 
@@ -47,7 +46,5 @@ public interface AnnotatedMember {
     @NotNull Class<?> getType();
 
     @NotNull String getName();
-
-    @NotNull Object getInstance();
 
 }

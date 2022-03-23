@@ -1,6 +1,6 @@
 package net.dzikoysk.cdn
 
-import net.dzikoysk.cdn.annotation.KotlinMemberResolver
+import net.dzikoysk.cdn.reflect.KotlinMemberResolver
 import net.dzikoysk.cdn.source.Source
 import panda.std.Result
 

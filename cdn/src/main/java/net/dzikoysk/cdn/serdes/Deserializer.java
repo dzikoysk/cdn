@@ -18,8 +18,8 @@ package net.dzikoysk.cdn.serdes;
 
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.model.Element;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
-import java.lang.reflect.AnnotatedType;
 
 /**
  * Represents process of converting configuration element into the Java object

@@ -24,7 +24,7 @@ import net.dzikoysk.cdn.model.Element
 import net.dzikoysk.cdn.model.Entry
 import net.dzikoysk.cdn.model.Section
 import net.dzikoysk.cdn.serdes.Composer
-import net.dzikoysk.cdn.serdes.TargetType
+import net.dzikoysk.cdn.reflect.TargetType
 import panda.std.Result
 import panda.std.asError
 import panda.std.asSuccess

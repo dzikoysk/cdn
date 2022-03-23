@@ -1,4 +1,4 @@
-package net.dzikoysk.cdn.annotation
+package net.dzikoysk.cdn.reflect
 
 import panda.utilities.StringUtils
 import java.lang.reflect.Field
@@ -10,34 +10,35 @@ import kotlin.reflect.jvm.javaField
 
 class KotlinMemberResolver : MemberResolver {
 
-    override fun fromField(instance: Any, field: Field): AnnotatedMember =
-        FieldMember(instance, field)
+    override fun fromField(type: Class<*>, field: Field): AnnotatedMember =
+        FieldMember(field, this)
 
-    override fun fromProperty(instance: Any, propertyName: String) : AnnotatedMember {
-        val find = instance::class.memberProperties.find { it.name == propertyName }
+    override fun fromProperty(type: Class<*>, propertyName: String) : AnnotatedMember {
+        val kType = type.kotlin
+        val find = type.kotlin.memberProperties.find { it.name == propertyName }
 
         if (find !is KMutableProperty<*>) {
-            val getter = instance::class.functions.find { it.name == "get" + StringUtils.capitalize(propertyName) }
-            val setter = instance::class.functions.find { it.name == "set" + StringUtils.capitalize(propertyName) }
+            val getter = kType.functions.find { it.name == "get" + StringUtils.capitalize(propertyName) }
+            val setter = kType.functions.find { it.name == "set" + StringUtils.capitalize(propertyName) }
 
             if (getter == null || setter == null) {
                 throw NoSuchMethodException()
             }
 
-            return KFunctionMember(instance, getter, setter, propertyName)
+            return KFunctionMember(propertyName, getter, setter, this)
         }
 
-        return KPropertyMember(instance, find)
+        return KPropertyMember(find, this)
     }
 
-    override fun getFields(instance: Any): List<AnnotatedMember> =
+    override fun getFields(type: Class<*>): List<AnnotatedMember> =
         emptyList() // properties already contain fields, so we don't want to duplicate these references
 
-    override fun getProperties(instance: Any): List<AnnotatedMember> =
-        instance::class.memberProperties
-            .map { Pair(it, findIndex(instance::class.java, it)) }
+    override fun getProperties(type: Class<*>): List<AnnotatedMember> =
+        type.kotlin.memberProperties
+            .map { Pair(it, findIndex(type, it)) }
             .sortedBy { (_, index) -> index }
-            .map { (property) -> KPropertyMember(instance, property) }
+            .map { (property) -> KPropertyMember(property, this) }
 
     /**
      * This method attempts to recreate order of properties in sources.

@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 
 import static java.lang.String.format;

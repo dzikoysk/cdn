@@ -22,7 +22,7 @@ import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.SimpleDeserializer;
-import net.dzikoysk.cdn.serdes.TargetType;
+import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 import java.util.List;
 

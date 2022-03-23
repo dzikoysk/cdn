@@ -1,8 +1,6 @@
-package net.dzikoysk.cdn.annotation
+package net.dzikoysk.cdn.reflect
 
 import net.dzikoysk.cdn.CdnUtils
-import net.dzikoysk.cdn.serdes.TargetType
-import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType
 import panda.std.Blank
 import panda.std.Blank.BLANK
 import panda.std.Option
@@ -13,21 +11,21 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.*
 
 internal class KFunctionMember(
-    private val instance: Any,
+    private val propertyName: String,
     private val getter: KFunction<*>,
     private val setter: KFunction<*>,
-    private val propertyName: String
-) : AnnotatedMember, TargetType {
+    private val resolver: MemberResolver
+) : AnnotatedMember {
 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(setter.javaMethod) || CdnUtils.isIgnored(getter.javaMethod)
 
-    override fun setValue(value: Any): Result<Blank, ReflectiveOperationException> =
+    override fun setValue(instance: Any, value: Any): Result<Blank, ReflectiveOperationException> =
         Result
             .attempt(ReflectiveOperationException::class.java) { setter.call(instance, value) ?: BLANK }
             .mapToBlank()
 
-    override fun getValue(): Result<Option<Any>, ReflectiveOperationException> =
+    override fun getValue(instance: Any): Result<Option<Any>, ReflectiveOperationException> =
         Result.attempt(ReflectiveOperationException::class.java) {
             Option.of(getter.call(instance))
         }
@@ -48,11 +46,8 @@ internal class KFunctionMember(
             .head()
             .orNull()
 
-    override fun getAnnotatedActualTypeArguments(): Array<TargetType> =
-        AnnotatedTargetType(annotatedType).annotatedActualTypeArguments
-
     override fun getTargetType(): TargetType =
-        this
+        AnnotatedTargetType(annotatedType, resolver)
 
     override fun getAnnotatedType(): AnnotatedType =
         getter.javaMethod!!.annotatedReturnType
@@ -62,8 +57,5 @@ internal class KFunctionMember(
 
     override fun getName(): String =
         propertyName
-
-    override fun getInstance(): Any =
-        instance
 
 }

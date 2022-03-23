@@ -1,14 +1,11 @@
-package net.dzikoysk.cdn.annotation
+package net.dzikoysk.cdn.reflect
 
 import net.dzikoysk.cdn.CdnUtils
-import net.dzikoysk.cdn.serdes.TargetType
-import net.dzikoysk.cdn.serdes.TargetType.AnnotatedTargetType
 import panda.std.Blank
 import panda.std.Option
 import panda.std.Result
 import panda.std.stream.PandaStream
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.ParameterizedType
 import java.util.Arrays
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
@@ -17,19 +14,19 @@ import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaMethod
 
 internal class KPropertyMember(
-    private val instance: Any,
-    private val property: KProperty<*>
-) : AnnotatedMember, TargetType {
+    private val property: KProperty<*>,
+    private val resolver: MemberResolver
+) : AnnotatedMember {
 
     override fun isIgnored(): Boolean =
         CdnUtils.isIgnored(property.javaField, false) || CdnUtils.isIgnored(property.getter.javaMethod)
 
-    override fun setValue(value: Any): Result<Blank, ReflectiveOperationException> =
+    override fun setValue(instance: Any, value: Any): Result<Blank, ReflectiveOperationException> =
         Result
             .attempt(ReflectiveOperationException::class.java) { (property as KMutableProperty).setter.call(instance, value) }
             .mapToBlank()
 
-    override fun getValue(): Result<Option<Any>, ReflectiveOperationException> =
+    override fun getValue(instance: Any): Result<Option<Any>, ReflectiveOperationException> =
         Result.attempt(ReflectiveOperationException::class.java) {
             Option.of(property.getter.call(instance))
         }
@@ -52,11 +49,8 @@ internal class KPropertyMember(
             .head()
             .orNull()
 
-    override fun getAnnotatedActualTypeArguments(): Array<TargetType> =
-        AnnotatedTargetType(annotatedType).annotatedActualTypeArguments
-
     override fun getTargetType(): TargetType =
-        this
+        AnnotatedTargetType(annotatedType, resolver)
 
     override fun getAnnotatedType(): AnnotatedType =
         property.javaGetter?.annotatedReturnType ?: property.javaField!!.annotatedType
@@ -66,8 +60,5 @@ internal class KPropertyMember(
 
     override fun getName(): String =
         property.name
-
-    override fun getInstance(): Any =
-        instance
 
 }
