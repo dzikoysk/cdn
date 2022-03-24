@@ -77,9 +77,11 @@ public final class CdnDeserializer<T> {
                 return result.projectToError();
             }
 
-            result.get()
-                    .map(arg -> new Pair<Class<?>, Object>(annotatedMember.getType(), arg))
-                    .peek(args::add);
+            Object argumentValue = result.get()
+                    .orElse(() -> annotatedMember.getValue(instance).orElseThrow(RuntimeException::new))
+                    .orNull();
+
+            args.add(new Pair<>(annotatedMember.getType(), argumentValue));
         }
 
         if (immutable) {
