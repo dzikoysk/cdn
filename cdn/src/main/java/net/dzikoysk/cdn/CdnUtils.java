@@ -241,6 +241,10 @@ public final class CdnUtils {
         return raw;
     }
 
+    public static String stringify(boolean enforce, String value) {
+        return enforce ? forceStringify(value) : value;
+    }
+
     public static String forceStringify(String value) {
         if (!isStringified(value)) {
             return "\"" + value + "\"";

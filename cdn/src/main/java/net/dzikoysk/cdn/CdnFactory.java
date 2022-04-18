@@ -64,7 +64,7 @@ public final class CdnFactory {
      */
     public static @NotNull Cdn createYamlLike() {
         return Cdn.configure()
-                .registerModule(new YamlLikeModule())
+                .registerModule(new YamlLikeModule(true))
                 .build();
     }
 

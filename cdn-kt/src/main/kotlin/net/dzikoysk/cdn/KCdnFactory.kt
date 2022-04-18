@@ -40,7 +40,7 @@ object KCdnFactory {
     fun createYamlLike(): Cdn =
         Cdn.configure()
             .registerKotlinModule()
-            .registerModule(YamlLikeModule())
+            .registerModule(YamlLikeModule(true))
             .build()
 
 }

@@ -49,9 +49,9 @@ internal class YamlLikeListComposerTest : CdnSpec() {
         val source = cfg("""
         elements:
           - :
-            name: custom 1
+            name: "custom 1"
           - :
-            name: custom 2
+            name: "custom 2"
         """)
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithListOfValues>(Source.of(source)))
@@ -75,7 +75,7 @@ internal class YamlLikeListComposerTest : CdnSpec() {
         list:
           - "a:"
           - "b {"
-          - c
+          - "c"
         """)
 
         assertEquals(expectedRender, assertOk(yamlLike.render(configuration)))

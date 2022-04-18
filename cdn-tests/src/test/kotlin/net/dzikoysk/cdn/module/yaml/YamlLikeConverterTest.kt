@@ -39,9 +39,9 @@ internal class YamlLikeConverterTest : CdnSpec() {
         assertEquals("""
         statistics:
           
-          slot: 7
+          slot: "7"
           
-          name: custom
+          name: "custom"
         """.trimIndent(), source)
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithEmptyDescription>(Source.of(source)))

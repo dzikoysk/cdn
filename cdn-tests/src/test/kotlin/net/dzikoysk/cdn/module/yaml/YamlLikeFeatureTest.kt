@@ -25,7 +25,7 @@ import panda.std.ResultAssertions.assertOk
 
 class YamlLikeFeatureTest : CdnSpec() {
 
-    private val converter = YamlLikeModule()
+    private val converter = YamlLikeModule(true)
 
     @Test
     fun `should convert indentation to brackets`() {
@@ -96,7 +96,7 @@ class YamlLikeFeatureTest : CdnSpec() {
     fun `should compose indentation based source`() {
         assertEquals(cfg("""
         section:
-          key: default value
+          key: "default value"
         """), assertOk(yamlLike.render(IndentationTestConfiguration())))
     }
 

@@ -57,8 +57,8 @@ class EnumComposerTest : CdnSpec() {
     fun `should support list of enums`() {
         val source = cfg("""
         elements:
-          - VAL
-          - VAR
+          - "VAL"
+          - "VAR"
         """)
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithListOfEnums>(Source.of(source)))
@@ -74,7 +74,7 @@ class EnumComposerTest : CdnSpec() {
     fun `should support maps with enums`() {
         val source = cfg("""
         enums:
-          VAL: VAR
+          VAL: "VAR"
         """)
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithEnumMap>(Source.of(source)))

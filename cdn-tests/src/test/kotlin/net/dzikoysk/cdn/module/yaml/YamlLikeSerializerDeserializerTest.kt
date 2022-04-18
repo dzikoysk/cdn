@@ -29,23 +29,23 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
     fun `should serialize entity with indentation based formatting`() {
         assertEquals(cfg("""
         # Root entry description
-        rootEntry: value value
+        rootEntry: "value value"
 
         # Section description
         section:
           # Random value
-          subEntry: -1
+          subEntry: "-1"
           # List description
           list:
-            - record
-            - record : with : semicolons
+            - "record"
+            - "record : with : semicolons"
           # Custom object
           custom:
-            id: rtx
-            count: 3070
+            id: "rtx"
+            count: "3070"
         
         # Class
-        clazz: java.lang.String
+        clazz: "java.lang.String"
         """), assertOk(yamlLike.render(TestConfiguration())))
     }
 

@@ -21,16 +21,18 @@ import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.model.Piece;
-import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.shared.ArrayValueVisitor;
 import net.dzikoysk.cdn.module.standard.StandardModule;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import org.jetbrains.annotations.Nullable;
+import panda.std.Blank;
+import panda.std.Result;
 import panda.utilities.StringUtils;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
 import static net.dzikoysk.cdn.module.standard.StandardOperators.ARRAY;
+import static panda.std.Result.ok;
 
 /**
  * Implementation of YAML-like format. Supported features:
@@ -43,7 +45,14 @@ import static net.dzikoysk.cdn.module.standard.StandardOperators.ARRAY;
 public final class YamlLikeModule extends StandardModule {
 
     private static final Pattern DEFAULT_COMMENT_OPENING = Pattern.compile("//");
-    private static final ArrayValueVisitor ARRAY_VALUE_VISITOR = new ArrayValueVisitor(ARRAY + " ", "");
+
+    private final boolean enforceQuotes;
+    private final ArrayValueVisitor arrayValueVisitor;
+
+    public YamlLikeModule(boolean enforceQuotes) {
+        this.enforceQuotes = enforceQuotes;
+        this.arrayValueVisitor = new ArrayValueVisitor(ARRAY + " ", "", enforceQuotes);
+    }
 
     @Override
     public String convertToCdn(String source) {
@@ -77,8 +86,18 @@ public final class YamlLikeModule extends StandardModule {
     }
 
     @Override
+    public Result<Blank, Exception> renderEntry(StringBuilder output, String indentation, @Nullable Section parent, Entry element) {
+        output.append(indentation)
+                .append(element.getName())
+                .append(": ")
+                .append(element.getPieceValue().trim().equals("[]") ? "[]" : CdnUtils.stringify(enforceQuotes, element.getPieceValue()))
+                .append(StandardOperators.LINE_SEPARATOR);
+        return ok();
+    }
+
+    @Override
     public Element<?> visitArrayValue(Element<?> element) {
-        return ARRAY_VALUE_VISITOR.visit(element);
+        return arrayValueVisitor.visit(element);
     }
 
     @Override

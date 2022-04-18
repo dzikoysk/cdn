@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.module.shared;
 
+import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
 import net.dzikoysk.cdn.model.Entry;
 import net.dzikoysk.cdn.model.Section;
@@ -25,16 +26,18 @@ public class ArrayValueVisitor {
 
     private final String prefix;
     private final String suffix;
+    private final boolean enforceQuotes;
 
-    public ArrayValueVisitor(String prefix, String suffix) {
+    public ArrayValueVisitor(String prefix, String suffix, boolean enforceQuotes) {
         this.prefix = prefix;
         this.suffix = suffix;
+        this.enforceQuotes = enforceQuotes;
     }
 
     public Element<?> visit(Element<?> element) {
         if (element instanceof Piece) {
             Piece piece = (Piece) element;
-            element = new Piece(prefix + piece.getValue() + suffix);
+            element = new Piece(prefix + CdnUtils.stringify(enforceQuotes, piece.getValue()) + suffix);
         }
         else if (element instanceof Entry) {
             Entry entry = (Entry) element;

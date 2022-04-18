@@ -64,12 +64,12 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
         assertEquals(cfg("""
         map:
           1:
-            1: a
+            1: "a"
           2:
-            1: a
+            1: "a"
         elements:
           a:
-            name: default value
+            name: "default value"
         """), assertOk(yamlLike.render(configuration)))
     }
 

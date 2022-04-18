@@ -23,7 +23,6 @@ import net.dzikoysk.cdn.model.Piece;
 import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.standard.StandardModule;
-import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.module.shared.ArrayValueVisitor;
 import org.jetbrains.annotations.Nullable;
 import panda.std.Blank;
@@ -39,7 +38,7 @@ import static panda.std.Result.ok;
  */
 public final class JsonLikeModule extends StandardModule {
 
-    private static final ArrayValueVisitor ARRAY_VALUE_VISITOR = new ArrayValueVisitor("", "");
+    private static final ArrayValueVisitor ARRAY_VALUE_VISITOR = new ArrayValueVisitor("", "", true);
 
     @Override
     public String convertToCdn(String source) {
