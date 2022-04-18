@@ -23,18 +23,20 @@ import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.reflect.TargetType;
-import net.dzikoysk.cdn.reflect.AnnotatedTargetType;
 import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
 import org.jetbrains.annotations.Nullable;
+import panda.std.Pair;
 import panda.std.Result;
+import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -48,8 +50,15 @@ public final class CdnUtils {
 
     private CdnUtils() {}
 
-    public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, AnnotatedType type, @Nullable AnnotatedMember member) {
-        return findComposer(settings, new AnnotatedTargetType(type, settings.getAnnotationResolver()), member);
+    /**
+     *  Find a pair of composers for KEY-VALUE relation, utility method that combines result of {@link #findComposer(CdnSettings, net.dzikoysk.cdn.reflect.TargetType, net.dzikoysk.cdn.reflect.AnnotatedMember)} method
+     */
+    public static Result<Pair<Composer<Object>, Composer<Object>>, Exception> findPairOfComposers(
+            CdnSettings settings,
+            TargetType keyType, @Nullable AnnotatedMember keyMember,
+            TargetType valueType, @Nullable AnnotatedMember valueMember
+    ) {
+        return findComposer(settings, keyType, keyMember).merge(findComposer(settings, valueType, valueMember), Pair::of);
     }
 
     public static Result<Composer<Object>, Exception> findComposer(CdnSettings settings, TargetType type, @Nullable AnnotatedMember member) {
@@ -238,6 +247,13 @@ public final class CdnUtils {
         }
 
         return value;
+    }
+
+    public static <K, V, E extends Exception> Map<K, V> streamOfResultPairToMap(PandaStream<Result<Pair<K, V>, E>> stream) {
+        return stream
+                .filter(Result::isOk)
+                .map(Result::get)
+                .toMapByPair(LinkedHashMap::new, pair -> pair);
     }
 
     public static <T, R> R process(Collection<T> processors, R value, BiFunction<T, R, R> handler) {

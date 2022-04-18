@@ -31,6 +31,7 @@ import panda.std.Pair;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,14 +78,11 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
     public Result<Map<Object, Object>, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, Map<Object, Object> defaultValue, boolean entryAsRecord) {
         if (source instanceof Entry) {
             Entry entry = (Entry) source;
-            // String value = entryAsRecord ? entry.get() : entry.getValue();
             String value = CdnUtils.destringify(entry.getPieceValue());
 
-            if (value.equals("[]") /* || entry.getRecord().equals(value) ?what the f is this even doing here? */) {
-                return ok(Collections.emptyMap());
-            }
-
-            return error(new CdnException("Cannot deserialize map of " + value));
+            return value.equals("[]")
+                    ? ok(Collections.emptyMap())
+                    : error(new CdnException("Cannot deserialize map of " + value));
         }
 
         Section section = (Section) source;
@@ -92,49 +90,70 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
         TargetType keyType = collectionTypes[0];
         TargetType valueType = collectionTypes[1];
 
-        return CdnUtils.findComposer(settings, keyType, null)
-                .merge(CdnUtils.findComposer(settings, valueType, null), Pair::of)
-                .flatMap(serializers -> PandaStream.of(section.getValue())
-                        .map(element -> deserializeElement(settings, serializers.getFirst(), keyType, serializers.getSecond(), valueType, element, entryAsRecord))
-                        .filterToResult(Result::errorToOption)
-                        .map(stream -> stream
-                                .map(Result::get)
-                                .toMapByPair(LinkedHashMap::new, pair -> pair)));
+        return CdnUtils.findPairOfComposers(settings, keyType, null, valueType, null)
+                .map(serializers -> new MapComposerContext(settings, serializers.getFirst(), keyType, serializers.getSecond(), valueType, entryAsRecord))
+                .flatMap(ctx -> deserializeElements(ctx, section.getValue()));
     }
 
-    private Result<Pair<Object, Object>, Exception> deserializeElement(
-            CdnSettings settings,
-            Deserializer<?> keyDeserializer,
-            TargetType keyType,
-            Deserializer<?> valueDeserializer,
-            TargetType valueType,
-            Element<?> element,
-            boolean entryAsRecord
-    ) {
-        if (element instanceof Entry) {
-            Entry entry = (Entry) element;
-            return deserialize(settings, entry.getName(), keyDeserializer, keyType, valueDeserializer, valueType, entry.getValue(), entryAsRecord);
-        }
-        else if (element instanceof Section) {
-            return deserialize(settings, ((Section) element).getName(), keyDeserializer, keyType, valueDeserializer, valueType, element, entryAsRecord);
-        }
-        else {
-            return Result.error(new UnsupportedOperationException("Unsupported element in map: " + element));
-        }
+    /**
+     * Maps list of deserialization results into a map of values
+     */
+    private Result<Map<Object, Object>, CdnException> deserializeElements(MapComposerContext context, Collection<? extends Element<?>> elements) {
+        return PandaStream.of(elements)
+                .map(element -> deserializeElement(context, element))
+                .filterToResult(Result::errorToOption)
+                .map(CdnUtils::streamOfResultPairToMap);
     }
 
-    private Result<Pair<Object, Object>, Exception> deserialize(
-            CdnSettings settings,
-            String name,
-            Deserializer<?> keyDeserializer,
-            TargetType keyType,
-            Deserializer<?> valueDeserializer,
-            TargetType valueType,
-            Element<?> source,
-            boolean entryAsRecord
-    ) {
-        return keyDeserializer.deserialize(settings, new Piece(name), keyType, null, entryAsRecord)
-                .merge(valueDeserializer.deserialize(settings, source, valueType, null, entryAsRecord), Pair::of);
+    /**
+     * Maps any {@link net.dzikoysk.cdn.model.Element} into KEY (name) - VALUE (element) entry
+     */
+    private Result<Pair<Object, Object>, CdnException> deserializeElement(MapComposerContext context, Element<?> element) {
+        if (element instanceof Entry)
+            return deserialize(context, ((Entry) element).getName(), element);
+        else if (element instanceof Section)
+            return deserialize(context, ((Section) element).getName(), element);
+        else
+            return Result.error(new CdnException("Unsupported element in map: " + element));
+    }
+
+    /**
+     * Deserializes KEY (String name) - VALUE (Element element) map entry and merges it into one result
+     */
+    private Result<Pair<Object, Object>, CdnException> deserialize(MapComposerContext context, String name, Element<?> element) {
+        Result<?, CdnException> serializedKey = context.keyDeserializer
+                .deserialize(context.settings, new Piece(name), context.keyType, null, context.entryAsRecord)
+                .mapErr(exception -> new CdnException("Cannot serialize key of map", exception));
+
+        Result<?, CdnException> serializedValue = context.valueDeserializer
+                .deserialize(context.settings, element, context.valueType, null, context.entryAsRecord)
+                .mapErr(exception -> new CdnException("Cannot serialize value of map", exception));
+
+        return serializedKey.merge(serializedValue, Pair::of);
+    }
+
+    private static class MapComposerContext implements Cloneable {
+        CdnSettings settings;
+        Deserializer<?> keyDeserializer;
+        TargetType keyType;
+        Deserializer<?> valueDeserializer;
+        TargetType valueType;
+        boolean entryAsRecord;
+
+        private MapComposerContext(CdnSettings settings, Deserializer<?> keyDeserializer, TargetType keyType, Deserializer<?> valueDeserializer, TargetType valueType, boolean entryAsRecord) {
+            this.settings = settings;
+            this.keyDeserializer = keyDeserializer;
+            this.keyType = keyType;
+            this.valueDeserializer = valueDeserializer;
+            this.valueType = valueType;
+            this.entryAsRecord = entryAsRecord;
+        }
+
+        @Override
+        @SuppressWarnings({ "MethodDoesntCallSuperMethod", "CloneDoesntDeclareCloneNotSupportedException" })
+        protected MapComposerContext clone() {
+            return new MapComposerContext(settings, keyDeserializer, keyType, valueDeserializer, valueType, entryAsRecord);
+        }
     }
 
 }
