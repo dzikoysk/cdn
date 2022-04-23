@@ -19,6 +19,8 @@ internal class YamlLikeConverterTest : CdnSpec() {
         @Contextual
         class Statistics {
             @Description("")
+            var flag = false
+            @Description("")
             var slot = 25
             @Description("")
             var name = "value"
@@ -31,6 +33,7 @@ internal class YamlLikeConverterTest : CdnSpec() {
     fun `should handle empty description`() {
         val source = assertOk(yamlLike.render(ConfigurationWithEmptyDescription().also { configuration ->
             configuration.statistics = Statistics().also {
+                it.flag = true
                 it.slot = 7
                 it.name = "custom"
             }
@@ -39,7 +42,9 @@ internal class YamlLikeConverterTest : CdnSpec() {
         assertEquals("""
         statistics:
           
-          slot: "7"
+          flag: true
+          
+          slot: 7
           
           name: "custom"
         """.trimIndent(), source)

@@ -29,6 +29,8 @@ import panda.std.Pair;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
+import panda.utilities.StringUtils;
+import panda.utilities.collection.Lists;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -36,6 +38,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -43,6 +46,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static java.util.Arrays.asList;
 import static panda.std.Result.error;
 import static panda.std.Result.ok;
 
@@ -209,6 +213,11 @@ public final class CdnUtils {
         }
     }
 
+    private static final List<Predicate<String>> LITERAL_FILTERS = asList(
+            (value) -> ObjectUtils.equalsOneOf(value, "true", "false"),
+            (value) -> Result.attempt(() -> Double.parseDouble(value)).isOk()
+    );
+
     public static String destringify(String raw) {
         if (raw.length() <= 1) {
             return raw;
@@ -246,6 +255,12 @@ public final class CdnUtils {
     }
 
     public static String forceStringify(String value) {
+        for (Predicate<String> literalFilter : LITERAL_FILTERS) {
+            if (literalFilter.test(value)) {
+                return value;
+            }
+        }
+
         if (!isStringified(value)) {
             return "\"" + value + "\"";
         }

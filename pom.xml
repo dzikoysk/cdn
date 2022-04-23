@@ -23,7 +23,7 @@
     <groupId>net.dzikoysk</groupId>
     <artifactId>cdn-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.13.21</version>
+    <version>1.13.22</version>
 
     <scm>
         <connection>scm:git:https://github.com/dzikoysk/cdn.git</connection>
@@ -60,7 +60,7 @@
     </distributionManagement>
 
     <properties>
-        <cdn.version>1.13.21</cdn.version>
+        <cdn.version>1.13.22</cdn.version>
         <expressible.version>1.1.19</expressible.version>
         <kotlin.version>1.6.21</kotlin.version>
         <java.version>1.8</java.version>

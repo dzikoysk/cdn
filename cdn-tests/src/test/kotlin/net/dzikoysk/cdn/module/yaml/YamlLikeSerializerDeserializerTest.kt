@@ -34,7 +34,7 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
         # Section description
         section:
           # Random value
-          subEntry: "-1"
+          subEntry: -1
           # List description
           list:
             - "record"
@@ -42,7 +42,7 @@ class YamlLikeSerializerDeserializerTest : CdnSpec() {
           # Custom object
           custom:
             id: "rtx"
-            count: "3070"
+            count: 3070
         
         # Class
         clazz: "java.lang.String"
