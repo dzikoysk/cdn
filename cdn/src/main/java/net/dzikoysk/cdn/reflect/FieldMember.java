@@ -49,14 +49,22 @@ public class FieldMember implements AnnotatedMember {
     @Override
     public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
         return Result.attempt(ReflectiveOperationException.class, () -> {
+            field.setAccessible(true);
             field.set(instance, value);
+            field.setAccessible(false);
             return BLANK;
         });
     }
 
     @Override
     public Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance) {
-        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(field.get(instance)));
+        return Result.attempt(ReflectiveOperationException.class, () -> {
+            field.setAccessible(true);
+            Object value = field.get(instance);
+            field.setAccessible(false);
+
+            return Option.of(value);
+        });
     }
 
     @Override

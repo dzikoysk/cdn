@@ -48,7 +48,7 @@ public class DefaultMemberResolver implements MemberResolver {
 
     @Override
     public List<AnnotatedMember> getFields(@NotNull Class<?> type) {
-        return PandaStream.of(type.getFields())
+        return PandaStream.of(type.getDeclaredFields())
                 .map(field -> fromField(type, field))
                 .toList();
     }

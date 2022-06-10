@@ -138,7 +138,7 @@ public final class CdnDeserializer<T> {
                 .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, defaultValue.get(), false))
                 .peek(value -> {
                     if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
-                        member.setValue(instance, value);
+                        member.setValue(instance, value).orElseThrow(IllegalStateException::new);
                     }
                 })
                 .map(Option::of);
