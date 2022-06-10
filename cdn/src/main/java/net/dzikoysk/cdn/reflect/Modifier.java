@@ -29,16 +29,16 @@ public final class Modifier {
         return this.predicate.test(modifiers);
     }
 
-    public boolean hasNot(int modifiers) {
-        return !this.has(modifiers);
-    }
-
     public boolean has(Member member) {
         return this.has(member.getModifiers());
     }
 
     public boolean has(Class<?> type) {
         return this.has(type.getModifiers());
+    }
+
+    public boolean hasNot(int modifiers) {
+        return !this.has(modifiers);
     }
 
     private static Modifier of(Predicate<Integer> predicate) {
