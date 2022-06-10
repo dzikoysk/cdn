@@ -2,16 +2,10 @@ package net.dzikoysk.cdn.reflect;
 
 class TestClasses {
 
-    public class Public {}
+    public static class Public {}
 
-    public static abstract class PublicStaticAbstract {}
+    static class PackagePrivate {}
 
-    protected static abstract class ProtectedStaticAbstract {}
-
-    class PackagePrivate {}
-
-    static class PackagePrivateStatic {}
-
-    static abstract class PackagePrivateStaticAbstract {}
+    protected static class Protected {}
 
 }

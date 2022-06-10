@@ -27,15 +27,15 @@ import java.util.List;
 
 public class DefaultMemberResolver implements MemberResolver {
 
-    private final List<Modifier> ignoredMod;
+    private final Visibility scopeVisibility;
 
-    public DefaultMemberResolver(List<Modifier> ignoredMod) {
-        this.ignoredMod = ignoredMod;
+    public DefaultMemberResolver(Visibility scopeVisibility) {
+        this.scopeVisibility = scopeVisibility;
     }
 
     @Override
     public AnnotatedMember fromField(@NotNull Class<?> type, @NotNull Field field) {
-        return new FieldMember(field, this, ignoredMod);
+        return new FieldMember(field, this);
     }
 
     @Override
@@ -63,6 +63,11 @@ public class DefaultMemberResolver implements MemberResolver {
                 .map(name -> name.substring(3))
                 .flatMap(name -> Option.attempt(NoSuchMethodException.class, () -> fromProperty(type, name)))
                 .toList();
+    }
+
+    @Override
+    public Visibility getScopeVisibility() {
+        return this.scopeVisibility;
     }
 
 }

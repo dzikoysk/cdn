@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import panda.std.ResultAssertions.assertOk
 
-class CustomModifierTest {
+class CustomVisibilityTest {
 
     private val publicModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
-        .withMemberResolver(Modifier.PRIVATE, Modifier.PACKAGE_PRIVATE, Modifier.PROTECTED)
+        .withMemberResolver(Visibility.PUBLIC)
         .build()
 
     private val allModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
-        .withMemberResolver()
+        .withMemberResolver(Visibility.PRIVATE)
         .build()
 
     @Test

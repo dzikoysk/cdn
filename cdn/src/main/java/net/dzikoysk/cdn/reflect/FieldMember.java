@@ -21,11 +21,14 @@ import org.jetbrains.annotations.NotNull;
 import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
+import panda.std.function.ThrowingFunction;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static panda.std.Blank.BLANK;
 
@@ -33,38 +36,42 @@ public class FieldMember implements AnnotatedMember {
 
     private final Field field;
     private final MemberResolver resolver;
-    private final List<Modifier> ignored;
+    private final Visibility visibility;
 
-    public FieldMember(Field field, MemberResolver resolver, List<Modifier> ignored) {
+    public FieldMember(Field field, MemberResolver resolver) {
         this.field = field;
         this.resolver = resolver;
-        this.ignored = ignored;
+        this.visibility = Visibility.forMember(field);
     }
 
     @Override
     public boolean isIgnored() {
-        return CdnUtils.isIgnored(field, ignored);
+        return CdnUtils.isIgnored(field, this.resolver.getScopeVisibility());
     }
 
     @Override
     public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
-        return Result.attempt(ReflectiveOperationException.class, () -> {
-            field.setAccessible(true);
-            field.set(instance, value);
-            field.setAccessible(false);
+        return Result.attempt(ReflectiveOperationException.class, () -> this.onField(f -> {
+            f.set(instance, value);
             return BLANK;
-        });
+        }));
     }
 
     @Override
     public Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance) {
-        return Result.attempt(ReflectiveOperationException.class, () -> {
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(this.onField(f -> f.get(instance))));
+    }
+
+    private <R> R onField(ThrowingFunction<Field, R, ReflectiveOperationException> action) throws ReflectiveOperationException {
+        if (!visibility.isAccessible()) {
             field.setAccessible(true);
-            Object value = field.get(instance);
+            R value = action.apply(field);
             field.setAccessible(false);
 
-            return Option.of(value);
-        });
+            return value;
+        }
+
+        return action.apply(field);
     }
 
     @Override

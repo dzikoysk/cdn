@@ -20,7 +20,7 @@ import net.dzikoysk.cdn.reflect.DefaultMemberResolver;
 import net.dzikoysk.cdn.reflect.MemberResolver;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.Modules;
-import net.dzikoysk.cdn.reflect.Modifier;
+import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.Deserializer;
 import net.dzikoysk.cdn.serdes.Serializer;
@@ -72,7 +72,7 @@ public final class CdnSettings {
     private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
     private final Modules modules = new Modules();
-    private MemberResolver memberResolver = new DefaultMemberResolver(Arrays.asList(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.PACKAGE_PRIVATE));
+    private MemberResolver memberResolver = new DefaultMemberResolver(Visibility.PUBLIC);
 
     {
         withComposer(boolean.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Boolean.parseBoolean(value)));
@@ -195,8 +195,8 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings withMemberResolver(Modifier... ignored) {
-        this.memberResolver = new DefaultMemberResolver(Arrays.asList(ignored));
+    public CdnSettings withMemberResolver(Visibility visibility) {
+        this.memberResolver = new DefaultMemberResolver(visibility);
         return this;
     }
 

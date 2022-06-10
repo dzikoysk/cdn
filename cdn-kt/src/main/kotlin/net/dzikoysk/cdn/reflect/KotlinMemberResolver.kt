@@ -8,10 +8,10 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class KotlinMemberResolver(private val ignored: List<Modifier> = emptyList()) : MemberResolver {
+class KotlinMemberResolver(private val scopeVisibility: Visibility = Visibility.PRIVATE) : MemberResolver {
 
     override fun fromField(type: Class<*>, field: Field): AnnotatedMember =
-        FieldMember(field, this, ignored)
+        FieldMember(field, this)
 
     override fun fromProperty(type: Class<*>, propertyName: String) : AnnotatedMember {
         val kType = type.kotlin
@@ -39,6 +39,10 @@ class KotlinMemberResolver(private val ignored: List<Modifier> = emptyList()) : 
             .map { Pair(it, findIndex(type, it)) }
             .sortedBy { (_, index) -> index }
             .map { (property) -> KPropertyMember(property, this) }
+
+    override fun getScopeVisibility(): Visibility {
+        return this.scopeVisibility
+    }
 
     /**
      * This method attempts to recreate order of properties in sources.
