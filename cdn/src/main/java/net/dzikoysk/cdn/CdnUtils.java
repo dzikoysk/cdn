@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.reflect.Modifier;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.reflect.TargetType;
 import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
@@ -29,11 +30,8 @@ import panda.std.Pair;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
-import panda.utilities.StringUtils;
-import panda.utilities.collection.Lists;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -159,22 +157,22 @@ public final class CdnUtils {
         return methodName;
     }
 
-    public static boolean isIgnored(@Nullable Field field, boolean excludeHiddenProperties) {
+    public static boolean isIgnored(@Nullable Field field, List<Modifier> ignoredMod) {
         if (field == null) {
             return false;
         }
 
-        int modifiers = field.getModifiers();
+        for (Modifier ignored : ignoredMod) {
+            if (ignored.has(field)) {
+                return true;
+            }
+        }
 
-        if (excludeHiddenProperties && !Modifier.isPublic(modifiers)) {
+        if (Modifier.STATIC.has(field)) {
             return true;
         }
 
-        if (Modifier.isStatic(modifiers)) {
-            return true;
-        }
-
-        if (Modifier.isTransient(modifiers)) {
+        if (Modifier.TRANSIENT.has(field)) {
             return true;
         }
 
@@ -191,9 +189,7 @@ public final class CdnUtils {
             return false;
         }
 
-        int modifiers = method.getModifiers();
-
-        if (Modifier.isNative(modifiers)) {
+        if (Modifier.NATIVE.has(method)) {
             return true;
         }
 

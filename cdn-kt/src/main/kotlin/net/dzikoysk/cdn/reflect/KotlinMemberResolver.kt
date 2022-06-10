@@ -8,10 +8,10 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class KotlinMemberResolver : MemberResolver {
+class KotlinMemberResolver(private val ignored: List<Modifier> = emptyList()) : MemberResolver {
 
     override fun fromField(type: Class<*>, field: Field): AnnotatedMember =
-        FieldMember(field, this)
+        FieldMember(field, this, ignored)
 
     override fun fromProperty(type: Class<*>, propertyName: String) : AnnotatedMember {
         val kType = type.kotlin

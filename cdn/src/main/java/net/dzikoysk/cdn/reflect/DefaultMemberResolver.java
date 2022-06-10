@@ -27,9 +27,15 @@ import java.util.List;
 
 public class DefaultMemberResolver implements MemberResolver {
 
+    private final List<Modifier> ignoredMod;
+
+    public DefaultMemberResolver(List<Modifier> ignoredMod) {
+        this.ignoredMod = ignoredMod;
+    }
+
     @Override
     public AnnotatedMember fromField(@NotNull Class<?> type, @NotNull Field field) {
-        return new FieldMember(field, this);
+        return new FieldMember(field, this, ignoredMod);
     }
 
     @Override

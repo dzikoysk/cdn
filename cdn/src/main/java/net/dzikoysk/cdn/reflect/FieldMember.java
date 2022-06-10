@@ -33,15 +33,17 @@ public class FieldMember implements AnnotatedMember {
 
     private final Field field;
     private final MemberResolver resolver;
+    private final List<Modifier> ignored;
 
-    public FieldMember(Field field, MemberResolver resolver) {
+    public FieldMember(Field field, MemberResolver resolver, List<Modifier> ignored) {
         this.field = field;
         this.resolver = resolver;
+        this.ignored = ignored;
     }
 
     @Override
     public boolean isIgnored() {
-        return CdnUtils.isIgnored(field, true);
+        return CdnUtils.isIgnored(field, ignored);
     }
 
     @Override

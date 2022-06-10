@@ -20,6 +20,7 @@ import net.dzikoysk.cdn.reflect.DefaultMemberResolver;
 import net.dzikoysk.cdn.reflect.MemberResolver;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.Modules;
+import net.dzikoysk.cdn.reflect.Modifier;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.serdes.Deserializer;
 import net.dzikoysk.cdn.serdes.Serializer;
@@ -35,7 +36,9 @@ import panda.std.reactive.MutableReference;
 import panda.std.reactive.Reference;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -69,7 +72,7 @@ public final class CdnSettings {
     private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
     private final Map<String, String> placeholders = new HashMap<>();
     private final Modules modules = new Modules();
-    private MemberResolver memberResolver = new DefaultMemberResolver();
+    private MemberResolver memberResolver = new DefaultMemberResolver(Arrays.asList(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.PACKAGE_PRIVATE));
 
     {
         withComposer(boolean.class, value -> ok(value.toString()), value -> Result.attempt(Exception.class, () -> Boolean.parseBoolean(value)));
@@ -187,8 +190,13 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings withAnnotationResolver(MemberResolver resolver) {
+    public CdnSettings withMemberResolver(MemberResolver resolver) {
         this.memberResolver = resolver;
+        return this;
+    }
+
+    public CdnSettings withMemberResolver(Modifier... ignored) {
+        this.memberResolver = new DefaultMemberResolver(Arrays.asList(ignored));
         return this;
     }
 

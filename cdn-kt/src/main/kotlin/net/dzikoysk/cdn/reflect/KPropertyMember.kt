@@ -19,7 +19,7 @@ internal class KPropertyMember(
 ) : AnnotatedMember {
 
     override fun isIgnored(): Boolean =
-        CdnUtils.isIgnored(property.javaField, false) || CdnUtils.isIgnored(property.getter.javaMethod)
+        CdnUtils.isIgnored(property.javaField, emptyList()) || CdnUtils.isIgnored(property.getter.javaMethod)
 
     override fun setValue(instance: Any, value: Any): Result<Blank, ReflectiveOperationException> =
         Result
