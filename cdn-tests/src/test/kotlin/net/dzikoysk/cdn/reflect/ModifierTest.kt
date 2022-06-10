@@ -67,8 +67,8 @@ class ModifierTest {
         }
 
         fun test(): ModifierTester {
-            excluded.forEach { assert(it.hasNot(mod)) }
-            included.forEach { assert(it.has(mod)) }
+            excluded.forEach { assert(it.hasNot(mod)) { "has ${it.name}" } }
+            included.forEach { assert(it.has(mod)) { "has not ${it.name}" } }
             return this
         }
 
