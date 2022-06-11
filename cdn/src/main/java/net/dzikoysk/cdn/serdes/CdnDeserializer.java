@@ -43,7 +43,7 @@ public final class CdnDeserializer<T> {
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, Class<T> template) {
-        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> template.getConstructor().newInstance())
+        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> template.getDeclaredConstructor().newInstance())
                 .flatMap(instance -> deserialize(source, instance))
                 .mapErr(CdnException::new);
     }
@@ -96,7 +96,7 @@ public final class CdnDeserializer<T> {
 
                 //noinspection unchecked
                 return (I) instance.getClass()
-                        .getConstructor(argsTypes)
+                        .getDeclaredConstructor(argsTypes)
                         .newInstance(values);
             });
         }

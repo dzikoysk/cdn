@@ -75,7 +75,7 @@ public final class CdnUtils {
         if (member != null && member.isAnnotationPresent(CustomComposer.class)) {
             Result<Composer<?>, ReflectiveOperationException> composerInstance = Result.attempt(ReflectiveOperationException.class, () -> {
                 CustomComposer customComposer = Objects.requireNonNull(member.getAnnotation(CustomComposer.class));
-                return ObjectUtils.cast(customComposer.value().getConstructor().newInstance());
+                return ObjectUtils.cast(customComposer.value().getDeclaredConstructor().newInstance());
             });
 
             if (composerInstance.isErr()) {
