@@ -28,6 +28,8 @@ import panda.std.Option;
 import panda.std.Pair;
 import panda.std.Result;
 import panda.utilities.ObjectUtils;
+
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +45,16 @@ public final class CdnDeserializer<T> {
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, Class<T> template) {
-        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> template.getDeclaredConstructor().newInstance())
-                .flatMap(instance -> deserialize(source, instance))
+        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> {
+            if (!settings.getAnnotationResolver().getScopeVisibility().isAccessible()) {
+                Constructor<T> constructor = template.getDeclaredConstructor();
+
+                constructor.setAccessible(true);
+                return constructor.newInstance();
+            }
+
+            return template.getConstructor().newInstance();
+        }).flatMap(instance -> deserialize(source, instance))
                 .mapErr(CdnException::new);
     }
 
@@ -94,9 +104,17 @@ public final class CdnDeserializer<T> {
                         .map(Pair::getSecond)
                         .toArray();
 
+                if (!settings.getAnnotationResolver().getScopeVisibility().isAccessible()) {
+                    Constructor<?> constructor = instance.getClass().getDeclaredConstructor(argsTypes);
+
+                    constructor.setAccessible(true);
+                    //noinspection unchecked
+                    return (I) constructor.newInstance(values);
+                }
+
                 //noinspection unchecked
                 return (I) instance.getClass()
-                        .getDeclaredConstructor(argsTypes)
+                        .getConstructor(argsTypes)
                         .newInstance(values);
             });
         }
