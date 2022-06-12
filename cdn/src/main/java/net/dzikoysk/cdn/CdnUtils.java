@@ -21,6 +21,7 @@ import net.dzikoysk.cdn.entity.Contextual;
 import net.dzikoysk.cdn.entity.CustomComposer;
 import net.dzikoysk.cdn.entity.Exclude;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
+import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.reflect.TargetType;
 import net.dzikoysk.cdn.serdes.composers.ContextualComposer;
@@ -29,8 +30,6 @@ import panda.std.Pair;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
-import panda.utilities.StringUtils;
-import panda.utilities.collection.Lists;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -159,14 +158,14 @@ public final class CdnUtils {
         return methodName;
     }
 
-    public static boolean isIgnored(@Nullable Field field, boolean excludeHiddenProperties) {
+    public static boolean isIgnored(@Nullable Field field, Visibility visibility) {
         if (field == null) {
             return false;
         }
 
         int modifiers = field.getModifiers();
 
-        if (excludeHiddenProperties && !Modifier.isPublic(modifiers)) {
+        if (!visibility.isVisible(field)) {
             return true;
         }
 
@@ -191,9 +190,7 @@ public final class CdnUtils {
             return false;
         }
 
-        int modifiers = method.getModifiers();
-
-        if (Modifier.isNative(modifiers)) {
+        if (Modifier.isNative(method.getModifiers())) {
             return true;
         }
 

@@ -46,7 +46,7 @@ public class MethodMember implements AnnotatedMember {
 
     @Override
     public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
-        return Result.attempt(ReflectiveOperationException.class, () -> setter.invoke(instance, value)).mapToBlank();
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(setter.invoke(instance, value))).mapToBlank();
     }
 
     @Override

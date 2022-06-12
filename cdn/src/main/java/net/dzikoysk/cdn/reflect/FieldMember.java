@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
+import panda.std.function.ThrowingFunction;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -33,28 +35,38 @@ public class FieldMember implements AnnotatedMember {
 
     private final Field field;
     private final MemberResolver resolver;
+    private final Visibility visibility;
 
     public FieldMember(Field field, MemberResolver resolver) {
         this.field = field;
         this.resolver = resolver;
+        this.visibility = Visibility.forMember(field);
     }
 
     @Override
     public boolean isIgnored() {
-        return CdnUtils.isIgnored(field, true);
+        return CdnUtils.isIgnored(field, this.resolver.getVisibilityToMatch());
     }
 
     @Override
     public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
-        return Result.attempt(ReflectiveOperationException.class, () -> {
-            field.set(instance, value);
+        return Result.attempt(ReflectiveOperationException.class, () -> this.onField(accessibleField -> {
+            accessibleField.set(instance, value);
             return BLANK;
-        });
+        }));
     }
 
     @Override
     public Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance) {
-        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(field.get(instance)));
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(this.onField(accessibleField -> accessibleField.get(instance))));
+    }
+
+    private <R> R onField(ThrowingFunction<Field, R, ReflectiveOperationException> action) throws ReflectiveOperationException {
+        if (!visibility.isAccessible()) {
+            field.setAccessible(true);
+        }
+
+        return action.apply(field);
     }
 
     @Override
