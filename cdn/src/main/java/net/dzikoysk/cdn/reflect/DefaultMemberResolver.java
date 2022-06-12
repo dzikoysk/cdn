@@ -27,10 +27,10 @@ import java.util.List;
 
 public class DefaultMemberResolver implements MemberResolver {
 
-    private final Visibility scopeVisibility;
+    private final Visibility visibilityToMatch;
 
-    public DefaultMemberResolver(Visibility scopeVisibility) {
-        this.scopeVisibility = scopeVisibility;
+    public DefaultMemberResolver(Visibility visibilityToMatch) {
+        this.visibilityToMatch = visibilityToMatch;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DefaultMemberResolver implements MemberResolver {
 
     @Override
     public List<AnnotatedMember> getFields(@NotNull Class<?> type) {
-        return PandaStream.of(type.getDeclaredFields())
+        return PandaStream.of(ReflectUtils.getSuperDeclaredFields(type))
                 .map(field -> fromField(type, field))
                 .toList();
     }
@@ -67,7 +67,7 @@ public class DefaultMemberResolver implements MemberResolver {
 
     @Override
     public Visibility getScopeVisibility() {
-        return this.scopeVisibility;
+        return this.visibilityToMatch;
     }
 
 }

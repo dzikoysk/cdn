@@ -51,24 +51,21 @@ public class FieldMember implements AnnotatedMember {
 
     @Override
     public Result<Blank, ReflectiveOperationException> setValue(@NotNull Object instance, @NotNull Object value) {
-        return Result.attempt(ReflectiveOperationException.class, () -> this.onField(f -> {
-            f.set(instance, value);
+        return Result.attempt(ReflectiveOperationException.class, () -> this.onField(accessibleField -> {
+            accessibleField.set(instance, value);
             return BLANK;
         }));
     }
 
     @Override
     public Result<Option<Object>, ReflectiveOperationException> getValue(@NotNull Object instance) {
-        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(this.onField(f -> f.get(instance))));
+        return Result.attempt(ReflectiveOperationException.class, () -> Option.of(this.onField(accessibleField -> accessibleField.get(instance))));
     }
 
     private <R> R onField(ThrowingFunction<Field, R, ReflectiveOperationException> action) throws ReflectiveOperationException {
         if (!visibility.isAccessible()) {
             field.setAccessible(true);
-            R value = action.apply(field);
-            field.setAccessible(false);
-
-            return value;
+            return action.apply(field);
         }
 
         return action.apply(field);
