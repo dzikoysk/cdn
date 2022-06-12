@@ -40,7 +40,7 @@ class KotlinMemberResolver(private val visibilityToMatch: Visibility = Visibilit
             .sortedBy { (_, index) -> index }
             .map { (property) -> KPropertyMember(property, this) }
 
-    override fun getScopeVisibility(): Visibility {
+    override fun getVisibilityToMatch(): Visibility {
         return this.visibilityToMatch
     }
 

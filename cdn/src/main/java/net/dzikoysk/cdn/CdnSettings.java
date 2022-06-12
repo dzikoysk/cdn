@@ -195,8 +195,8 @@ public final class CdnSettings {
         return this;
     }
 
-    public CdnSettings withMemberResolver(Visibility visibility) {
-        this.memberResolver = new DefaultMemberResolver(visibility);
+    public CdnSettings withMemberResolver(Visibility visibilityToMatch) {
+        this.memberResolver = new DefaultMemberResolver(visibilityToMatch);
         return this;
     }
 

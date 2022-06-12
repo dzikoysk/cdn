@@ -30,6 +30,6 @@ public interface MemberResolver {
 
     List<AnnotatedMember> getProperties(@NotNull Class<?> type);
 
-    Visibility getScopeVisibility();
+    Visibility getVisibilityToMatch();
 
 }

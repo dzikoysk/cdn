@@ -66,7 +66,7 @@ public class DefaultMemberResolver implements MemberResolver {
     }
 
     @Override
-    public Visibility getScopeVisibility() {
+    public Visibility getVisibilityToMatch() {
         return this.visibilityToMatch;
     }
 

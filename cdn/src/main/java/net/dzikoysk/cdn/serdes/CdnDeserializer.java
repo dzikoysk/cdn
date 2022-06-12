@@ -46,7 +46,7 @@ public final class CdnDeserializer<T> {
 
     public Result<T, ? extends CdnException> deserialize(Section source, Class<T> template) {
         return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> {
-            if (!settings.getAnnotationResolver().getScopeVisibility().isAccessible()) {
+            if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
                 Constructor<T> constructor = template.getDeclaredConstructor();
 
                 constructor.setAccessible(true);
@@ -104,7 +104,7 @@ public final class CdnDeserializer<T> {
                         .map(Pair::getSecond)
                         .toArray();
 
-                if (!settings.getAnnotationResolver().getScopeVisibility().isAccessible()) {
+                if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
                     Constructor<?> constructor = instance.getClass().getDeclaredConstructor(argsTypes);
 
                     constructor.setAccessible(true);

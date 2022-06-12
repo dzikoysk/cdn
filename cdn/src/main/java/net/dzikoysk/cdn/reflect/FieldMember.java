@@ -28,7 +28,6 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import static panda.std.Blank.BLANK;
 
@@ -46,7 +45,7 @@ public class FieldMember implements AnnotatedMember {
 
     @Override
     public boolean isIgnored() {
-        return CdnUtils.isIgnored(field, this.resolver.getScopeVisibility());
+        return CdnUtils.isIgnored(field, this.resolver.getVisibilityToMatch());
     }
 
     @Override
