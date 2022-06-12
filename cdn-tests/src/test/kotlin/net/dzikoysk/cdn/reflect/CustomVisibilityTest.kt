@@ -17,20 +17,19 @@ class CustomVisibilityTest {
 
     @Test
     fun `should not override java field `() {
-        val result = publicModifiersCdn.load( { "test: hey" } , Config::class.java)
+        val result = publicModifiersCdn.loadAs<Config> { "test:hey" }
 
-        assertEquals("siema", assertOk(result).test)
+        assertEquals("yo", assertOk(result).test)
     }
 
     @Test
     fun `should override java field `() {
-        val result = allModifiersCdn.load( { "test: hey" } , Config::class.java)
-
+        val result = allModifiersCdn.loadAs<Config> { "test:hey" }
         assertEquals("hey", assertOk(result).test)
     }
 
     class Config {
-        val test: String = "siema" // private final String test = "siema";
+        val test: String = "yo" // private final String test = "yo";
     }
 
 }
