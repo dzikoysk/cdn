@@ -64,7 +64,6 @@ public class FieldMember implements AnnotatedMember {
     private <R> R onField(ThrowingFunction<Field, R, ReflectiveOperationException> action) throws ReflectiveOperationException {
         if (!visibility.isAccessible()) {
             field.setAccessible(true);
-            return action.apply(field);
         }
 
         return action.apply(field);

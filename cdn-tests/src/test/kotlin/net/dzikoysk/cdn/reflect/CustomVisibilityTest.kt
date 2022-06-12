@@ -7,16 +7,11 @@ import panda.std.ResultAssertions.assertOk
 
 class CustomVisibilityTest {
 
-    private val publicModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
-        .withMemberResolver(Visibility.PUBLIC)
-        .build()
-
-    private val allModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
-        .withMemberResolver(Visibility.PRIVATE)
-        .build()
-
     @Test
     fun `should not override java field `() {
+        val publicModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
+            .withMemberResolver(Visibility.PUBLIC)
+            .build()
         val result = publicModifiersCdn.loadAs<Config> { "test:hey" }
 
         assertEquals("yo", assertOk(result).test)
@@ -24,7 +19,11 @@ class CustomVisibilityTest {
 
     @Test
     fun `should override java field `() {
+        val allModifiersCdn: Cdn = CdnFactory.createYamlLike().settings
+            .withMemberResolver(Visibility.PRIVATE)
+            .build()
         val result = allModifiersCdn.loadAs<Config> { "test:hey" }
+
         assertEquals("hey", assertOk(result).test)
     }
 

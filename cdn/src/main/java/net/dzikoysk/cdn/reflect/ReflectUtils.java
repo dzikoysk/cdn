@@ -7,12 +7,12 @@ import java.util.List;
 
 public final class ReflectUtils {
 
-    public static List<Field> getSuperDeclaredFields(Class<?> type) {
+    public static List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>(Arrays.asList(type.getDeclaredFields()));
         Class<?> superclass = type.getSuperclass();
 
         if (!superclass.equals(Object.class)) {
-            fields.addAll(getSuperDeclaredFields(superclass));
+            fields.addAll(getAllFields(superclass));
         }
 
         return fields;
