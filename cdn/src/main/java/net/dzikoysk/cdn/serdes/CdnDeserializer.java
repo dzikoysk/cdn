@@ -45,17 +45,9 @@ public final class CdnDeserializer<T> {
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, Class<T> template) {
-        return Result.<T, Exception>attempt(ReflectiveOperationException.class, () -> {
-            if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
-                Constructor<T> constructor = template.getDeclaredConstructor();
-
-                constructor.setAccessible(true);
-                return constructor.newInstance();
-            }
-
-            return template.getConstructor().newInstance();
-        }).flatMap(instance -> deserialize(source, instance))
-                .mapErr(CdnException::new);
+        return this.createInstance(template)
+                .mapErr(exception -> new CdnException("Failed to create instance of " + template.getName(), exception))
+                .flatMap(instance -> deserialize(source, instance));
     }
 
     public Result<T, ? extends CdnException> deserialize(Section source, T instance) {
@@ -88,35 +80,22 @@ public final class CdnDeserializer<T> {
             }
 
             Object argumentValue = result.get()
-                    .orElse(() -> annotatedMember.getValue(instance).orElseThrow(RuntimeException::new))
+                    .orElse(() -> annotatedMember.getValue(instance).orThrow(RuntimeException::new))
                     .orNull();
 
             args.add(new Pair<>(annotatedMember.getType(), argumentValue));
         }
 
         if (immutable) {
-            return Result.attempt(ReflectiveOperationException.class, () -> {
-                Class<?>[] argsTypes = args.stream()
-                        .map(Pair::getFirst)
-                        .toArray(Class[]::new);
+            Class<?>[] argsTypes = args.stream()
+                    .map(Pair::getFirst)
+                    .toArray(Class[]::new);
 
-                Object[] values = args.stream()
-                        .map(Pair::getSecond)
-                        .toArray();
+            Object[] values = args.stream()
+                    .map(Pair::getSecond)
+                    .toArray();
 
-                if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
-                    Constructor<?> constructor = instance.getClass().getDeclaredConstructor(argsTypes);
-
-                    constructor.setAccessible(true);
-                    //noinspection unchecked
-                    return (I) constructor.newInstance(values);
-                }
-
-                //noinspection unchecked
-                return (I) instance.getClass()
-                        .getConstructor(argsTypes)
-                        .newInstance(values);
-            });
+            return this.createInstance(instance.getClass(), argsTypes, values).projectToError();
         }
 
         return ok(instance);
@@ -167,7 +146,7 @@ public final class CdnDeserializer<T> {
                 .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, optionDefaultValue.orNull(), false))
                 .peek(value -> {
                     if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
-                        member.setValue(instance, value).orElseThrow(IllegalStateException::new);
+                        member.setValue(instance, value).orThrow(IllegalStateException::new);
                     }
                 })
                 .map(Option::of);
