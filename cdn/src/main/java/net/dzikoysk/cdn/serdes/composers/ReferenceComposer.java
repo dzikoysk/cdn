@@ -16,6 +16,7 @@
 
 package net.dzikoysk.cdn.serdes.composers;
 
+import net.dzikoysk.cdn.CdnException;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
@@ -31,6 +32,10 @@ public final class ReferenceComposer<T> implements Composer<T> {
 
     @Override
     public Result<T, Exception> deserialize(CdnSettings settings, Element<?> source, TargetType type, T defaultValue, boolean entryAsRecord) {
+        if (defaultValue == null) {
+            return Result.error(new CdnException("Default value of reference cannot be null!"));
+        }
+
         Reference<Object> defaultReference = (Reference<Object>) defaultValue;
         TargetType referenceType = type.getAnnotatedActualTypeArguments()[0];
 
