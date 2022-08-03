@@ -31,6 +31,8 @@ import panda.std.Blank;
 import panda.std.Option;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
+
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,23 +82,21 @@ public final class CdnSerializer {
             return error(propertyValueResult.getError());
         }
 
-        List<String> description = PandaStream.of(member.getAnnotationsByType(Description.class))
-                .flatMap(annotation -> Arrays.asList(annotation.value()))
-                .toList();
+        List<String> allDescriptions = new ArrayList<>();
 
-        if (description.isEmpty()) {
-            description.addAll(
-                    PandaStream.of(member.getAnnotationsByType(Descriptions.class))
-                        .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
-                        .flatMapStream(descriptions -> Arrays.stream(descriptions.value()))
-                        .toList()
-            );
+        for (DescriptionResolver<?> descriptionResolver : settings.getDescriptionResolvers()) {
+            Class<? extends Annotation> type = descriptionResolver.getAnnotationType();
+            List<String> description = PandaStream.of(member.getAnnotationsByType(type))
+                    .flatMap(descriptionResolver::getDescription)
+                    .toList();
+
+            allDescriptions.addAll(description);
         }
 
         Option<Object> propertyValue = propertyValueResult.get();
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            Section section = new Section(description, StandardOperators.OBJECT_SEPARATOR, member.getName());
+            Section section = new Section(allDescriptions, StandardOperators.OBJECT_SEPARATOR, member.getName());
             output.append(section);
             return serialize(propertyValue.get(), section).mapToBlank();
         }
@@ -105,7 +105,7 @@ public final class CdnSerializer {
 
         return propertyValue
                 .map(value -> CdnUtils.findComposer(settings, targetType, member)
-                        .flatMap(serializer -> serializer.serialize(settings, description, member.getName(), targetType, value))
+                        .flatMap(serializer -> serializer.serialize(settings, allDescriptions, member.getName(), targetType, value))
                         .peek(output::append)
                         .mapToBlank())
                 .orElseGet(Result.ok());
