@@ -16,12 +16,16 @@
 
 package net.dzikoysk.cdn;
 
+import net.dzikoysk.cdn.entity.Description;
+import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.reflect.DefaultMemberResolver;
 import net.dzikoysk.cdn.reflect.MemberResolver;
 import net.dzikoysk.cdn.module.CdnModule;
 import net.dzikoysk.cdn.module.Modules;
 import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.serdes.Composer;
+import net.dzikoysk.cdn.serdes.DescriptionProvider;
+import net.dzikoysk.cdn.serdes.DescriptionResolver;
 import net.dzikoysk.cdn.serdes.Deserializer;
 import net.dzikoysk.cdn.serdes.Serializer;
 import net.dzikoysk.cdn.serdes.SimpleComposer;
@@ -34,19 +38,25 @@ import net.dzikoysk.cdn.serdes.composers.ReferenceComposer;
 import panda.std.Result;
 import panda.std.reactive.MutableReference;
 import panda.std.reactive.Reference;
+import panda.std.stream.PandaStream;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static panda.std.Result.ok;
 
@@ -70,8 +80,10 @@ public final class CdnSettings {
     private final Map<Class<?>, Composer> composers = new HashMap<>();
     @SuppressWarnings("rawtypes")
     private final Map<Predicate<Class<?>>, Composer> dynamicComposers = new HashMap<>();
+    private final Set<DescriptionResolver<?>> descriptionResolvers = new HashSet<>();
     private final Map<String, String> placeholders = new HashMap<>();
     private final Modules modules = new Modules();
+
     private MemberResolver memberResolver = new DefaultMemberResolver(Visibility.PUBLIC);
 
     {
@@ -99,6 +111,8 @@ public final class CdnSettings {
         withComposer(MutableReference.class, new ReferenceComposer<>());
 
         withDynamicComposer(Class::isEnum, new EnumComposer());
+        withDescriptionResolver(Description.class, description -> Arrays.asList(description.value()));
+        withDescriptionResolver(Descriptions.class, descriptions -> PandaStream.of(descriptions.value()).flatMap(description -> Arrays.asList(description.value())).toList());
     }
 
     /**
@@ -200,12 +214,21 @@ public final class CdnSettings {
         return this;
     }
 
+    public <A extends Annotation> CdnSettings withDescriptionResolver(Class<A> type, DescriptionProvider<A> resolver) {
+        this.descriptionResolvers.add(new DescriptionResolver<>(type, resolver));
+        return this;
+    }
+
     public CdnModule getModule() {
         return modules;
     }
 
     public Map<? extends String, ? extends String> getPlaceholders() {
         return placeholders;
+    }
+
+    public Set<DescriptionResolver<?>> getDescriptionResolvers() {
+        return Collections.unmodifiableSet(descriptionResolvers);
     }
 
     public Map<? extends Predicate<Class<?>>, ? extends Composer<?>> getDynamicComposers() {
