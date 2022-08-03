@@ -140,26 +140,54 @@ public final class CdnDeserializer<T> {
             return defaultValueResult.projectToError();
         }
 
-        Option<Object> defaultValue = defaultValueResult.get();
-
-        if (defaultValue.isEmpty()) {
-            return ok(none());
-        }
+        Option<Object> optionDefaultValue = defaultValueResult.get();
 
         if (member.isAnnotationPresent(Contextual.class)) {
-            return deserializeToSection((Section) element, immutable, defaultValue.get()).map(Option::of);
+            Section section = (Section) element;
+            Object defaultValue;
+
+            if (optionDefaultValue.isEmpty()) {
+                Result<?, ReflectiveOperationException> sectionInstance = createInstance(member.getType());
+
+                if (sectionInstance.isErr()) {
+                    return sectionInstance.projectToError();
+                }
+
+                defaultValue = sectionInstance.get();
+            } else {
+                defaultValue = optionDefaultValue.get();
+            }
+
+            return deserializeToSection(section, immutable, defaultValue).map(Option::of);
         }
 
         TargetType targetType = member.getTargetType();
 
         return CdnUtils.findComposer(settings, targetType, member)
-                .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, defaultValue.get(), false))
+                .flatMap(deserializer -> deserializer.deserialize(settings, element, targetType, optionDefaultValue.orNull(), false))
                 .peek(value -> {
                     if (!immutable && value != Composer.MEMBER_ALREADY_PROCESSED) {
                         member.setValue(instance, value).orElseThrow(IllegalStateException::new);
                     }
                 })
                 .map(Option::of);
+    }
+
+    private <TYPE> Result<TYPE, ReflectiveOperationException> createInstance(Class<TYPE> type) {
+        return createInstance(type, new Class[0], new Object[0]);
+    }
+
+    private <TYPE> Result<TYPE, ReflectiveOperationException> createInstance(Class<TYPE> type, Class<?>[] argsTypes, Object[] args) {
+        return Result.attempt(ReflectiveOperationException.class, () -> {
+            if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
+                Constructor<TYPE> constructor = type.getDeclaredConstructor(argsTypes);
+
+                constructor.setAccessible(true);
+                return constructor.newInstance(args);
+            }
+
+            return type.getConstructor(argsTypes).newInstance(args);
+        });
     }
 
 }
