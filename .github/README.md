@@ -168,9 +168,7 @@ section {
   </td>
   <td>
    <pre lang="javascript">
-# entry comment
 "key": "value",
-# section description
 "section": {
  "list": [
   "1st element",

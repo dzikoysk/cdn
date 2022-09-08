@@ -18,7 +18,7 @@ package net.dzikoysk.cdn;
 
 import java.util.function.Function;
 
-public class CdnException extends Exception {
+public class CdnException extends RuntimeException {
 
     public CdnException(String message) {
         super(message);
