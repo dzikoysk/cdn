@@ -67,15 +67,13 @@ Cdn cdn = CdnFactory.createStandard();
 File configurationFile = new File("./config.cdn");
 
 // Load configuration
-Result<AwesomeConfig, CdnException> configuration = cdn.load(Source.of(configurationFile), AwesomeConfig.class);
+AwesomeConfig configuration = cdn.load(Source.of(configurationFile), AwesomeConfig.class).orThrow(identity());
 
-configuration.peek(config -> {
-    // Modify configuration
-    config.property = "modified value";
+// Modify configuration
+configuration.property = "modified value";
 
-    // Save configuration
-    cdn.render(config);
-}).orThrow(exception -> exception);
+// Save configuration
+cdn.render(configuration).orThrow(identity());
 ```
 
 To explore all features, take a look at other chapters.
