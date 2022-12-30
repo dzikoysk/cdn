@@ -61,7 +61,7 @@
 
     <properties>
         <cdn.version>1.14.1</cdn.version>
-        <expressible.version>1.2.1</expressible.version>
+        <expressible.version>1.2.2</expressible.version>
         <kotlin.version>1.6.21</kotlin.version>
         <java.version>1.8</java.version>
 
