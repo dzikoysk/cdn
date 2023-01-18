@@ -112,7 +112,6 @@ public final class CdnSettings {
 
         withDynamicComposer(Class::isEnum, new EnumComposer());
         withDescriptionResolver(Description.class, description -> Arrays.asList(description.value()));
-        withDescriptionResolver(Descriptions.class, descriptions -> PandaStream.of(descriptions.value()).flatMap(description -> Arrays.asList(description.value())).toList());
     }
 
     /**

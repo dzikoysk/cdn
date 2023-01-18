@@ -7,6 +7,9 @@ import java.util.List;
 
 public final class ReflectUtils {
 
+    private ReflectUtils() {
+    }
+
     public static List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>(Arrays.asList(type.getDeclaredFields()));
         Class<?> superclass = type.getSuperclass();

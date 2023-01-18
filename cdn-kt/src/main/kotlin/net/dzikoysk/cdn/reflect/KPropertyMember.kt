@@ -37,8 +37,8 @@ internal class KPropertyMember(
                 ?: false
 
     override fun <A : Annotation?> getAnnotationsByType(annotation: Class<A>): MutableList<A> =
-        PandaStream.of(property.javaGetter?.annotations, property.javaField?.annotations)
-            .flatMapStream { Arrays.stream(it ?: emptyArray()) }
+        PandaStream.of(property.javaGetter?.annotations, property.javaField?.getAnnotationsByType(annotation))
+            .flatMap { array -> (array ?: emptyArray()).toList() }
             .`is`(annotation)
             .toList()
 
