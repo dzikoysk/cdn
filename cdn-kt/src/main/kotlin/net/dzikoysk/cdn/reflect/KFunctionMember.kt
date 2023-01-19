@@ -37,6 +37,7 @@ internal class KFunctionMember(
 
     override fun <A : Annotation> getAnnotationsByType(annotation: Class<A>): List<A> =
         PandaStream.of(getter.annotations)
+            .concat(getter.javaMethod?.getAnnotationsByType(annotation)?.toList())
             .`is`(annotation)
             .toList()
 
