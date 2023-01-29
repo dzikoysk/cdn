@@ -17,7 +17,6 @@
 package net.dzikoysk.cdn;
 
 import net.dzikoysk.cdn.entity.Description;
-import net.dzikoysk.cdn.entity.Descriptions;
 import net.dzikoysk.cdn.reflect.DefaultMemberResolver;
 import net.dzikoysk.cdn.reflect.MemberResolver;
 import net.dzikoysk.cdn.module.CdnModule;
@@ -38,7 +37,6 @@ import net.dzikoysk.cdn.serdes.composers.ReferenceComposer;
 import panda.std.Result;
 import panda.std.reactive.MutableReference;
 import panda.std.reactive.Reference;
-import panda.std.stream.PandaStream;
 import panda.utilities.ClassUtils;
 import panda.utilities.ObjectUtils;
 
@@ -56,12 +54,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static panda.std.Result.ok;
 
 /**
- * Settings used by CDN instance. By default, the {@link net.dzikoysk.cdn.CdnSettings} register serializers&deserializers for the given types:
+ * Settings used by CDN instance. By default, the {@link net.dzikoysk.cdn.CdnSettings} register serializers and deserializers for those types:
  *
  * <ul>
  *     <li>Boolean (boolean)</li>
