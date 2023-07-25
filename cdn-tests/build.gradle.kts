@@ -6,6 +6,8 @@ dependencies {
     testImplementation(project(":cdn"))
     testImplementation(project(":cdn-kt"))
 
+    testImplementation(kotlin("stdlib-jdk8"))
+
     testImplementation("org.panda-lang:expressible-kt:1.2.9")
     testImplementation("org.panda-lang:expressible-junit:1.2.9")
 
