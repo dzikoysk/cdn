@@ -1,8 +1,10 @@
 package net.dzikoysk.cdn.serdes.composers
 
 import net.dzikoysk.cdn.CdnSpec
+import net.dzikoysk.cdn.KCdnFactory
 import net.dzikoysk.cdn.entity.Contextual
 import net.dzikoysk.cdn.loadAs
+import net.dzikoysk.cdn.reflect.Visibility.PRIVATE
 import net.dzikoysk.cdn.source.Source
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -59,6 +61,39 @@ class ContextualComposerTest : CdnSpec() {
                 }
             }
         }"""))).section.get().map["entry"]!!.key)
+    }
+
+    private class ConfigWithInterface {
+        val section = Mlynarz()
+    }
+
+    private interface Mlyn {
+        fun getMonke(): String
+    }
+
+    @Contextual
+    private class Mlynarz : Mlyn {
+        override fun getMonke() = "mlynarz"
+    }
+
+    @Test
+    fun `should serialize monke`() {
+        assertEquals(
+            "mlynarz",
+            assertOk(
+                KCdnFactory
+                    .createStandard()
+                    .also { it.settings.withMemberResolver(PRIVATE) }
+                    .loadAs<ConfigWithInterface>(
+                        Source.of("""
+                            section {
+                                monke: mlynarz
+                            }""")
+                    )
+            )
+            .section
+            .getMonke()
+        )
     }
 
 }
