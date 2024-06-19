@@ -26,6 +26,8 @@ import net.dzikoysk.cdn.serdes.Composer;
 import net.dzikoysk.cdn.reflect.TargetType;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +44,7 @@ public final class ListComposer implements Composer<List<Object>> {
             Entry entry = (Entry) source;
 
             return CdnUtils.destringify(entry.getPieceValue()).trim().endsWith("[]")
-                ? ok(Collections.emptyList())
+                ? ok(new ArrayList<>())
                 : error(new UnsupportedOperationException("Cannot deserialize list of " + entry));
         }
 

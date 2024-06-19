@@ -30,10 +30,8 @@ import panda.std.Pair;
 import panda.std.Result;
 import panda.std.stream.PandaStream;
 import panda.utilities.ObjectUtils;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.function.Function;
 
 import static net.dzikoysk.cdn.module.standard.StandardOperators.OBJECT_SEPARATOR;
@@ -92,7 +90,7 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
             String value = CdnUtils.destringify(entry.getPieceValue());
 
             return value.equals("[]")
-                    ? ok(Collections.emptyMap())
+                    ? ok(new HashMap<>())
                     : error(new CdnException("Cannot deserialize map of " + value));
         }
 
