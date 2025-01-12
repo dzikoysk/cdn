@@ -27,10 +27,10 @@ import java.util.List;
 
 public class DefaultMemberResolver implements MemberResolver {
 
-    private final Visibility visibilityToMatch;
+    private final Visibility visibility;
 
-    public DefaultMemberResolver(Visibility visibilityToMatch) {
-        this.visibilityToMatch = visibilityToMatch;
+    public DefaultMemberResolver(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     @Override
@@ -66,8 +66,8 @@ public class DefaultMemberResolver implements MemberResolver {
     }
 
     @Override
-    public Visibility getVisibilityToMatch() {
-        return this.visibilityToMatch;
+    public Visibility getVisibility() {
+        return this.visibility;
     }
 
 }

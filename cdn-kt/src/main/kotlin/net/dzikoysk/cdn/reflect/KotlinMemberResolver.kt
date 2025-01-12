@@ -8,7 +8,7 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class KotlinMemberResolver(private val visibilityToMatch: Visibility = Visibility.PRIVATE) : MemberResolver {
+class KotlinMemberResolver(private val visibility: Visibility = Visibility.PRIVATE) : MemberResolver {
 
     override fun fromField(type: Class<*>, field: Field): AnnotatedMember =
         FieldMember(field, this)
@@ -40,8 +40,8 @@ class KotlinMemberResolver(private val visibilityToMatch: Visibility = Visibilit
             .sortedBy { (_, index) -> index }
             .map { (property) -> KPropertyMember(property, this) }
 
-    override fun getVisibilityToMatch(): Visibility {
-        return this.visibilityToMatch
+    override fun getVisibility(): Visibility {
+        return this.visibility
     }
 
     /**
