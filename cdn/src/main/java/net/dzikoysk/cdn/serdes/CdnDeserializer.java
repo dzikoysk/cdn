@@ -158,14 +158,10 @@ public final class CdnDeserializer<T> {
 
     private <TYPE> Result<TYPE, ReflectiveOperationException> createInstance(Class<TYPE> type, Class<?>[] argsTypes, Object[] args) {
         return Result.attempt(ReflectiveOperationException.class, () -> {
-            if (!settings.getAnnotationResolver().getVisibilityToMatch().isAccessible()) {
-                Constructor<TYPE> constructor = type.getDeclaredConstructor(argsTypes);
+            Constructor<TYPE> constructor = type.getDeclaredConstructor(argsTypes);
 
-                constructor.setAccessible(true);
-                return constructor.newInstance(args);
-            }
-
-            return type.getConstructor(argsTypes).newInstance(args);
+            constructor.setAccessible(true);
+            return constructor.newInstance(args);
         });
     }
 

@@ -5,23 +5,17 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 
 public enum Visibility {
-    PUBLIC(true, Modifier::isPublic),
-    PACKAGE_PRIVATE (false, mod -> !Modifier.isPublic(mod) && !Modifier.isProtected(mod) && !Modifier.isPrivate(mod), PUBLIC),
-    PROTECTED(false, Modifier::isProtected, PACKAGE_PRIVATE, PUBLIC),
-    PRIVATE(false, Modifier::isPrivate, PROTECTED, PACKAGE_PRIVATE, PUBLIC);
+    PUBLIC(Modifier::isPublic),
+    PACKAGE_PRIVATE(mod -> !Modifier.isPublic(mod) && !Modifier.isProtected(mod) && !Modifier.isPrivate(mod), PUBLIC),
+    PROTECTED(Modifier::isProtected, PACKAGE_PRIVATE, PUBLIC),
+    PRIVATE(Modifier::isPrivate, PROTECTED, PACKAGE_PRIVATE, PUBLIC);
 
-    private final boolean accessible;
     private final Visibility[] included;
     private final Predicate<Integer> predicate;
 
-    private Visibility(boolean accessible, Predicate<Integer> predicate, Visibility... included) {
-        this.accessible = accessible;
+    Visibility(Predicate<Integer> predicate, Visibility... included) {
         this.included = included;
         this.predicate = predicate;
-    }
-
-    public boolean isAccessible() {
-        return accessible;
     }
 
     public boolean isVisible(int modifiers) {
@@ -44,10 +38,6 @@ public enum Visibility {
 
     public boolean isVisible(Class<?> type) {
         return this.isVisible(type.getModifiers());
-    }
-
-    public boolean isNotVisible(int modifiers) {
-        return !this.isVisible(modifiers);
     }
 
     public static Visibility forMember(Member member) {

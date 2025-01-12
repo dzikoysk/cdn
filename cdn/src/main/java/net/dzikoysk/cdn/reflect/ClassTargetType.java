@@ -24,6 +24,7 @@ public class ClassTargetType implements TargetType {
         return annotation.isAnnotationPresent(annotation);
     }
 
+    @Override
     public List<AnnotatedMember> getAnnotatedMembers() {
         List<AnnotatedMember> members = new ArrayList<>();
         members.addAll(resolver.getFields(type));

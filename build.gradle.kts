@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
     signing
     jacoco
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "2.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
@@ -15,7 +15,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "net.dzikoysk"
-    version = "1.14.5"
+    version = "1.14.6"
 
     repositories {
         maven("https://maven.reposilite.com/maven-central")
