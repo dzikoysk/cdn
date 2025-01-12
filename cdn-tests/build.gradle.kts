@@ -18,3 +18,7 @@ dependencies {
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
 }
+
+kotlin {
+    jvmToolchain(8)
+}
