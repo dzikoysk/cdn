@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `java-library`
     `maven-publish`
@@ -99,6 +101,17 @@ subprojects {
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit")
         testImplementation("org.assertj:assertj-core:3.23.1")
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            languageVersion = "1.7"
+            freeCompilerArgs = listOf(
+                "-Xjvm-default=all", // For generating default methods in interfaces
+                // "-Xcontext-receivers"
+            )
+        }
     }
 
     tasks.withType<Test> {
