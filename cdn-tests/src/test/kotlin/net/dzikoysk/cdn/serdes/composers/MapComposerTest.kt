@@ -27,7 +27,7 @@ import panda.std.ResultAssertions.assertOk
 class MapComposerTest : CdnSpec() {
 
     class ConfigurationWithMaps {
-        var map = emptyMap<Int, Map<Int, String>>()
+        var map = emptyMap<Int, Map<String, String>>()
         var elements = mapOf("a" to ElementConfiguration())
     }
 
@@ -44,6 +44,7 @@ class MapComposerTest : CdnSpec() {
           }
           2 {
             1: a
+            "1:2": b
           }
         }
         elements {
@@ -54,8 +55,8 @@ class MapComposerTest : CdnSpec() {
         """)
 
         val map = mapOf(
-            1 to mapOf(1 to "a"),
-            2 to mapOf(1 to "a")
+            1 to mapOf("1" to "a"),
+            2 to mapOf("1" to "a", "1:2" to "b"),
         )
 
         val configuration = assertOk(standard.loadAs<ConfigurationWithMaps>(Source.of(source)))

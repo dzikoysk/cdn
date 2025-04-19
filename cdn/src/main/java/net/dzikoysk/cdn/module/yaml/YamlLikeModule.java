@@ -88,7 +88,7 @@ public final class YamlLikeModule extends StandardModule {
     @Override
     public Result<Blank, Exception> renderEntry(StringBuilder output, String indentation, @Nullable Section parent, Entry element) {
         output.append(indentation)
-                .append(element.getName())
+                .append(CdnUtils.stringify(element.getName()))
                 .append(": ")
                 .append(element.getPieceValue().trim().equals("[]") ? "[]" : CdnUtils.stringify(enforceQuotes, element.getPieceValue()))
                 .append(StandardOperators.LINE_SEPARATOR);

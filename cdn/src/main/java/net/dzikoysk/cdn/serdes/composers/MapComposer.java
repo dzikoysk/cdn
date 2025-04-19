@@ -132,11 +132,11 @@ public final class MapComposer implements Composer<Map<Object, Object>> {
     private Result<Pair<Object, Object>, CdnException> deserialize(MapComposerContext context, String name, Element<?> element) {
         Result<?, CdnException> serializedKey = context.keyComposer
                 .deserialize(context.settings, new Piece(name), context.keyType, null, context.entryAsRecord)
-                .mapErr(exception -> new CdnException("Cannot serialize key of map", exception));
+                .mapErr(exception -> new CdnException("Cannot serialize key of map: " + name, exception));
 
         Result<?, CdnException> serializedValue = context.valueComposer
                 .deserialize(context.settings, element, context.valueType, null, context.entryAsRecord)
-                .mapErr(exception -> new CdnException("Cannot serialize value of map", exception));
+                .mapErr(exception -> new CdnException("Cannot serialize value of map: " + element.getValue(), exception));
 
         return serializedKey.merge(serializedValue, Pair::of);
     }

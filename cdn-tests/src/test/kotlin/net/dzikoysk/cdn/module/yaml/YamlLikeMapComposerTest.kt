@@ -51,11 +51,12 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
             1: a
           2:
             1: a
+            "1:2": b
         """)
 
         val expectedMap = mapOf(
-            1 to mapOf(1 to "a"),
-            2 to mapOf(1 to "a")
+            1 to mapOf("1" to "a"),
+            2 to mapOf("1" to "a", "1:2" to "b"),
         )
 
         val configuration = assertOk(yamlLike.loadAs<ConfigurationWithMaps>(Source.of(source)))
@@ -67,6 +68,7 @@ internal class YamlLikeMapComposerTest : CdnSpec(){
             1: "a"
           2:
             1: "a"
+            "1:2": "b"
         elements:
           a:
             name: "default value"
