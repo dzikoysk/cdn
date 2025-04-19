@@ -98,11 +98,13 @@ public class Section extends AbstractNamedElement<List<? extends Element<?>>> {
             return Option.none();
         }
 
+        String stringifiedKey = CdnUtils.stringify(key);
+
         for (Element<?> element : getValue()) {
             if (element instanceof NamedElement) {
                 NamedElement<?> namedElement = (NamedElement<?>) element;
 
-                if (key.equals(namedElement.getName())) {
+                if (key.equals(CdnUtils.destringify(namedElement.getName()))) {
                     return Option.of(element);
                 }
             }

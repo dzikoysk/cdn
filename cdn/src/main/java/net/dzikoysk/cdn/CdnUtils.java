@@ -212,7 +212,7 @@ public final class CdnUtils {
 
     private static final List<Predicate<String>> LITERAL_FILTERS = asList(
             (value) -> ObjectUtils.equalsOneOf(value, "true", "false"),
-            (value) -> Result.attempt(() -> Double.parseDouble(value)).isOk()
+            (value) -> Result.supplyThrowing(() -> Double.parseDouble(value)).isOk()
     );
 
     public static String destringify(String raw) {
@@ -232,23 +232,28 @@ public final class CdnUtils {
     }
 
     public static boolean isStringified(String value) {
-        return value.startsWith("\"") && value.endsWith("\"");
+        for (String operator : StandardOperators.STRING_OPERATORS) {
+            if (value.startsWith(operator) && value.endsWith(operator)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String stringify(boolean enforce, String value) {
+        return enforce ? forceStringify(value) : value;
     }
 
     public static String stringify(String value) {
         String raw = value.replace(StandardOperators.LINE_SEPARATOR, StandardOperators.RAW_LINE_SEPARATOR);
 
         if (!isStringified(raw)) {
-            if (raw.isEmpty() || raw.trim().length() != raw.length() || raw.endsWith(",") || raw.endsWith("{") || raw.endsWith(":")) {
-                return "\"" + raw + "\"";
+            if (raw.isEmpty() || raw.trim().length() != raw.length() || raw.contains(",") || raw.contains("{") || raw.contains(":")) {
+                return stringifyValue(raw);
             }
         }
 
         return raw;
-    }
-
-    public static String stringify(boolean enforce, String value) {
-        return enforce ? forceStringify(value) : value;
     }
 
     public static String forceStringify(String value) {
@@ -259,10 +264,23 @@ public final class CdnUtils {
         }
 
         if (!isStringified(value)) {
-            return "\"" + value + "\"";
+            return stringifyValue(value);
         }
 
         return value;
+    }
+
+    private static String stringifyValue(String raw) {
+        if (raw.contains("\"")) {
+            if (raw.contains("'")) {
+                if (raw.contains("`")) {
+                    throw new IllegalArgumentException("Cannot stringify value: " + raw);
+                }
+                return "`" + raw + "`";
+            }
+            return "'" + raw + "'";
+        }
+        return "\"" + raw + "\"";
     }
 
     public static <K, V, E extends Exception> Map<K, V> streamOfResultPairToMap(PandaStream<Result<Pair<K, V>, E>> stream) {

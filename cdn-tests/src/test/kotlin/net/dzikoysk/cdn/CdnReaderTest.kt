@@ -83,6 +83,42 @@ class CdnReaderTest : CdnSpec() {
     }
 
     @Test
+    fun `should read quoted key and value with tricky values`() {
+        val result = assertOk(standard.load(Source.of("""
+        "key:": " value "
+        """)))
+
+        assertEquals(" value ", result.getString("key:").get())
+    }
+
+    @Test
+    fun `GH-185 should read weird keys`() {
+        val result = assertOk(standard.load(Source.of("""
+          ':lenny:': ( ͡° ͜ʖ ͡°)
+          ':tableflip:': (╯°□°）╯︵ ┻━┻
+          '<3': ❤
+          ':swag:': (⌐■_■)
+          ':yes:': ✔
+          ':dog:': 7V●ᴥ●V
+          ':shrug:': ¯\_(ツ)_/¯
+          ':angry:': (ノಠ益ಠ)ノ
+          ':no:': ❌
+          'o/': ( ﾟ◡ﾟ)/
+        """)))
+
+        assertEquals("( ͡° ͜ʖ ͡°)", result.getString(":lenny:").get())
+        assertEquals("(╯°□°）╯︵ ┻━┻", result.getString(":tableflip:").get())
+        assertEquals("❤", result.getString("<3").get())
+        assertEquals("(⌐■_■)", result.getString(":swag:").get())
+        assertEquals("✔", result.getString(":yes:").get())
+        assertEquals("7V●ᴥ●V", result.getString(":dog:").get())
+        assertEquals("¯\\_(ツ)_/¯", result.getString(":shrug:").get())
+        assertEquals("(ノಠ益ಠ)ノ", result.getString(":angry:").get())
+        assertEquals("❌", result.getString(":no:").get())
+        assertEquals("( ﾟ◡ﾟ)/", result.getString("o/").get())
+    }
+
+    @Test
     fun `should remove semicolons`() {
         val result = assertOk(standard.load(Source.of("""
         a: b,

@@ -37,7 +37,7 @@ class StandardSerializerTest : CdnSpec() {
           # List description
           list [
             record
-            record : with : semicolons
+            "record : with : semicolons"
           ]
           # Custom object
           custom {

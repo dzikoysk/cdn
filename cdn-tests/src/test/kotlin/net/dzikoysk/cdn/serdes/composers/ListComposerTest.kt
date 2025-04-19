@@ -48,8 +48,8 @@ class ListComposerTest : CdnSpec() {
 
         val expectedSource = cfg("""
         list [
-          a:1
-          b:2
+          "a:1"
+          "b:2"
         ]
         """)
 

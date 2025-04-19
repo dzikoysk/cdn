@@ -30,6 +30,8 @@ class SimpleComposerTest : CdnSpec() {
         var separator = ", "
         var singleQuote = "\""
         var quotes = "\"\""
+        var singleQuotes = "'"
+        var backticks = "`"
         var empty = ""
     }
 
