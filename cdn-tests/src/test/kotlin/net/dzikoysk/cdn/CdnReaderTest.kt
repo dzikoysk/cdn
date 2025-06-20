@@ -105,6 +105,8 @@ class CdnReaderTest : CdnSpec() {
             ':angry:': (ノಠ益ಠ)ノ
             ':no:': ❌
             'o/': ( ﾟ◡ﾟ)/
+            "key": "some value: with colon"
+            "key-other": "more : colons : and : colons"
           }
         """)))
 
@@ -119,6 +121,8 @@ class CdnReaderTest : CdnSpec() {
         assertEquals("(ノಠ益ಠ)ノ", section.getString(":angry:").get())
         assertEquals("❌", section.getString(":no:").get())
         assertEquals("( ﾟ◡ﾟ)/", section.getString("o/").get())
+        assertEquals("some value: with colon", section.getString("key").get())
+        assertEquals("more : colons : and : colons", section.getString("key-other").get())
     }
 
     @Test
