@@ -16,8 +16,8 @@
 
 package net.dzikoysk.cdn.model;
 
+import java.util.stream.Collectors;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
-import panda.utilities.StringUtils;
 
 import java.util.*;
 
@@ -26,7 +26,9 @@ import java.util.*;
  */
 public final class Piece implements Element<String> {
 
-    private static final Set<String> STRING_OPERATORS = new HashSet<>(Arrays.asList(StandardOperators.STRING_OPERATORS));
+    private static final Set<Character> STRING_OPERATORS = Arrays.stream(StandardOperators.STRING_OPERATORS)
+        .map(s -> s.charAt(0))
+        .collect(Collectors.toSet());
 
     private final String value;
 
@@ -34,53 +36,44 @@ public final class Piece implements Element<String> {
         this.value = value.trim();
     }
 
-    public Entry toEntry(List<? extends String> description) {
-        String openingSymbol = Character.toString(value.charAt(0));
-        String[] elements;
-
-        if (isStringOperator(openingSymbol)) {
-            StringBuilder entryKey = new StringBuilder(openingSymbol);
-            int readIndex = 1;
-
-            for (; readIndex < value.length(); readIndex++) {
-                String currentChar = Character.toString(value.charAt(readIndex));
-                entryKey.append(currentChar);
-
-                if (currentChar.equals(openingSymbol)) {
-                    break;
-                }
-            }
-
-            elements = new String[] {
-                entryKey.toString(),
-                StringUtils.split(value.substring(readIndex + 1), StandardOperators.OPERATOR)[1].trim()
-            };
-        } else {
-            elements = StringUtils.splitFirst(value, StandardOperators.OPERATOR);
-        }
-
-        String entryKey = elements.length > 0
-                ? elements[0].trim()
-                : value;
-
-        String entryValue = elements.length == 2
-                ? elements[1].trim()
-                : entryKey;
-
-        if (entryValue.endsWith(StandardOperators.SEPARATOR)) {
-            entryValue = entryValue.substring(0, entryValue.length() - 1);
-        }
-
-        return new Entry(description, value, entryKey, entryValue);
+    public Entry toEntry(List<String> description) {
+        char operator = value.charAt(0);
+        return STRING_OPERATORS.contains(operator)
+            ? parseWithOperator(operator, description)
+            : parseWithoutOperator(description);
     }
 
-    private boolean isStringOperator(String operator) {
-        for (String stringOperator : StandardOperators.STRING_OPERATORS) {
-            if (stringOperator.equals(operator)) {
-                return true;
+    private Entry parseWithOperator(char operator, List<String> description) {
+        StringBuilder key = new StringBuilder().append(operator);
+        int readIndex = 1;
+
+        while (readIndex < value.length()) {
+            char currentChar = value.charAt(readIndex++);
+            key.append(currentChar);
+
+            if (currentChar == operator) {
+                break;
             }
         }
-        return false;
+
+        return new Entry(description, value, key.toString(), parseValue(value, readIndex));
+    }
+
+    private Entry parseWithoutOperator(List<String> description) {
+        int separatorIndex = value.indexOf(StandardOperators.OPERATOR);
+        if (separatorIndex == -1) {
+            return new Entry(description, value, value, value);
+        }
+
+        String key = value.substring(0, separatorIndex).trim();
+        return new Entry(description, value, key, parseValue(value, separatorIndex));
+    }
+
+    private static String parseValue(String raw, int operatorIndex) {
+        String value = raw.substring(operatorIndex + StandardOperators.OPERATOR.length());
+        return value.endsWith(StandardOperators.SEPARATOR)
+            ? value.substring(0, value.length() - StandardOperators.SEPARATOR.length()).trim()
+            : value.trim();
     }
 
     @Override
